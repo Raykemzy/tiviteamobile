@@ -48,9 +48,9 @@ class LoginNotifier extends _$LoginNotifier {
     try {
       final response = await _repo.login(
         data,
-        saveUserState: (user) {
+        saveUserState: (user) async {
           if (rememberMe) {
-            _userRepo.saveRememberMe(rememberMe);
+            await _userRepo.saveRememberMe(rememberMe);
           }
           final userStateNotifier = ref.read(userNotifierProvider.notifier);
           userStateNotifier.updateUser(user);
@@ -78,7 +78,7 @@ class LoginNotifier extends _$LoginNotifier {
   }) async {
     state = state.copyWith(loadState: LoadState.loading);
     try {
-      final response = await _repo.signUpWithSocialAuth(data, saveUserState: (user) {
+      final response = await _repo.signUpWithSocialAuth(data, saveUserState: (user) async {
         final userStateNotifier = ref.read(userNotifierProvider.notifier);
         userStateNotifier.updateUser(user);
       });

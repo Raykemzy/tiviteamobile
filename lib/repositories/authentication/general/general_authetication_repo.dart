@@ -27,13 +27,13 @@ final class GeneralAuthenticationRepo {
 
   Future<BaseResponse<SocialAuthResponse>> signUpWithSocialAuth(
     SocialAuthModel data, {
-    required void Function(User?) saveUserState,
+    required Future<void> Function(User?) saveUserState,
   }) async {
     try {
       final result = await restClient.signUpWithSocialAuth(data);
       final userLoginData = result.data;
-      userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
-      userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
+      await userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
+      await userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
 
       await userRepository?.saveUser(userLoginData?.user);
 
@@ -50,7 +50,7 @@ final class GeneralAuthenticationRepo {
         await userRepository?.saveUser(updatedUser);
       }
 
-      saveUserState(updatedUser);
+      await saveUserState(updatedUser);
 
       return result;
     } on DioException catch (e) {
@@ -60,15 +60,15 @@ final class GeneralAuthenticationRepo {
 
   Future<BaseResponse<LoginResponseObject>> login(
     LoginRequestObject data, {
-    required void Function(User?) saveUserState,
+    required Future<void> Function(User?) saveUserState,
   }) async {
     try {
       await userRepository?.clearUserSession();
       final result = await restClient.login(data);
       final userLoginData = result.data;
 
-      userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
-      userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
+      await userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
+      await userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
 
       final updatedUser = userLoginData?.user?.copyWith(
         kycIsVerified: userLoginData.kycIsVerified,
@@ -79,7 +79,7 @@ final class GeneralAuthenticationRepo {
 
       await userRepository?.saveUser(updatedUser);
 
-      saveUserState(updatedUser);
+      await saveUserState(updatedUser);
 
       return result;
     } on DioException catch (e) {

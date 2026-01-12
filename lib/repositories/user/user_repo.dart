@@ -6,12 +6,12 @@ abstract interface class UserRepository {
   Future<void> saveUser(User? user);
   String getToken();
   String getRefreshToken();
-  void saveToken(String token);
-  void saveRefreshToken(String token);
+  Future<void> saveToken(String token);
+  Future<void> saveRefreshToken(String token);
   void saveCurrentState(CurrentState val);
   CurrentState getCurrentState();
   bool? getRememberMe();
-  void saveRememberMe(bool val);
+  Future<void> saveRememberMe(bool val);
   void saveKYCVerificationStatus(KYCVerificationStatus status);
   KYCVerificationStatus getKYCVerificationStatus();
 

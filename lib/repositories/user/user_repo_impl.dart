@@ -30,7 +30,7 @@ class UserRepoImpl implements UserRepository {
   }
 
   @override
-  void saveRememberMe(bool val) async {
+  Future<void> saveRememberMe(bool val) async {
     await _storage.put(HiveKeys.rememberMe, val);
   }
 
@@ -50,12 +50,12 @@ class UserRepoImpl implements UserRepository {
   }
 
   @override
-  void saveRefreshToken(String token) async {
+  Future<void> saveRefreshToken(String token) async {
     await _storage.put(HiveKeys.refreshToken, token);
   }
 
   @override
-  void saveToken(String token) async {
+  Future<void> saveToken(String token) async {
     await _storage.put(HiveKeys.token, token);
   }
 

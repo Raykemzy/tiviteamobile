@@ -10,7 +10,7 @@ import 'package:tivi_tea/core/services/local_storage/storage_keys.dart';
 final class ThirdPartyAuthRepo {
   final GoogleSignIn googleSignIn;
   final LocalStorage localStorage;
-  ThirdPartyAuthRepo({required this.googleSignIn, required this.localStorage,});
+  ThirdPartyAuthRepo({required this.googleSignIn, required this.localStorage});
 
   Future<BaseResponse<SocialAuthModel>> signIn() async {
     final googleUser = await googleSignIn.signIn();
@@ -24,20 +24,21 @@ final class ThirdPartyAuthRepo {
         final userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         final user = userCredential.user;
-        final providerData = user?.providerData.firstWhere((element) => element.providerId == 'google.com');
-        
+        final providerData = user?.providerData
+            .firstWhere((element) => element.providerId == 'google.com');
+
         // Extract name from Google user data
         String firstName = '';
         String lastName = '';
         String email = '';
-        
+
         // Check if Google provided name data
         if (providerData?.displayName != null) {
           final nameParts = providerData?.displayName?.split(' ') ?? [];
           firstName = nameParts.isNotEmpty ? nameParts.first : '';
           lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
           email = user?.email ?? '';
-          
+
           // Store the user data locally for future logins
           if (firstName.isNotEmpty) {
             await localStorage.put(HiveKeys.googleFirstName, firstName);
@@ -52,15 +53,17 @@ final class ThirdPartyAuthRepo {
           // Google didn't provide name data, get from stored values in local storage
           firstName = localStorage.get<String>(HiveKeys.googleFirstName) ?? '';
           lastName = localStorage.get<String>(HiveKeys.googleLastName) ?? '';
-          
+
           // Get email from stored value if not available from Google
-          email = user?.email ?? localStorage.get<String>(HiveKeys.googleEmail) ?? '';
+          email = user?.email ??
+              localStorage.get<String>(HiveKeys.googleEmail) ??
+              '';
         }
-        
+
         debugLog(email);
         debugLog(firstName);
         debugLog(lastName);
-        
+
         return BaseResponse(
           status: 'success',
           data: SocialAuthModel(
@@ -102,13 +105,14 @@ final class ThirdPartyAuthRepo {
       String? firstName;
       String? lastName;
       String? email;
-      
+
       // Check if Apple provided name data (only available on first login)
-      if (appleCredential.givenName != null || appleCredential.familyName != null) {
+      if (appleCredential.givenName != null ||
+          appleCredential.familyName != null) {
         firstName = appleCredential.givenName;
         lastName = appleCredential.familyName;
         email = appleCredential.email;
-        
+
         // Store the user data locally for future logins
         if (firstName != null) {
           await localStorage.put(HiveKeys.appleFirstName, firstName);
@@ -124,9 +128,10 @@ final class ThirdPartyAuthRepo {
         // Get from stored values in local storage
         firstName = localStorage.get<String>(HiveKeys.appleFirstName);
         lastName = localStorage.get<String>(HiveKeys.appleLastName);
-        
+
         // Get email from stored value if not available from Apple
-        email = appleCredential.email ?? localStorage.get<String>(HiveKeys.appleEmail);
+        email = appleCredential.email ??
+            localStorage.get<String>(HiveKeys.appleEmail);
       }
 
       debugLog(email);
