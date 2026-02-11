@@ -63,15 +63,21 @@ final class GeneralAuthenticationRepo {
     required Future<void> Function(User?) saveUserState,
   }) async {
     try {
-      await userRepository?.clearUserSession();
+      final previouslyCachedUser = userRepository?.getUser();
+      // await userRepository?.clearUserSession();
       final result = await restClient.login(data);
       final userLoginData = result.data;
 
       await userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
       await userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
 
+      final hasUploadedKycDocuments =
+          userLoginData?.user?.hasUploadedKycDocuments ??
+              previouslyCachedUser?.hasUploadedKycDocuments;
+
       final updatedUser = userLoginData?.user?.copyWith(
         kycIsVerified: userLoginData.kycIsVerified,
+        hasUploadedKycDocuments: hasUploadedKycDocuments,
         kycVerificationStatus: userLoginData.kycIsVerified == true
             ? KYCVerificationStatus.documentsVerified
             : null,
@@ -138,6 +144,22 @@ final class GeneralAuthenticationRepo {
       final user = userRepository?.getUser();
       final userWithUpdatedKYCVerificationStatus = user?.copyWith(
         kycVerificationStatus: KYCVerificationStatus.documentsSubmitted,
+      );
+      await userRepository?.saveUser(userWithUpdatedKYCVerificationStatus);
+
+      return result;
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
+  Future<BaseResponse> submitArtisanKyc(ClientKYCRequestBody data) async {
+    try {
+      final result = await restClient.submitArtisanKyc(data);
+      final user = userRepository?.getUser();
+      final userWithUpdatedKYCVerificationStatus = user?.copyWith(
+        kycVerificationStatus: KYCVerificationStatus.documentsSubmitted,
+        hasUploadedKycDocuments: true,
       );
       await userRepository?.saveUser(userWithUpdatedKYCVerificationStatus);
 

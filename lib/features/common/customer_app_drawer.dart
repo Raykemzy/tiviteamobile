@@ -43,7 +43,7 @@ class CustomerAppDrawer extends ConsumerWidget {
           20.verticalSpace,
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
-              icon: Assets.svgs.dashboardDrawerIcon,
+              icon: Assets.svgs.dashboardDrawerIcon.path,
               label: context.l10n.dashboard,
               isSelected: routePath == dashboard,
               onTap: () {
@@ -56,21 +56,21 @@ class CustomerAppDrawer extends ConsumerWidget {
             ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
-              icon: Assets.svgs.profileDrawerIcon,
+              icon: Assets.svgs.profileDrawerIcon.path,
               label: context.l10n.myProfile,
               isSelected: routePath == AppRoutes.profile,
               onTap: () => context.go(AppRoutes.profile),
             ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
-              icon: Assets.svgs.listingDrawerIcon,
+              icon: Assets.svgs.listingDrawerIcon.path,
               label: context.l10n.myFavorites,
               isSelected: routePath == AppRoutes.myListingView,
               onTap: () => context.go(AppRoutes.myListingView),
             ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
-              icon: Assets.svgs.historyDrawerIcon,
+              icon: Assets.svgs.historyDrawerIcon.path,
               label: context.l10n.bookingHistory,
               isSelected: routePath == bookingHistory,
               onTap: () => context.go(bookingHistory),
@@ -100,12 +100,12 @@ class CustomerAppDrawer extends ConsumerWidget {
             child: Column(
               children: [
                 DrawerListTile(
-                  icon: Assets.svgs.headphonesDrawerIcon,
+                  icon: Assets.svgs.headphonesDrawerIcon.path,
                   label: context.l10n.customerSupport,
                 ),
                 if (appAccessState != AppAccessState.guest)
                   DrawerListTile(
-                    icon: Assets.svgs.settingsDrawerIcon,
+                    icon: Assets.svgs.settingsDrawerIcon.path,
                     label: context.l10n.settings,
                     isSelected: routePath == settings,
                     onTap: () => context.go(settings),
@@ -119,7 +119,7 @@ class CustomerAppDrawer extends ConsumerWidget {
                   builder: (context, ref, _) {
                     final notifier = ref.read(loginNotifierProvider.notifier);
                     return DrawerListTile(
-                      icon: Assets.svgs.logout,
+                      icon: Assets.svgs.logout.path,
                       label: isGuest ? 'Login' : context.l10n.logOut,
                       logOutButton: isGuest ? false : true,
                       onTap: () {

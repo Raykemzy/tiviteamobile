@@ -50,7 +50,7 @@ class SearchTextField extends StatelessWidget {
                   filled: true,
                   fillColor: context.theme.dividerColor,
                   prefixIcon: AppSvgWidget(
-                    path: Assets.svgs.search,
+                    path: Assets.svgs.search.path,
                     color: const Color(0xFF8A8A99),
                     fit: BoxFit.scaleDown,
                   ),
@@ -112,7 +112,7 @@ class FiltersWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AppSvgWidget(path: Assets.svgs.filterIcon),
+          AppSvgWidget(path: Assets.svgs.filterIcon.path),
           5.horizontalSpace,
           Text(context.l10n.filters,
               style: context.theme.textTheme.displaySmall),

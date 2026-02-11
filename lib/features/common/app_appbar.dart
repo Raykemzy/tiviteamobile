@@ -62,14 +62,14 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       : scaffoldKey.currentState?.openDrawer(),
                   child: AppSvgWidget(
                     path: showBackButtonForHomeScreenAppBar
-                        ? Assets.svgs.chevronLeft
-                        : Assets.svgs.hamburger,
+                        ? Assets.svgs.chevronLeft.path
+                        : Assets.svgs.hamburger.path,
                   ),
                 );
               },
             ),
             const Spacer(),
-            if (!isGuest) AppSvgWidget(path: Assets.svgs.notificationIcon),
+            if (!isGuest) AppSvgWidget(path: Assets.svgs.notificationIcon.path),
             if (!isGuest) 10.horizontalSpace,
             user.profilePicture == null
                 ? const CircleAvatar()
@@ -110,8 +110,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                   )
                                 : AppSvgWidget(
                                     path: showBackButtonForHomeScreenAppBar
-                                        ? Assets.svgs.chevronLeft
-                                        : Assets.svgs.hamburger,
+                                        ? Assets.svgs.chevronLeft.path
+                                        : Assets.svgs.hamburger.path,
                                   ),
                           );
                         },
@@ -142,7 +142,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       if (!isGuest)
-                        AppSvgWidget(path: Assets.svgs.notificationIcon),
+                        AppSvgWidget(path: Assets.svgs.notificationIcon.path),
                       10.horizontalSpace,
                       user.profilePicture == null
                           ? const CircleAvatar()

@@ -33,7 +33,7 @@ class ChooseFileContainer extends StatelessWidget {
           ),
           child: Column(
             children: [
-              AppSvgWidget(path: Assets.svgs.cloudUpload),
+              AppSvgWidget(path: Assets.svgs.cloudUpload.path),
               10.verticalSpace,
               Text(
                 title ?? context.l10n.businessRegistrationDocument,

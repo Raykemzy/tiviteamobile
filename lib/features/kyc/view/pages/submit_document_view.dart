@@ -27,7 +27,7 @@ class SubmitDocumentView extends ConsumerWidget {
           margin: EdgeInsets.symmetric(horizontal: 18.w),
           child: Column(
             children: [
-              AppSvgWidget(path: Assets.svgs.pendingVerification),
+              AppSvgWidget(path: Assets.svgs.pendingVerification.path),
               20.verticalSpace,
               Text(
                 context.l10n.accountVerification,

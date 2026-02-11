@@ -16,22 +16,22 @@ mixin ProfileItemMixin {
     return [
       ProfileItemModel(
         label: '${user.firstName} ${user.lastName}',
-        icon: Assets.svgs.profileEdit,
+        icon: Assets.svgs.profileEdit.path,  
         onTap: () {},
       ),
       ProfileItemModel(
         label: user.phoneNumber ?? '',
-        icon: Assets.svgs.profilePhone,
+        icon: Assets.svgs.profilePhone.path,
         onTap: () {},
       ),
       ProfileItemModel(
         label: user.email ?? '',
-        icon: Assets.svgs.profileMail,
+        icon: Assets.svgs.profileMail.path,
         onTap: () {},
       ),
       ProfileItemModel(
         label: context.l10n.changePassword,
-        icon: Assets.svgs.profilePassword,
+        icon: Assets.svgs.profilePassword.path,
         onTap: () => context.push(
           '${AppRoutes.profile}/${AppRoutes.changePasswordView}',
         ),

@@ -223,7 +223,7 @@ class _ImageDetails extends StatelessWidget {
           5.verticalSpace,
           Row(
             children: [
-              AppSvgWidget(path: Assets.svgs.location),
+              AppSvgWidget(path: Assets.svgs.location.path),
               5.horizontalSpace,
               SizedBox(
                 width: 150.w,
@@ -269,7 +269,7 @@ class _ImageDetails extends StatelessWidget {
                         if (listing.partner?.user?.isVerified ?? false)
                           Padding(
                             padding: EdgeInsets.only(left: 5.w),
-                            child: AppSvgWidget(path: Assets.svgs.verified),
+                            child: AppSvgWidget(path: Assets.svgs.verified.path),
                           )
                       ],
                     ),

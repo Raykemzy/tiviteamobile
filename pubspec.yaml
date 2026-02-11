@@ -49,6 +49,7 @@ dependencies:
   firebase_auth: ^5.5.1
   package_rename: ^1.10.0
   mobile_scanner: ^6.0.10
+  file_picker: ^8.1.7
 
 # flutter_native_splash:
 #   android: true
@@ -58,6 +59,7 @@ dependencies:
 #   image: "assets/placeholders/logo.png"
 
 dev_dependencies:
+  analyzer: ^7.6.0
   build_runner: ^2.4.12
   flutter_gen_runner:
   flutter_test:
@@ -81,6 +83,7 @@ flutter:
     - assets/images/
     - assets/svgs/
     - assets/placeholders/
+    - assets/icons/flags/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -107,3 +110,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_gen:
+  integrations:
+    flutter_svg: true
+  assets:
+    exclude:
+      - assets/icons/flags/DO.svg
+      - assets/icons/flags/IN.svg
+      - assets/icons/flags/IS.svg

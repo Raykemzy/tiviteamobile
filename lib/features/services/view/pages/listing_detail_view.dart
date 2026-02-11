@@ -330,7 +330,7 @@ class ContactSection extends StatelessWidget {
           10.verticalSpace,
           Row(
             children: [
-              AppSvgWidget(path: Assets.svgs.callOutgoing),
+              AppSvgWidget(path: Assets.svgs.callOutgoing.path),
               10.horizontalSpace,
               Text(
                 phone,
@@ -344,7 +344,7 @@ class ContactSection extends StatelessWidget {
           10.verticalSpace,
           Row(
             children: [
-              AppSvgWidget(path: Assets.svgs.mail),
+              AppSvgWidget(path: Assets.svgs.mail.path),
               10.horizontalSpace,
               Text(
                 email,

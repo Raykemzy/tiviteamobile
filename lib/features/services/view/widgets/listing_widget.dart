@@ -70,7 +70,7 @@ class _ImageDetails extends StatelessWidget {
           5.verticalSpace,
           Row(
             children: [
-              AppSvgWidget(path: Assets.svgs.location),
+              AppSvgWidget(path: Assets.svgs.location.path),
               5.horizontalSpace,
               Text(
                 listing.address ?? '',

@@ -75,7 +75,7 @@ class _PartnerKYCSecondViewState extends ConsumerState<PartnerKYCSecondView> {
                       ),
                       child: Row(
                         children: [
-                          AppSvgWidget(path: Assets.svgs.doc),
+                          AppSvgWidget(path: Assets.svgs.doc.path),
                           10.horizontalSpace,
                           Text(selectedUtilityBillImage?.path.split('-').last ??
                               ''),

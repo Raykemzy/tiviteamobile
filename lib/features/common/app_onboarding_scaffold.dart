@@ -93,7 +93,7 @@ class _ItemRow extends StatelessWidget {
             GestureDetector(
               onTap: onOnboardingActionTapped.onBack,
               child: AppSvgWidget(
-                path: Assets.svgs.backButton,
+                path: Assets.svgs.backButton.path,
                 fit: BoxFit.scaleDown,
                 width: 20.w,
                 height: 20.h,

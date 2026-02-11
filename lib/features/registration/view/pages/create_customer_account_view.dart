@@ -118,7 +118,7 @@ class _CreateCustomerAccountState extends State<CreateCustomerAccount> {
                 label: context.l10n.email,
                 hintText: context.l10n.emailHintText,
                 suffixIcon: AppSvgWidget(
-                  path: Assets.svgs.envelope,
+                  path: Assets.svgs.envelope.path,
                   fit: BoxFit.scaleDown,
                 ),
                 validateFunction: Validators.email(),
@@ -131,7 +131,7 @@ class _CreateCustomerAccountState extends State<CreateCustomerAccount> {
                 suffixIcon: InkWell(
                   onTap: _obscurePass,
                   child: AppSvgWidget(
-                    path: obscurePass ? Assets.svgs.eye : Assets.svgs.eyeSlash,
+                    path: obscurePass ? Assets.svgs.eye.path : Assets.svgs.eyeSlash.path,
                     fit: BoxFit.scaleDown,
                   ),
                 ),
@@ -145,8 +145,8 @@ class _CreateCustomerAccountState extends State<CreateCustomerAccount> {
                   onTap: _obscureConfirmPass,
                   child: AppSvgWidget(
                     path: obscureConfirmPass
-                        ? Assets.svgs.eye
-                        : Assets.svgs.eyeSlash,
+                        ? Assets.svgs.eye.path
+                        : Assets.svgs.eyeSlash.path,
                     fit: BoxFit.scaleDown,
                   ),
                 ),

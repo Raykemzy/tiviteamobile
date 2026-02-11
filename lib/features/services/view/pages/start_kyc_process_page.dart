@@ -29,7 +29,7 @@ class StartKYCProcessView extends ConsumerWidget {
             child: Column(
               children: [
                 20.verticalSpace,
-                AppSvgWidget(path: Assets.svgs.greenBox),
+                AppSvgWidget(path: Assets.svgs.greenBox.path), 
                 20.verticalSpace,
                 Text(
                   context.l10n.completeKYC,

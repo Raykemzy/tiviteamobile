@@ -65,7 +65,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               label: context.l10n.email,
               hintText: context.l10n.emailHintText,
               suffixIcon: AppSvgWidget(
-                path: Assets.svgs.envelope,
+                path: Assets.svgs.envelope.path,
                 fit: BoxFit.scaleDown,
               ),
             ),

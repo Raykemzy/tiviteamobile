@@ -103,7 +103,7 @@ class _WithdrawalViewState extends ConsumerState<WithdrawalView> {
                       color: Color(0xFFC6E3E5),
                     ),
                     child: SvgPicture.asset(
-                      Assets.svgs.balanceIcon,
+                      Assets.svgs.balanceIcon.path,  
                       width: 20.w,
                       height: 20.h,
                     ),

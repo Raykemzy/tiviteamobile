@@ -10,7 +10,6 @@ import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/features/onboarding/view_model/onboarding_notifier.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
-import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -31,7 +30,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     Future.delayed(const Duration(milliseconds: 1000), () async {
       if (mounted) {
         final rememberMeService = ref.read(rememberMeServiceProvider);
-        
+
         // Check if remember me is enabled and data is valid
         if (rememberMeService.shouldUseRememberMe()) {
           // Get the validated user data
@@ -40,24 +39,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             // Update the user notifier with the validated user data
             final userNotifier = ref.read(userNotifierProvider.notifier);
             userNotifier.updateUser(user);
-            
+
             // Update the login notifier to reflect that user is logged in
             final loginNotifier = ref.read(loginNotifierProvider.notifier);
             loginNotifier.setAppAccessState(AppAccessState.user);
-            
+
             // Navigate to home screen
             context.pushReplacement(AppRoutes.homeView);
             return;
           }
         }
-        
+
         // If remember me validation fails, clear the data
         if (ref.read(getRememberUserStatusProvider)) {
           await rememberMeService.clearRememberMeData();
         }
 
-        ///TODO: Check user states here and decide screen to navigate to
-        context.push(AppRoutes.selectUserTypeView);
+        if (mounted) {
+          context.push(AppRoutes.selectUserTypeView);
+        }
       }
     });
   }

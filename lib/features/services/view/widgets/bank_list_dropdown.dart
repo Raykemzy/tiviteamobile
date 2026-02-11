@@ -50,7 +50,7 @@ class _BankListDropdownState extends ConsumerState<BankListDropdown> {
               Row(
                 children: [
                   AppSvgWidget(
-                    path: Assets.svgs.box,
+                    path: Assets.svgs.box.path,
                     color: const Color(0xFF77797D),
                   ),
                   10.horizontalSpace,

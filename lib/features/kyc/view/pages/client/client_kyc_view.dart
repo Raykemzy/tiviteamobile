@@ -241,7 +241,7 @@ class _ChooseFileContainer extends StatelessWidget {
             else
               Row(
                 children: [
-                  AppSvgWidget(path: Assets.svgs.doc),
+                  AppSvgWidget(path: Assets.svgs.doc.path),
                   10.horizontalSpace,
                   Text(selectedImage?.path.split('-').last ?? ''),
                   10.horizontalSpace,
@@ -260,7 +260,7 @@ class _ChooseFileContainer extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
               child: Row(
                 children: [
-                  AppSvgWidget(path: Assets.svgs.cloudUpload),
+                  AppSvgWidget(path: Assets.svgs.cloudUpload.path),
                   5.horizontalSpace,
                   Text(
                     context.l10n.chooseAFile,

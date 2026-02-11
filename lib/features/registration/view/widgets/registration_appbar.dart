@@ -52,7 +52,7 @@ class RegistrationAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 onTap: onTap ?? () => context.pop(),
                 child: const Icon(CupertinoIcons.chevron_left),
               ),
-              AppSvgWidget(path: Assets.svgs.hamburger)
+              AppSvgWidget(path: Assets.svgs.hamburger.path)
             ],
           ),
           10.verticalSpace,

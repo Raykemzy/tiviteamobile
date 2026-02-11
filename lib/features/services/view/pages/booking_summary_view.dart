@@ -167,7 +167,7 @@ class _BookingSummaryViewState extends ConsumerState<BookingSummaryView> {
                         child: Row(
                           children: [
                             AppSvgWidget(
-                              path: Assets.svgs.location,
+                              path: Assets.svgs.location.path,
                               fit: BoxFit.cover,
                               width: 20,
                               height: 20,

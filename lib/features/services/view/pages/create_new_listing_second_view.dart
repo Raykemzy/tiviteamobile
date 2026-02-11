@@ -112,7 +112,7 @@ class _CreateNewListingSecondViewState
                   controller: pickUpLocation,
                   hintText: context.l10n.pickUpLocation,
                   suffixIcon: AppSvgWidget(
-                    path: Assets.svgs.mapMarker,
+                    path: Assets.svgs.mapMarker.path,
                     fit: BoxFit.scaleDown,
                   ),
                 ),

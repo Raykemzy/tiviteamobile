@@ -16,10 +16,10 @@ class AppDropdown<T> extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AppDropdown> createState() => _AppDropdownState();
+  ConsumerState<AppDropdown<T>> createState() => _AppDropdownState<T>();
 }
 
-class _AppDropdownState extends ConsumerState<AppDropdown> {
+class _AppDropdownState<T> extends ConsumerState<AppDropdown<T>> {
   String initialText = 'Select Option';
   bool isExpanded = false;
   @override
@@ -49,7 +49,7 @@ class _AppDropdownState extends ConsumerState<AppDropdown> {
               Row(
                 children: [
                   AppSvgWidget(
-                    path: Assets.svgs.box,
+                    path: Assets.svgs.box.path,
                     color: const Color(0xFF77797D),
                   ),
                   10.horizontalSpace,

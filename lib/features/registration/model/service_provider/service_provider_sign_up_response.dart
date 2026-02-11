@@ -25,6 +25,8 @@ class ServiceProviderSignUpResponse {
   final String? businessType;
   @JsonKey(name: 'foot_soldier')
   final String? footSoldier;
+  @JsonKey(name: 'has_uploaded_kyc_documents')
+  final bool? hasUploadedKycDocuments;
 
   ServiceProviderSignUpResponse({
     this.id,
@@ -39,6 +41,7 @@ class ServiceProviderSignUpResponse {
     this.website,
     this.businessType,
     this.footSoldier,
+    this.hasUploadedKycDocuments,
   });
 
   /// Factory method for JSON deserialization

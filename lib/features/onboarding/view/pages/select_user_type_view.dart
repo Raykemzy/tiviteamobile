@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
@@ -8,6 +9,8 @@ import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_onboarding_scaffold.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
+import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
+import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/features/onboarding/model/enums/enums.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
@@ -34,9 +37,9 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
           ),
           20.verticalSpace,
           _UserTypeContainer(
-            userType: AppUserType.guest,
+            userType: AppUserType.artisan,
             onTap: (type) => _selectUserType(type),
-            isSelected: selectedAppUserType == AppUserType.guest,
+            isSelected: selectedAppUserType == AppUserType.artisan,
           ),
           10.verticalSpace,
           _UserTypeContainer(
@@ -65,7 +68,7 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
                       fontWeight: FontWeight.w700,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => context.push(AppRoutes.loginView),
+                      ..onTap = () => context.go(AppRoutes.loginView),
                   ),
                 ],
               ),
@@ -75,7 +78,33 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
           AppButton(onPressed: _navigateToCreateAccountView),
         ],
       ),
+      bottomChildren: Consumer(
+        builder: (context, ref, _) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 32.0),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => _onContinueAsGuest(ref),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(
+                  'Continue as a Guest',
+                  style: context.theme.textTheme.displaySmall?.copyWith(
+                    color: const Color(0xFFEC8305),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
+  }
+
+  void _onContinueAsGuest(WidgetRef ref) {
+    final notifier = ref.read(loginNotifierProvider.notifier);
+    notifier.setAppAccessState(AppAccessState.guest);
+    context.go(AppRoutes.homeView);
   }
 
   void _selectUserType(AppUserType type) {
@@ -89,8 +118,8 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
     switch (selectedAppUserType) {
       case AppUserType.serviceProvier:
         context.push(AppRoutes.createServiceProviderAccount);
-      case AppUserType.guest:
-        context.go(AppRoutes.homeView);
+      case AppUserType.artisan:
+        context.push(AppRoutes.createArtisanAccount);
       default:
         context.push(AppRoutes.createCustomerAccount);
     }
@@ -130,15 +159,15 @@ class _UserTypeContainer extends StatelessWidget {
           child: Row(
             children: [
               if (userType == AppUserType.serviceProvier) ...[
-                AppSvgWidget(path: Assets.svgs.suitcase),
+                AppSvgWidget(path: Assets.svgs.suitcase.path),
                 10.horizontalSpace,
                 Text(context.l10n.serviceProvider),
-              ] else if (userType == AppUserType.guest) ...[
-                AppSvgWidget(path: Assets.svgs.listingDrawerIcon),
+              ] else if (userType == AppUserType.artisan) ...[
+                AppSvgWidget(path: Assets.svgs.box.path),
                 10.horizontalSpace,
-                Text(context.l10n.browseListings),
+                Text(context.l10n.artisan),
               ] else ...[
-                AppSvgWidget(path: Assets.svgs.profileIcon),
+                AppSvgWidget(path: Assets.svgs.profileIcon.path),
                 10.horizontalSpace,
                 Text(context.l10n.customer),
               ]

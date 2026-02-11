@@ -72,7 +72,7 @@ class _PartnerKYCFirstViewState extends State<PartnerKYCFirstView> {
                 ),
                 child: Row(
                   children: [
-                    AppSvgWidget(path: Assets.svgs.doc),
+                    AppSvgWidget(path: Assets.svgs.doc.path),
                     10.horizontalSpace,
                     Text(selectedImage?.path.split('-').last ?? ''),
                     10.horizontalSpace,

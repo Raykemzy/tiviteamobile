@@ -156,7 +156,7 @@ class _EditListingSecondViewState extends ConsumerState<EditListingSecondView> {
                   controller: pickUpLocation,
                   hintText: context.l10n.pickUpLocation,
                   suffixIcon: AppSvgWidget(
-                    path: Assets.svgs.mapMarker,
+                    path: Assets.svgs.mapMarker.path,
                     fit: BoxFit.scaleDown,
                   ),
                 ),

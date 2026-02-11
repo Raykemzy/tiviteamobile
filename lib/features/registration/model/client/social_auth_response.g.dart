@@ -45,4 +45,5 @@ Map<String, dynamic> _$SocialAuthResponseToJson(SocialAuthResponse instance) =>
 const _$EntityTypeEnumMap = {
   EntityType.partner: 'partner',
   EntityType.client: 'client',
+  EntityType.artisan: 'artisan',
 };

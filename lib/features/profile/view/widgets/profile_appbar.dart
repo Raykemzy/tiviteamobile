@@ -75,7 +75,7 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                 0.5,
                               ),
                               child: AppSvgWidget(
-                                path: Assets.svgs.camera,
+                                path: Assets.svgs.camera.path,
                                 width: 20,
                                 color: Colors.white,
                               ),

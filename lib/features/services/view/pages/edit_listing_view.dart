@@ -114,7 +114,7 @@ class _ListingTypeContainer extends StatelessWidget {
             CreateListingType.workSpace => Row(
                 children: [
                   AppSvgWidget(
-                    path: Assets.svgs.userGroup,
+                    path: Assets.svgs.userGroup.path,  
                     color: isSelected
                         ? context.theme.primaryColor
                         : const Color(0xFF77797D),
@@ -126,7 +126,7 @@ class _ListingTypeContainer extends StatelessWidget {
             CreateListingType.workTool => Row(
                 children: [
                   AppSvgWidget(
-                    path: Assets.svgs.suitcase,
+                    path: Assets.svgs.suitcase.path,
                     color: isSelected
                         ? context.theme.primaryColor
                         : const Color(0xFF77797D),
@@ -138,7 +138,7 @@ class _ListingTypeContainer extends StatelessWidget {
             CreateListingType.otherListing => Row(
                 children: [
                   AppSvgWidget(
-                    path: Assets.svgs.box,
+                    path: Assets.svgs.box.path,
                     color: isSelected
                         ? context.theme.primaryColor
                         : const Color(0xFF77797D),

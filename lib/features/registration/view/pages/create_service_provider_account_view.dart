@@ -10,6 +10,7 @@ import 'package:tivi_tea/features/common/app_phone_text_field.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/common/app_text_field.dart';
 import 'package:tivi_tea/features/registration/model/service_provider/service_provider_sign_up_request_body.dart';
+import 'package:tivi_tea/features/registration/view/widgets/form_section_header.dart';
 import 'package:tivi_tea/features/registration/view/widgets/registration_appbar.dart';
 import 'package:tivi_tea/features/registration/view/widgets/registration_scaffold.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
@@ -88,7 +89,7 @@ class _CreateServiceProviderAccountState
                 ),
               ),
               20.verticalSpace,
-              _FormSectionHeader(title: context.l10n.personalInfo),
+              FormSectionHeader(title: context.l10n.personalInfo),
               AppTextField(
                 controller: firstNameController,
                 validateFunction: Validators.name(),
@@ -119,11 +120,11 @@ class _CreateServiceProviderAccountState
                 hintText: context.l10n.emailHintText,
                 validateFunction: Validators.email(),
                 suffixIcon: AppSvgWidget(
-                  path: Assets.svgs.envelope,
+                  path: Assets.svgs.envelope.path,
                   fit: BoxFit.scaleDown,
                 ),
               ),
-              _FormSectionHeader(title: context.l10n.locationDetails),
+              FormSectionHeader(title: context.l10n.locationDetails),
               AppTextField(
                 controller: addressController,
                 label: context.l10n.yourAddress,
@@ -181,24 +182,6 @@ class _CreateServiceProviderAccountState
     context.push(
       AppRoutes.createServiceProviderAccountSecondView,
       extra: data,
-    );
-  }
-}
-
-class _FormSectionHeader extends StatelessWidget {
-  final String title;
-  const _FormSectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: context.theme.secondaryHeaderColor,
-      margin: EdgeInsets.symmetric(vertical: 20.h),
-      padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Text(
-        title,
-        style: context.theme.textTheme.bodyLarge,
-      ),
     );
   }
 }

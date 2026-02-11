@@ -86,6 +86,7 @@ class _GeneralHomeScreeenState extends ConsumerState<GeneralHomeScreeen> {
       child: switch (entityType) {
         EntityType.partner => const ServiceProviderHomeScreen(),
         EntityType.client => const CustomerHomeScreen(),
+        EntityType.artisan => const CustomerHomeScreen(),
       },
     );
   }

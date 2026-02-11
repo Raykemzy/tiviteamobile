@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/utils/image_picker_notifier.dart';
+import 'package:tivi_tea/core/utils/logger.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/kyc/model/enums.dart';
 import 'package:tivi_tea/features/services/view/pages/booking_summary_view.dart';
@@ -37,15 +39,17 @@ class BottomSheetWidget extends ConsumerWidget {
             children: [
               AppSvgWidget(
                 path: switch (chooseFileType) {
-                  ChooseFileType.takePhoto => Assets.svgs.camera,
-                  _ => Assets.svgs.addPhoto,
+                  ChooseFileType.takePhoto => Assets.svgs.camera.path,
+                  ChooseFileType.selectFromGallery => Assets.svgs.addPhoto.path,
+                  ChooseFileType.selectFromFiles => Assets.svgs.doc.path,
                 },
               ),
               20.verticalSpace,
               Text(
                 switch (chooseFileType) {
                   ChooseFileType.takePhoto => context.l10n.takeAPicture,
-                  _ => context.l10n.gallery,
+                  ChooseFileType.selectFromGallery => context.l10n.gallery,
+                  ChooseFileType.selectFromFiles => context.l10n.pdf,
                 },
               ),
             ],
@@ -70,10 +74,20 @@ class BottomSheetWidget extends ConsumerWidget {
         onImageSelected(image);
         break;
 
-      default:
+      case ChooseFileType.selectFromGallery:
         final image = await notifier.selectSingleImage();
         if (image == null) return;
         onImageSelected(image);
+        break;
+
+      case ChooseFileType.selectFromFiles:
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf'],
+        );
+        if (result == null || result.files.single.path == null) return;
+        onImageSelected(XFile(result.files.single.path!));
+        break;
     }
 
     if (context.mounted) {

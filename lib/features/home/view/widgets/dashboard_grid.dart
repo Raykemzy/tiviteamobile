@@ -95,7 +95,7 @@ class DashboardInfoContainer extends StatelessWidget {
                   color: bookingContainerColor,
                 ),
                 child: Center(
-                  child: AppSvgWidget(path: Assets.svgs.brandBooking),
+                  child: AppSvgWidget(path: Assets.svgs.brandBooking.path),
                 ),
               )
             ],

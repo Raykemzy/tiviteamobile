@@ -15,6 +15,8 @@ import 'package:tivi_tea/features/onboarding/view/pages/splash_screen.dart';
 import 'package:tivi_tea/features/payment/view/payment_webview.dart';
 import 'package:tivi_tea/features/profile/view/profile_view.dart';
 import 'package:tivi_tea/features/registration/model/service_provider/service_provider_sign_up_request_body.dart';
+import 'package:tivi_tea/features/registration/view/pages/artisan_kyc_view.dart';
+import 'package:tivi_tea/features/registration/view/pages/create_artisan_account_view.dart';
 import 'package:tivi_tea/features/registration/view/pages/create_customer_account_view.dart';
 import 'package:tivi_tea/features/registration/view/pages/create_service_provider_account_second_view.dart';
 import 'package:tivi_tea/features/registration/view/pages/create_service_provider_account_view.dart';
@@ -171,6 +173,18 @@ final GoRouter router = GoRouter(
       path: AppRoutes.createServiceProviderAccount,
       builder: (BuildContext context, GoRouterState state) {
         return const CreateServiceProviderAccount();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.createArtisanAccount,
+      builder: (BuildContext context, GoRouterState state) {
+        return const CreateArtisanAccountView();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.artisanKYCView,
+      builder: (BuildContext context, GoRouterState state) {
+        return const ArtisanKycView();
       },
     ),
     GoRoute(

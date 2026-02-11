@@ -46,3 +46,6 @@ app.*.map.json
 
 # .properties
 key.properties
+
+/assets/icons/flags/
+/docs/api-risk-findings.md

@@ -30,6 +30,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
           ? null
           : DateTime.parse(json['updated_at'] as String),
       profilePicture: json['profile_picture'] as String?,
+      hasUploadedKycDocuments: json['has_uploaded_kyc_documents'] as bool?,
       groups: json['groups'] as List<dynamic>? ?? const [],
       userPermissions: json['user_permissions'] as List<dynamic>? ?? const [],
     );
@@ -50,6 +51,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
       'profile_picture': instance.profilePicture,
+      'has_uploaded_kyc_documents': instance.hasUploadedKycDocuments,
       'groups': instance.groups,
       'user_permissions': instance.userPermissions,
     };
@@ -57,6 +59,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
 const _$EntityTypeEnumMap = {
   EntityType.partner: 'partner',
   EntityType.client: 'client',
+  EntityType.artisan: 'artisan',
 };
 
 GetUserProfileResponse _$GetUserProfileResponseFromJson(

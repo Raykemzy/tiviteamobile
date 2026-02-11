@@ -74,7 +74,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AppSvgWidget(path: Assets.svgs.lock),
+                    AppSvgWidget(path: Assets.svgs.lock.path),
                     5.horizontalSpace,
                     Text(
                       context.l10n.changePassword,

@@ -20,6 +20,7 @@ import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
+import 'package:tivi_tea/features/registration/model/artisan/artisan_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/model/client/customer_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/model/client/social_auth_model.dart';
 import 'package:tivi_tea/features/registration/model/client/social_auth_response.dart';
@@ -50,6 +51,10 @@ abstract class RestClient {
   Future<BaseResponse<ServiceProviderSignUpResponse>> signUpAsServiceProvider(
     @Body() ServiceProviderSignUpRequestBody data,
   );
+  @POST('/authentication/artisan/sign-up')
+  Future<BaseResponse<ServiceProviderSignUpResponse>> signUpAsArtisan(
+    @Body() ArtisanSignUpRequestBody data,
+  );
   @POST('/authentication/client/sign-up')
   Future<BaseResponse<CustomerSignUpResponseBody>> signUpAsCustomer(
     @Body() CustomerSignUpRequestBody data,
@@ -66,6 +71,8 @@ abstract class RestClient {
   Future<BaseResponse> submitKyc(@Body() PartnerKycRequestBody data);
   @POST('/authentication/client/submit-kyc')
   Future<BaseResponse> submitClientKyc(@Body() ClientKYCRequestBody data);
+  @POST('/authentication/artisan/submit-kyc')
+  Future<BaseResponse> submitArtisanKyc(@Body() ClientKYCRequestBody data);
   @POST('/authentication/client/social-auth')
   Future<BaseResponse<SocialAuthResponse>> signUpWithSocialAuth(
       @Body() SocialAuthModel data);

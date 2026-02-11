@@ -15,6 +15,7 @@ class AppDrawer extends ConsumerWidget {
     return switch (entityType) {
       EntityType.partner => const ServiceProviderAppDrawer(),
       EntityType.client => const CustomerAppDrawer(),
+      EntityType.artisan => const CustomerAppDrawer(),
     };
   }
 }

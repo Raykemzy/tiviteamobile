@@ -190,6 +190,12 @@ abstract class AppLocalizations {
   /// **'Service Provider'**
   String get serviceProvider;
 
+  /// Artisan text
+  ///
+  /// In en, this message translates to:
+  /// **'Artisan'**
+  String get artisan;
+
   /// Customer text
   ///
   /// In en, this message translates to:
@@ -351,6 +357,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location Details'**
   String get locationDetails;
+
+  /// Service Details section title
+  ///
+  /// In en, this message translates to:
+  /// **'Service Details'**
+  String get serviceDetails;
+
+  /// Label for artisan service type selector
+  ///
+  /// In en, this message translates to:
+  /// **'Select the service you provide'**
+  String get selectTheServiceYouProvide;
+
+  /// Hint for optional other service specification
+  ///
+  /// In en, this message translates to:
+  /// **'If other, please specify below (Optional)'**
+  String get ifOtherPleaseSpecifyBelowOptional;
+
+  /// Label or hint for artisan description field
+  ///
+  /// In en, this message translates to:
+  /// **'Describes what you do'**
+  String get describesWhatYouDo;
 
   /// Account Information text
   ///
@@ -1401,6 +1431,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit Documents'**
   String get submitDocuments;
+
+  /// Artisan KYC intro - ID requirement
+  ///
+  /// In en, this message translates to:
+  /// **'TiviTea requires a valid Government-issued Identity Card in order to verify your identity and activate your account.'**
+  String get tiviteaRequiresValidIdCard;
+
+  /// Artisan KYC - upload ID label
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a proof of your identity'**
+  String get uploadProofOfIdentity;
+
+  /// Artisan KYC - provide correct info
+  ///
+  /// In en, this message translates to:
+  /// **'Provide correct information to help us verify your account'**
+  String get provideCorrectInfoToVerifyAccount;
+
+  /// Artisan KYC - NIN hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 11 digit NIN Number'**
+  String get enter11DigitNinNumber;
+
+  /// Artisan KYC - ID confirmation checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm that I uploaded a valid government-issued Identity Card. This ID includes my picture, signature, name, date of birth and address'**
+  String get confirmUploadedValidIdCard;
+
+  /// Artisan KYC - submitted state title
+  ///
+  /// In en, this message translates to:
+  /// **'Document submitted for verification'**
+  String get documentSubmittedForVerification;
+
+  /// Artisan KYC - success screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Account Verification Successful'**
+  String get accountVerificationSuccessful;
 
   /// Documents submitted text
   ///

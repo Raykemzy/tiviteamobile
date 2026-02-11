@@ -34,6 +34,8 @@ class User {
   final DateTime? updatedAt;
   @JsonKey(name: 'profile_picture')
   final String? profilePicture;
+  @JsonKey(name: 'has_uploaded_kyc_documents')
+  final bool? hasUploadedKycDocuments;
   final List<dynamic>? groups;
   @JsonKey(name: 'user_permissions')
   final List<dynamic>? userPermissions;
@@ -56,6 +58,7 @@ class User {
     this.createdAt,
     this.updatedAt,
     this.profilePicture,
+    this.hasUploadedKycDocuments,
     this.groups = const [],
     this.userPermissions = const [],
     this.kycVerificationStatus,
@@ -81,6 +84,7 @@ class User {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? profilePicture,
+    bool? hasUploadedKycDocuments,
     List<String>? groups,
     List<String>? userPermissions,
     KYCVerificationStatus? kycVerificationStatus,
@@ -101,6 +105,8 @@ class User {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       profilePicture: profilePicture ?? this.profilePicture,
+      hasUploadedKycDocuments:
+          hasUploadedKycDocuments ?? this.hasUploadedKycDocuments,
       groups: groups ?? this.groups,
       userPermissions: userPermissions ?? this.userPermissions,
       kycVerificationStatus:

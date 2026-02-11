@@ -21,6 +21,7 @@ import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
+import 'package:tivi_tea/models/user_model.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -47,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   emailFocusNode.requestFocus();
     // });
-    
+
     // Listen to focus changes to detect keyboard visibility
     emailFocusNode.addListener(() {
       setState(() {});
@@ -105,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
               label: context.l10n.email,
               hintText: context.l10n.emailHintText,
               suffixIcon: AppSvgWidget(
-                path: Assets.svgs.envelope,
+                path: Assets.svgs.envelope.path,
                 fit: BoxFit.scaleDown,
               ),
               validateFunction: Validators.email(),
@@ -119,7 +120,9 @@ class _LoginViewState extends State<LoginView> {
               suffixIcon: InkWell(
                 onTap: _obscurePass,
                 child: AppSvgWidget(
-                  path: obscurePass ? Assets.svgs.eye : Assets.svgs.eyeSlash,
+                  path: obscurePass
+                      ? Assets.svgs.eye.path
+                      : Assets.svgs.eyeSlash.path,
                   fit: BoxFit.scaleDown,
                 ),
               ),
@@ -250,13 +253,14 @@ class _LoginViewState extends State<LoginView> {
       bottomChildren: Consumer(
         builder: (context, ref, _) {
           // Check if any text field has focus (keyboard is visible)
-          final isKeyboardVisible = emailFocusNode.hasFocus || passwordFocusNode.hasFocus;
-          
+          final isKeyboardVisible =
+              emailFocusNode.hasFocus || passwordFocusNode.hasFocus;
+
           // Hide the guest login button when keyboard is visible
           if (isKeyboardVisible) {
             return const SizedBox.shrink();
           }
-          
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 32.0),
             child: InkWell(
@@ -288,7 +292,7 @@ class _LoginViewState extends State<LoginView> {
     notifier.login(
       data,
       rememberMe: rememberMe,
-      onSuccess: (entityType) => _onLoginSuccess(ref, entityType),
+      onSuccess: (user) => _onLoginSuccess(ref, user),
       onError: (error) => context.showError(error),
     );
   }
@@ -304,7 +308,7 @@ class _LoginViewState extends State<LoginView> {
   void _signInWithApple(WidgetRef ref) {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.signInWithApple(
-      onSuccess: (entityType) => _onLoginSuccess(ref, entityType),
+      onSuccess: (user) => _onLoginSuccess(ref, user),
       onError: (error) {
         debugLog(error);
         context.showError(error);
@@ -312,10 +316,18 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void _onLoginSuccess(WidgetRef ref, EntityType? entityType) {
+  void _onLoginSuccess(WidgetRef ref, User? user) {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.setAppAccessState(AppAccessState.user);
-    context.go(AppRoutes.homeView, extra: entityType);
+    if (user?.entityType == EntityType.artisan &&
+        user?.hasUploadedKycDocuments == false) {
+      context.go(AppRoutes.artisanKYCView);
+      return;
+    }
+    context.go(
+      AppRoutes.homeView,
+      extra: user?.entityType ?? EntityType.client,
+    );
   }
 
   void _onGuestLoginSuccess(WidgetRef ref) {

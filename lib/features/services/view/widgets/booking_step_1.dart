@@ -124,7 +124,7 @@ class _BookingStep1State extends State<BookingStep1> {
                               controller: _dateFromController,
                               showCursor: false,
                               suffixIcon: AppSvgWidget(
-                                path: Assets.svgs.calendar,
+                                path: Assets.svgs.calendar.path,
                                 fit: BoxFit.scaleDown,
                               ),
                               onTap: _selectDateFrom,
@@ -138,7 +138,7 @@ class _BookingStep1State extends State<BookingStep1> {
                               controller: _timeFromController,
                               showCursor: false,
                               suffixIcon: AppSvgWidget(
-                                path: Assets.svgs.calendar,
+                                path: Assets.svgs.calendar.path,
                                 fit: BoxFit.scaleDown,
                               ),
                               onTap: _selectTimeFrom,
@@ -155,7 +155,7 @@ class _BookingStep1State extends State<BookingStep1> {
                               controller: _dateToController,
                               showCursor: false,
                               suffixIcon: AppSvgWidget(
-                                path: Assets.svgs.calendar,
+                                path: Assets.svgs.calendar.path,
                                 fit: BoxFit.scaleDown,
                               ),
                               readOnly: true,
@@ -170,7 +170,7 @@ class _BookingStep1State extends State<BookingStep1> {
                               controller: _timeToController,
                               showCursor: false,
                               suffixIcon: AppSvgWidget(
-                                path: Assets.svgs.calendar,
+                                path: Assets.svgs.calendar.path,
                                 fit: BoxFit.scaleDown,
                               ),
                               onTap: _selectTimeTo,
@@ -197,7 +197,7 @@ class _BookingStep1State extends State<BookingStep1> {
                           label: context.l10n.numberOfPeople,
                           controller: _numberOfPeople,
                           suffixIcon: AppSvgWidget(
-                            path: Assets.svgs.userGroup,
+                            path: Assets.svgs.userGroup.path,
                             fit: BoxFit.scaleDown,
                           ),
                           keyboardType: TextInputType.number,

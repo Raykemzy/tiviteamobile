@@ -26,7 +26,7 @@ class AppSuccessContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AppSvgWidget(path: Assets.svgs.greenCheck),
+        AppSvgWidget(path: Assets.svgs.greenCheck.path),
         10.verticalSpace,
         Text(title, style: context.theme.textTheme.titleSmall),
         20.verticalSpace,

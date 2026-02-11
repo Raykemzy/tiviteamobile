@@ -29,6 +29,7 @@ ServiceProviderSignUpResponse _$ServiceProviderSignUpResponseFromJson(
       website: json['website'] as String?,
       businessType: json['business_type'] as String?,
       footSoldier: json['foot_soldier'] as String?,
+      hasUploadedKycDocuments: json['has_uploaded_kyc_documents'] as bool?,
     );
 
 Map<String, dynamic> _$ServiceProviderSignUpResponseToJson(
@@ -46,4 +47,5 @@ Map<String, dynamic> _$ServiceProviderSignUpResponseToJson(
       'website': instance.website,
       'business_type': instance.businessType,
       'foot_soldier': instance.footSoldier,
+      'has_uploaded_kyc_documents': instance.hasUploadedKycDocuments,
     };

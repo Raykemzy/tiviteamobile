@@ -108,8 +108,8 @@ class _CreateOrUpdatePinDialogState extends State<CreateOrUpdatePinDialog> {
                             obscureOldPass.value = !obscureOldPass.value,
                         child: AppSvgWidget(
                           path: obscurePassValue
-                              ? Assets.svgs.eye
-                              : Assets.svgs.eyeSlash,
+                              ? Assets.svgs.eye.path
+                              : Assets.svgs.eyeSlash.path,
                           fit: BoxFit.scaleDown,
                         ),
                       ),
@@ -130,8 +130,8 @@ class _CreateOrUpdatePinDialogState extends State<CreateOrUpdatePinDialog> {
                       onTap: () => obscureNewPass.value = !obscureNewPass.value,
                       child: AppSvgWidget(
                         path: obscurePassValue
-                            ? Assets.svgs.eye
-                            : Assets.svgs.eyeSlash,
+                            ? Assets.svgs.eye.path
+                            : Assets.svgs.eyeSlash.path,
                         fit: BoxFit.scaleDown,
                       ),
                     ),
@@ -153,8 +153,8 @@ class _CreateOrUpdatePinDialogState extends State<CreateOrUpdatePinDialog> {
                           obscureConfirmPass.value = !obscureConfirmPass.value,
                       child: AppSvgWidget(
                         path: obscurePassValue
-                            ? Assets.svgs.eye
-                            : Assets.svgs.eyeSlash,
+                            ? Assets.svgs.eye.path
+                            : Assets.svgs.eyeSlash.path,
                         fit: BoxFit.scaleDown,
                       ),
                     ),

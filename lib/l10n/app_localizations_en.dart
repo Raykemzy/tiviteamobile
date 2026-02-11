@@ -61,6 +61,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceProvider => 'Service Provider';
 
   @override
+  String get artisan => 'Artisan';
+
+  @override
   String get customer => 'Customer';
 
   @override
@@ -141,6 +144,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationDetails => 'Location Details';
+
+  @override
+  String get serviceDetails => 'Service Details';
+
+  @override
+  String get selectTheServiceYouProvide => 'Select the service you provide';
+
+  @override
+  String get ifOtherPleaseSpecifyBelowOptional =>
+      'If other, please specify below (Optional)';
+
+  @override
+  String get describesWhatYouDo => 'Describes what you do';
 
   @override
   String get accountInfo => 'Account Information';
@@ -685,6 +701,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submitDocuments => 'Submit Documents';
+
+  @override
+  String get tiviteaRequiresValidIdCard =>
+      'TiviTea requires a valid Government-issued Identity Card in order to verify your identity and activate your account.';
+
+  @override
+  String get uploadProofOfIdentity => 'Upload a proof of your identity';
+
+  @override
+  String get provideCorrectInfoToVerifyAccount =>
+      'Provide correct information to help us verify your account';
+
+  @override
+  String get enter11DigitNinNumber => 'Enter 11 digit NIN Number';
+
+  @override
+  String get confirmUploadedValidIdCard =>
+      'I confirm that I uploaded a valid government-issued Identity Card. This ID includes my picture, signature, name, date of birth and address';
+
+  @override
+  String get documentSubmittedForVerification =>
+      'Document submitted for verification';
+
+  @override
+  String get accountVerificationSuccessful => 'Account Verification Successful';
 
   @override
   String get documentSubmitted => 'Documents submitted for verification!';

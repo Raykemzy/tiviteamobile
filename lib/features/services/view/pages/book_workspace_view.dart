@@ -102,7 +102,7 @@ class _BookWorkSpaceOrListingViewState
                             controller: _dateFromController,
                             showCursor: false,
                             suffixIcon: AppSvgWidget(
-                              path: Assets.svgs.calendar,
+                              path: Assets.svgs.calendar.path, 
                               fit: BoxFit.scaleDown,
                             ),
                             onTap: _selectDateFrom,
@@ -117,7 +117,7 @@ class _BookWorkSpaceOrListingViewState
                             controller: _timeFromController,
                             showCursor: false,
                             suffixIcon: AppSvgWidget(
-                              path: Assets.svgs.calendar,
+                              path: Assets.svgs.calendar.path,
                               fit: BoxFit.scaleDown,
                             ),
                             onTap: _selectTimeFrom,
@@ -136,7 +136,7 @@ class _BookWorkSpaceOrListingViewState
                             controller: _dateToController,
                             showCursor: false,
                             suffixIcon: AppSvgWidget(
-                              path: Assets.svgs.calendar,
+                              path: Assets.svgs.calendar.path,
                               fit: BoxFit.scaleDown,
                             ),
                             readOnly: true,
@@ -151,7 +151,7 @@ class _BookWorkSpaceOrListingViewState
                             controller: _timeToController,
                             showCursor: false,
                             suffixIcon: AppSvgWidget(
-                              path: Assets.svgs.calendar,
+                              path: Assets.svgs.calendar.path,
                               fit: BoxFit.scaleDown,
                             ),
                             onTap: _selectTimeTo,
@@ -178,7 +178,7 @@ class _BookWorkSpaceOrListingViewState
                         label: context.l10n.numberOfPeople,
                         controller: _numberOfPeople,
                         suffixIcon: AppSvgWidget(
-                          path: Assets.svgs.userGroup,
+                          path: Assets.svgs.userGroup.path,
                           fit: BoxFit.scaleDown,
                         ),
                         keyboardType: TextInputType.number,

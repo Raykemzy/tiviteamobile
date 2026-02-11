@@ -187,7 +187,7 @@ class _ImageDetails extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    AppSvgWidget(path: Assets.svgs.star),
+                    AppSvgWidget(path: Assets.svgs.star.path),
                     5.horizontalSpace,
                     Text("${favoriteListing.rating ?? 0}")
                   ],

@@ -30,7 +30,7 @@ class DocumentSubmitted extends ConsumerWidget {
             child: Column(
               children: [
                 20.verticalSpace,
-                AppSvgWidget(path: Assets.svgs.greenCheck),
+                AppSvgWidget(path: Assets.svgs.greenCheck.path),
                 20.verticalSpace,
                 Text(
                   context.l10n.documentSubmitted,

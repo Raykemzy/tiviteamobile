@@ -74,8 +74,8 @@ class _WithdrawalDialogStep1State extends State<WithdrawalDialogStep1> {
                   onTap: () => obscurePass.value = !obscurePass.value,
                   child: AppSvgWidget(
                     path: obscurePassValue
-                        ? Assets.svgs.eye
-                        : Assets.svgs.eyeSlash,
+                        ? Assets.svgs.eye.path
+                        : Assets.svgs.eyeSlash.path,
                     fit: BoxFit.scaleDown,
                   ),
                 ),

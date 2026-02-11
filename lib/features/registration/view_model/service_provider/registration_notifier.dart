@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tivi_tea/core/config/dio_config.dart';
 
 import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/features/registration/model/artisan/artisan_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/model/service_provider/service_provider_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/view_model/service_provider/registration_state.dart';
 import 'package:tivi_tea/repositories/authentication/service_provider/service_provider_authentication_repo.dart';
@@ -37,6 +38,29 @@ class RegistrationNotifier extends _$RegistrationNotifier {
       if (!response.isSuccess()) {
         throw response.error?.message ?? response.message ?? '';
       }
+      state = state.copyWith(loadState: LoadState.success);
+      if (onSuccess != null) onSuccess();
+    } catch (e) {
+      state = state.copyWith(loadState: LoadState.error);
+      if (onError != null) onError(e.toString());
+    }
+  }
+
+  void signUpAsArtisan(
+    ArtisanSignUpRequestBody data, {
+    VoidCallback? onSuccess,
+    void Function(String)? onError,
+  }) async {
+    state = state.copyWith(loadState: LoadState.loading);
+    try {
+      final response = await _repo.signUpAsArtisan(data);
+      if (!response.isSuccess()) {
+        throw response.error?.message ?? response.message ?? '';
+      }
+      final cachedUser = response.data?.user?.copyWith(
+        hasUploadedKycDocuments: response.data?.hasUploadedKycDocuments,
+      );
+      await _userRepo.saveUser(cachedUser);
       state = state.copyWith(loadState: LoadState.success);
       if (onSuccess != null) onSuccess();
     } catch (e) {

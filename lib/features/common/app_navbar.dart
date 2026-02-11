@@ -69,16 +69,16 @@ class Navbar extends StatelessWidget {
                 NavigationDestination(
                   label: context.l10n.home,
                   icon: AppSvgWidget(
-                    path: Assets.svgs.homeNavBarIcon,
+                    path: Assets.svgs.homeNavBarIcon.path,
                     color: const Color(0xFF737380),
                   ),
-                  selectedIcon: AppSvgWidget(path: Assets.svgs.homeNavBarIcon),
+                  selectedIcon: AppSvgWidget(path: Assets.svgs.homeNavBarIcon.path),
                 ),
                 NavigationDestination(
                   label: context.l10n.services,
-                  icon: AppSvgWidget(path: Assets.svgs.servicesNavBarIcon),
+                  icon: AppSvgWidget(path: Assets.svgs.servicesNavBarIcon.path),
                   selectedIcon: AppSvgWidget(
-                    path: Assets.svgs.servicesNavBarIcon,
+                    path: Assets.svgs.servicesNavBarIcon.path,
                     color: Colors.white,
                   ),
                 ),
@@ -87,18 +87,18 @@ class Navbar extends StatelessWidget {
                     label: isClient
                         ? context.l10n.myFavorites
                         : context.l10n.myListing,
-                    icon: AppSvgWidget(path: Assets.svgs.historyNavBarIcon),
+                    icon: AppSvgWidget(path: Assets.svgs.historyNavBarIcon.path),
                     selectedIcon: AppSvgWidget(
-                      path: Assets.svgs.historyNavBarIcon,
+                      path: Assets.svgs.historyNavBarIcon.path,
                       color: Colors.white,
                     ),
                   ),
                 if (appAccessState != AppAccessState.guest)
                   NavigationDestination(
                     label: context.l10n.profile,
-                    icon: AppSvgWidget(path: Assets.svgs.profileNavBarIcon),
+                    icon: AppSvgWidget(path: Assets.svgs.profileNavBarIcon.path),
                     selectedIcon: AppSvgWidget(
-                      path: Assets.svgs.profileNavBarIcon,
+                      path: Assets.svgs.profileNavBarIcon.path,
                       color: Colors.white,
                     ),
                   ),

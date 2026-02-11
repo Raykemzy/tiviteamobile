@@ -11,6 +11,7 @@ import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/features/registration/model/client/social_auth_model.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
+import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/authentication/general/general_authetication_repo.dart';
 import 'package:tivi_tea/repositories/authentication/general/third_party_auth.dart';
 import 'package:tivi_tea/repositories/user/user_repo.dart';
@@ -40,8 +41,9 @@ class LoginNotifier extends _$LoginNotifier {
   void login(
     LoginRequestObject data, {
     bool rememberMe = false,
+
     ///Pass [EntityType] to determine what dashboard would be loaded
-    void Function(EntityType?)? onSuccess,
+    void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
     state = state.copyWith(loadState: LoadState.loading);
@@ -63,7 +65,7 @@ class LoginNotifier extends _$LoginNotifier {
       }
 
       state = state.copyWith(loadState: LoadState.success);
-      if (onSuccess != null) onSuccess(response.data?.user?.entityType);
+      if (onSuccess != null) onSuccess(response.data?.user);
     } catch (e) {
       state = state.copyWith(loadState: LoadState.error);
       if (onError != null) onError(e.toString());
@@ -73,12 +75,13 @@ class LoginNotifier extends _$LoginNotifier {
   void signUpWithSocialAuth(
     SocialAuthModel data, {
     ///Pass [EntityType] to determine what dashboard would be loaded
-    void Function(EntityType?)? onSuccess,
+    void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
     state = state.copyWith(loadState: LoadState.loading);
     try {
-      final response = await _repo.signUpWithSocialAuth(data, saveUserState: (user) async {
+      final response =
+          await _repo.signUpWithSocialAuth(data, saveUserState: (user) async {
         final userStateNotifier = ref.read(userNotifierProvider.notifier);
         userStateNotifier.updateUser(user);
       });
@@ -88,7 +91,7 @@ class LoginNotifier extends _$LoginNotifier {
             'An error occurred';
       }
       state = state.copyWith(loadState: LoadState.success);
-      if (onSuccess != null) onSuccess(response.data?.user?.entityType);
+      if (onSuccess != null) onSuccess(response.data?.user);
     } catch (e) {
       state = state.copyWith(loadState: LoadState.error);
       if (onError != null) onError(e.toString());
@@ -156,15 +159,18 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   void signInWithGoogle({
-    void Function(EntityType?)? onSuccess,
+    void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
     state = state.copyWith(signInWithGoogleLoadState: LoadState.loading);
     final response = await _thirdPartyAuthRepo.signIn();
     if (response.isSuccess()) {
       if (response.data != null) {
-        signUpWithSocialAuth(response.data!,
-            onSuccess: onSuccess, onError: onError);
+        signUpWithSocialAuth(
+          response.data!,
+          onSuccess: onSuccess,
+          onError: onError,
+        );
       }
       state = state.copyWith(signInWithGoogleLoadState: LoadState.success);
     } else {
@@ -174,7 +180,7 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   void signInWithApple({
-    void Function(EntityType?)? onSuccess,
+    void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
     state = state.copyWith(signInWithAppleLoadState: LoadState.loading);

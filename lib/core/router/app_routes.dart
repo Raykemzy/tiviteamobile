@@ -7,6 +7,8 @@ class AppRoutes {
   static const String resetPasswordView = '/resetPasswordView';
   static const String homeView = '/';
   static const String createCustomerAccount = '/createCustomerAccount';
+  static const String createArtisanAccount = '/createArtisanAccount';
+  static const String artisanKYCView = '/artisanKYCView';
   static const String createServiceProviderAccount = '/createServiceProviderAccount';
   static const String createServiceProviderAccountSecondView = '/createServiceProviderAccountSecondView';
   static const String serviceProviderDashboard = 'serviceProviderDashboard';

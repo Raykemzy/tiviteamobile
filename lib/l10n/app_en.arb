@@ -63,6 +63,10 @@
   "@serviceProvider": {
     "description": "Service Provider text"
   },
+  "artisan": "Artisan",
+  "@artisan": {
+    "description": "Artisan text"
+  },
   "customer": "Customer",
   "@customer": {
     "description": "Customer text"
@@ -170,6 +174,22 @@
   "locationDetails": "Location Details",
   "@locationDetails": {
     "description": "Location Details text"
+  },
+  "serviceDetails": "Service Details",
+  "@serviceDetails": {
+    "description": "Service Details section title"
+  },
+  "selectTheServiceYouProvide": "Select the service you provide",
+  "@selectTheServiceYouProvide": {
+    "description": "Label for artisan service type selector"
+  },
+  "ifOtherPleaseSpecifyBelowOptional": "If other, please specify below (Optional)",
+  "@ifOtherPleaseSpecifyBelowOptional": {
+    "description": "Hint for optional other service specification"
+  },
+  "describesWhatYouDo": "Describes what you do",
+  "@describesWhatYouDo": {
+    "description": "Label or hint for artisan description field"
   },
   "accountInfo": "Account Information",
   "@accountInfo": {
@@ -880,6 +900,34 @@
   "submitDocuments": "Submit Documents",
   "@submitDocuments": {
     "description": "Submit Documents text"
+  },
+  "tiviteaRequiresValidIdCard": "TiviTea requires a valid Government-issued Identity Card in order to verify your identity and activate your account.",
+  "@tiviteaRequiresValidIdCard": {
+    "description": "Artisan KYC intro - ID requirement"
+  },
+  "uploadProofOfIdentity": "Upload a proof of your identity",
+  "@uploadProofOfIdentity": {
+    "description": "Artisan KYC - upload ID label"
+  },
+  "provideCorrectInfoToVerifyAccount": "Provide correct information to help us verify your account",
+  "@provideCorrectInfoToVerifyAccount": {
+    "description": "Artisan KYC - provide correct info"
+  },
+  "enter11DigitNinNumber": "Enter 11 digit NIN Number",
+  "@enter11DigitNinNumber": {
+    "description": "Artisan KYC - NIN hint"
+  },
+  "confirmUploadedValidIdCard": "I confirm that I uploaded a valid government-issued Identity Card. This ID includes my picture, signature, name, date of birth and address",
+  "@confirmUploadedValidIdCard": {
+    "description": "Artisan KYC - ID confirmation checkbox"
+  },
+  "documentSubmittedForVerification": "Document submitted for verification",
+  "@documentSubmittedForVerification": {
+    "description": "Artisan KYC - submitted state title"
+  },
+  "accountVerificationSuccessful": "Account Verification Successful",
+  "@accountVerificationSuccessful": {
+    "description": "Artisan KYC - success screen title"
   },
   "documentSubmitted": "Documents submitted for verification!",
   "@documentSubmitted": {

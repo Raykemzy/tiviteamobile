@@ -19,7 +19,7 @@ class KYCDialog extends StatelessWidget {
     return IntrinsicHeight(
       child: Column(
         children: [
-          AppSvgWidget(path: Assets.svgs.greenBox),
+          AppSvgWidget(path: Assets.svgs.greenBox.path),
           20.verticalSpace,
           Text(
             context.l10n.completeKYC,

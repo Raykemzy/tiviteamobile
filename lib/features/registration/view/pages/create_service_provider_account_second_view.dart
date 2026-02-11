@@ -133,7 +133,7 @@ class _CreateServiceProviderAccountSecondViewState
                 obscureText: obscurePass,
                 suffixIcon: AppSvgWidget(
                   onTap: _obscurePass,
-                  path: obscurePass ? Assets.svgs.eye : Assets.svgs.eyeSlash,
+                  path: obscurePass ? Assets.svgs.eye.path : Assets.svgs.eyeSlash.path,
                   fit: BoxFit.scaleDown,
                 ),
               ),
@@ -148,8 +148,8 @@ class _CreateServiceProviderAccountSecondViewState
                 suffixIcon: AppSvgWidget(
                   onTap: _obscureConfirmPass,
                   path: obscureConfirmPass
-                      ? Assets.svgs.eye
-                      : Assets.svgs.eyeSlash,
+                      ? Assets.svgs.eye.path
+                      : Assets.svgs.eyeSlash.path,
                   fit: BoxFit.scaleDown,
                 ),
               ),
