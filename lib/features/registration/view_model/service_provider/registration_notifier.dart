@@ -48,7 +48,7 @@ class RegistrationNotifier extends _$RegistrationNotifier {
 
   void signUpAsArtisan(
     ArtisanSignUpRequestBody data, {
-    VoidCallback? onSuccess,
+    void Function(String)? onSuccess,
     void Function(String)? onError,
   }) async {
     state = state.copyWith(loadState: LoadState.loading);
@@ -62,7 +62,7 @@ class RegistrationNotifier extends _$RegistrationNotifier {
       );
       await _userRepo.saveUser(cachedUser);
       state = state.copyWith(loadState: LoadState.success);
-      if (onSuccess != null) onSuccess();
+      if (onSuccess != null) onSuccess(response.message ?? '');
     } catch (e) {
       state = state.copyWith(loadState: LoadState.error);
       if (onError != null) onError(e.toString());

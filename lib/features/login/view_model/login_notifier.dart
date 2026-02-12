@@ -65,7 +65,10 @@ class LoginNotifier extends _$LoginNotifier {
       }
 
       state = state.copyWith(loadState: LoadState.success);
-      if (onSuccess != null) onSuccess(response.data?.user);
+      if (onSuccess != null) {
+        final user = _userRepo.getUser();
+        onSuccess(user);
+      }
     } catch (e) {
       state = state.copyWith(loadState: LoadState.error);
       if (onError != null) onError(e.toString());

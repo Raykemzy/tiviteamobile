@@ -278,9 +278,8 @@ class _CreateArtisanAccountViewState extends State<CreateArtisanAccountView> {
                   Center(
                     child: Consumer(
                       builder: (context, ref, _) {
-                        final loadState = ref
-                            .watch(registrationNotifierProvider)
-                            .loadState;
+                        final loadState =
+                            ref.watch(registrationNotifierProvider).loadState;
                         final isLoading = loadState == LoadState.loading;
                         return AppButton(
                           buttonText: context.l10n.continue_,
@@ -346,7 +345,14 @@ class _CreateArtisanAccountViewState extends State<CreateArtisanAccountView> {
     final notifier = ref.read(registrationNotifierProvider.notifier);
     notifier.signUpAsArtisan(
       request,
-      onSuccess: () => context.pushReplacement(AppRoutes.loginView),
+      onSuccess: (message) {
+        context.showSuccess(message);
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) {
+            context.pushReplacement(AppRoutes.loginView);
+          }
+        });
+      },
       onError: (error) => context.showError(error),
     );
   }
