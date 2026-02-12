@@ -17,6 +17,7 @@ import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/features/services/view_model/service_provider/partner_services_notifier.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
 class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -71,8 +72,8 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
                             child: CircleAvatar(
                               radius: 15,
                               backgroundColor:
-                                  context.theme.primaryColor.withValues(alpha: 
-                                0.5,
+                                  context.theme.primaryColor.withValues(
+                                alpha: 0.5,
                               ),
                               child: AppSvgWidget(
                                 path: Assets.svgs.camera.path,
@@ -95,6 +96,28 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ],
           ),
         ),
+        if (user.entityType == EntityType.artisan)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: context.theme.dividerColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    'Artisan Profile',
+                    style: context.theme.textTheme.displayLarge?.copyWith(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }

@@ -68,7 +68,23 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 );
               },
             ),
-            const Spacer(),
+            if (title != null)
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 30.w),
+                  child: Center(
+                    child: Text(
+                      title!,
+                      style: context.theme.textTheme.titleLarge?.copyWith(
+                        fontSize: 16.sp,
+                        color: context.theme.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              const Spacer(),
             if (!isGuest) AppSvgWidget(path: Assets.svgs.notificationIcon.path),
             if (!isGuest) 10.horizontalSpace,
             user.profilePicture == null

@@ -43,4 +43,6 @@ class AppRoutes {
   static const String paymentView = 'paymentView';
   static const String withdrawalView = 'withdrawalView';
   static const String scanQRCodeView = 'scanQRCodeView';
+  static const String artisanGalleryView = 'artisanGalleryView';
+  static const String jobHistoryView = 'jobHistoryView';
 }

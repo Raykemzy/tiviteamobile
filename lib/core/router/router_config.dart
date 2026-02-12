@@ -127,6 +127,8 @@ final GoRouter router = GoRouter(
                 ProfileRouter.settings,
                 ProfileRouter.paymentView,
                 ProfileRouter.withdrawalView,
+                ProfileRouter.artisanGalleryView,
+                ProfileRouter.jobHistoryView,
               ],
             ),
           ],

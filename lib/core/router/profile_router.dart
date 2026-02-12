@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/features/payment/view/payment_view.dart';
 import 'package:tivi_tea/features/payment/view/withdrawl_view.dart';
+import 'package:tivi_tea/features/profile/view/artisan_gallery_view.dart';
+import 'package:tivi_tea/features/profile/view/artisan_job_history_view.dart';
 import 'package:tivi_tea/features/profile/view/change_password_view.dart';
 import 'package:tivi_tea/features/profile/view/edit_profile_view.dart';
 import 'package:tivi_tea/features/settings/view/pages/settings.dart';
@@ -36,6 +38,18 @@ class ProfileRouter {
     path: AppRoutes.withdrawalView,
     builder: (BuildContext context, GoRouterState state) {
       return const WithdrawalView();
+    },
+  );
+  static final artisanGalleryView = GoRoute(
+    path: AppRoutes.artisanGalleryView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const ArtisanGalleryView();
+    },
+  );
+  static final jobHistoryView = GoRoute(
+    path: AppRoutes.jobHistoryView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const JobHistoryView();
     },
   );
 }

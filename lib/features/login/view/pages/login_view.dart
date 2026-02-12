@@ -319,11 +319,13 @@ class _LoginViewState extends State<LoginView> {
   void _onLoginSuccess(WidgetRef ref, User? user) {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.setAppAccessState(AppAccessState.user);
-    if (user?.entityType == EntityType.artisan &&
-        user?.hasUploadedKycDocuments == false) {
-      context.go(AppRoutes.artisanKYCView);
-      return;
-    }
+    //TODO: Uncomment this when the artisan KYC is implemented
+    
+    // if (user?.entityType == EntityType.artisan &&
+    //     user?.hasUploadedKycDocuments == false) {
+    //   context.go(AppRoutes.artisanKYCView);
+    //   return;
+    // }
     context.go(
       AppRoutes.homeView,
       extra: user?.entityType ?? EntityType.client,
