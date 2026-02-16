@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/artisans/view/all_artisans_view.dart';
 import 'package:tivi_tea/features/home/model/general/booking_summary_params.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/view/general/all_listing_view.dart';
@@ -111,6 +112,12 @@ class ServicesRouter {
     builder: (BuildContext context, GoRouterState state) {
       final footSoldierEmail = state.extra as String;
       return CreateTransferRecipientView(footSoldierEmail: footSoldierEmail);
+    },
+  );
+  static final allArtisansView = GoRoute(
+    path: AppRoutes.allArtisansView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const AllArtisansView();
     },
   );
 }

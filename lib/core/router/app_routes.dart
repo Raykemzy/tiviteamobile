@@ -45,4 +45,6 @@ class AppRoutes {
   static const String scanQRCodeView = 'scanQRCodeView';
   static const String artisanGalleryView = 'artisanGalleryView';
   static const String jobHistoryView = 'jobHistoryView';
+  static const String allArtisansView = 'allArtisansView';
+  static const String artisanDetailsView = '/artisanDetailsView';
 }

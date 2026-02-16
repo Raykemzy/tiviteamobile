@@ -28,6 +28,7 @@ class CustomerAppDrawer extends ConsumerWidget {
     const artisanGallery =
         '${AppRoutes.profile}/${AppRoutes.artisanGalleryView}';
     const jobHistory = '${AppRoutes.profile}/${AppRoutes.jobHistoryView}';
+    const allArtisans = "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
     return Drawer(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -83,6 +84,14 @@ class CustomerAppDrawer extends ConsumerWidget {
                 isSelected: routePath == AppRoutes.myListingView,
                 onTap: () => context.go(AppRoutes.myListingView),
               ),
+
+          if (appAccessState != AppAccessState.guest)
+            DrawerListTile(
+              icon: Assets.svgs.listingDrawerIcon.path,
+              label: 'All Artisans',
+              isSelected: routePath == allArtisans,
+              onTap: () => context.go(allArtisans),
+            ),
           if (appAccessState != AppAccessState.guest)
             if (entityType == EntityType.artisan)
               DrawerListTile(

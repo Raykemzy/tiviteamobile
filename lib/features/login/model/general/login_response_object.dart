@@ -25,6 +25,8 @@ class LoginResponseObject {
   final String? businessType;
   @JsonKey(name: 'kyc_is_verified')
   final bool? kycIsVerified;
+  @JsonKey(name: 'has_uploaded_kyc_documents')
+  final bool? hasUploadedKycDocuments;
   @JsonKey(name: 'foot_soldier')
   final String? footSoldier;
   final Tokens? tokens;
@@ -43,6 +45,7 @@ class LoginResponseObject {
     this.businessType,
     this.kycIsVerified,
     this.footSoldier,
+    this.hasUploadedKycDocuments,
     this.tokens,
   });
 

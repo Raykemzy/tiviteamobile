@@ -796,6 +796,44 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>>
+      getArtisansList(int page) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<
+        BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/listings/artisans',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>> _value;
+    try {
+      _value =
+          BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<ArtisanResponseModel>.fromJson(
+          json as Map<String, dynamic>,
+          (json) => ArtisanResponseModel.fromJson(json as Map<String, dynamic>),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories() async {
     final _extra = <String, dynamic>{};

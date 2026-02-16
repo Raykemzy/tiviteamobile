@@ -33,7 +33,8 @@ final class GeneralAuthenticationRepo {
       final result = await restClient.signUpWithSocialAuth(data);
       final userLoginData = result.data;
       await userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
-      await userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
+      await userRepository
+          ?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
 
       await userRepository?.saveUser(userLoginData?.user);
 
@@ -69,11 +70,11 @@ final class GeneralAuthenticationRepo {
       final userLoginData = result.data;
 
       await userRepository?.saveToken(userLoginData?.tokens?.access ?? '');
-      await userRepository?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
+      await userRepository
+          ?.saveRefreshToken(userLoginData?.tokens?.refresh ?? '');
 
-      final hasUploadedKycDocuments =
-          userLoginData?.user?.hasUploadedKycDocuments ??
-              previouslyCachedUser?.hasUploadedKycDocuments;
+      final hasUploadedKycDocuments = userLoginData?.hasUploadedKycDocuments ??
+          previouslyCachedUser?.hasUploadedKycDocuments;
 
       final updatedUser = userLoginData?.user?.copyWith(
         kycIsVerified: userLoginData.kycIsVerified,

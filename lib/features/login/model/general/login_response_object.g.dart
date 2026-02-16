@@ -25,6 +25,7 @@ LoginResponseObject _$LoginResponseObjectFromJson(Map<String, dynamic> json) =>
       businessType: json['business_type'] as String?,
       kycIsVerified: json['kyc_is_verified'] as bool?,
       footSoldier: json['foot_soldier'] as String?,
+      hasUploadedKycDocuments: json['has_uploaded_kyc_documents'] as bool?,
       tokens: json['tokens'] == null
           ? null
           : Tokens.fromJson(json['tokens'] as Map<String, dynamic>),
@@ -45,6 +46,7 @@ Map<String, dynamic> _$LoginResponseObjectToJson(
       'website': instance.website,
       'business_type': instance.businessType,
       'kyc_is_verified': instance.kycIsVerified,
+      'has_uploaded_kyc_documents': instance.hasUploadedKycDocuments,
       'foot_soldier': instance.footSoldier,
       'tokens': instance.tokens,
     };

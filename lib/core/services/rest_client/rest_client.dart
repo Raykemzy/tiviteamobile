@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/response/generic_paginated_response.dart';
+import 'package:tivi_tea/features/artisans/model/artisan_response_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_request_body.dart';
 import 'package:tivi_tea/features/history/model/booking_history_model.dart';
@@ -127,6 +128,9 @@ abstract class RestClient {
   @GET('/listings/partner/listings')
   Future<BaseResponse<GenericPaginatedResponse<ListingResponseModel>>>
       getPartnerListing(@Query('page') int page);
+  @GET('/listings/artisans')
+  Future<BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>>
+      getArtisansList(@Query('page') int page);
   @GET('/listings/categories')
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories();

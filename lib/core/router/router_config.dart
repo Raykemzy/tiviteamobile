@@ -92,6 +92,7 @@ final GoRouter router = GoRouter(
                 ServicesRouter.eTicketView,
                 ServicesRouter.createFootSoldierView,
                 ServicesRouter.createTransferRecepientView,
+                ServicesRouter.allArtisansView,
               ],
             ),
           ],

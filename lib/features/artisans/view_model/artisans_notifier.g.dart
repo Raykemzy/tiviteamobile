@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'registration_notifier.dart';
+part of 'artisans_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$registrationNotifierHash() =>
-    r'66984105e93586d40f882ebec897cb34a35c439a';
+String _$artisansNotifierHash() => r'2021bce2cb378c32f0e874e60f932bbbad5427cb';
 
-/// See also [RegistrationNotifier].
-@ProviderFor(RegistrationNotifier)
-final registrationNotifierProvider = AutoDisposeNotifierProvider<
-    RegistrationNotifier, RegistrationState>.internal(
-  RegistrationNotifier.new,
-  name: r'registrationNotifierProvider',
+/// See also [ArtisansNotifier].
+@ProviderFor(ArtisansNotifier)
+final artisansNotifierProvider =
+    AutoDisposeNotifierProvider<ArtisansNotifier, ArtisansState>.internal(
+  ArtisansNotifier.new,
+  name: r'artisansNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$registrationNotifierHash,
+      : _$artisansNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$RegistrationNotifier = AutoDisposeNotifier<RegistrationState>;
+typedef _$ArtisansNotifier = AutoDisposeNotifier<ArtisansState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
