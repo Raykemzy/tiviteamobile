@@ -18,6 +18,19 @@ class Validators {
     };
   }
 
+  static Validator positiveNumber([String? emptyMessage, String? invalidMessage]) {
+    return (String? value) {
+      if (value == null || value.trim().isEmpty) {
+        return emptyMessage ?? 'This field can not be empty.';
+      }
+      final n = num.tryParse(value.trim());
+      if (n == null || n <= 0) {
+        return invalidMessage ?? 'Please enter a valid number.';
+      }
+      return null;
+    };
+  }
+
   static Validator confirmPass(String valueToCompareAgainst) {
     return (String? value) {
       if (valueToCompareAgainst != value) {

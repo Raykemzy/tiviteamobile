@@ -48,4 +48,8 @@ class AppRoutes {
   static const String allArtisansView = 'allArtisansView';
   static const String artisanDetailsView = 'artisanDetailsView';
   static const String artisanGalleryFullView = 'artisanGalleryFullView';
+  static const String marketPlaceView = 'marketPlaceView';
+  static const String myMarketplaceView = 'myMarketplaceView';
+  static const String addMarketplaceItemView = 'addMarketplaceItemView';
+  static const String editMarketplaceItemView = 'editMarketplaceItemView';
 }

@@ -28,13 +28,6 @@ class MyListingView extends ConsumerStatefulWidget {
 
 class _MyListingViewState extends ConsumerState<MyListingView> {
   @override
-  void initState() {
-    super.initState();
-    final notifier = ref.read(partnerServicesNotiferProvider.notifier);
-    notifier.getPartnerListing();
-  }
-
-  @override
   Widget build(BuildContext context) {
     const createListingPath =
         '${AppRoutes.myListingView}/${AppRoutes.createListingView}';
@@ -289,7 +282,8 @@ class PsrtnerListingTile extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(10),
                                 color: listing.status?.toLowerCase() ==
                                         PartnerListingStatus.published.name
-                                    ? const Color(0xFF006400).withValues(alpha: 0.2)
+                                    ? const Color(0xFF006400)
+                                        .withValues(alpha: 0.2)
                                     : const Color(0xFFF9C846),
                               ),
                               child: Text(

@@ -24,6 +24,12 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
     const payment = '${AppRoutes.profile}/${AppRoutes.paymentView}';
     const withdrawals = '${AppRoutes.profile}/${AppRoutes.withdrawalView}';
+    const marketPlace =
+        '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
+    const myMarketplace =
+        '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}';
+    const allArtisans =
+        "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
     return Drawer(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -70,6 +76,27 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
               label: context.l10n.myListing,
               isSelected: routePath == AppRoutes.myListingView,
               onTap: () => context.go(AppRoutes.myListingView),
+            ),
+          if (appAccessState != AppAccessState.guest)
+            DrawerListTile(
+              icon: Assets.svgs.listingDrawerIcon.path,
+              label: 'All Artisans',
+              isSelected: routePath == allArtisans,
+              onTap: () => context.go(allArtisans),
+            ),
+          if (appAccessState != AppAccessState.guest)
+            DrawerListTile(
+              icon: Assets.svgs.listingDrawerIcon.path,
+              label: 'Marketplace',
+              isSelected: routePath == marketPlace,
+              onTap: () => context.go(marketPlace),
+            ),
+          if (appAccessState != AppAccessState.guest)
+            DrawerListTile(
+              icon: Assets.svgs.listingDrawerIcon.path,
+              label: 'My Marketplace',
+              isSelected: routePath == myMarketplace,
+              onTap: () => context.go(myMarketplace),
             ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(

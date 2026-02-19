@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/utils/image_picker_notifier.dart';
-import 'package:tivi_tea/core/utils/logger.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/kyc/model/enums.dart';
 import 'package:tivi_tea/features/services/view/pages/booking_summary_view.dart';

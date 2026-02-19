@@ -6,6 +6,7 @@ import 'package:tivi_tea/features/artisans/view/all_artisans_view.dart';
 import 'package:tivi_tea/features/artisans/view/artisan_detail_view.dart';
 import 'package:tivi_tea/features/artisans/view/artisan_gallery_full_view.dart';
 import 'package:tivi_tea/features/home/model/general/booking_summary_params.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/marketplace_view.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/view/general/all_listing_view.dart';
 import 'package:tivi_tea/features/kyc/model/partner_kyc_request_body.dart';
@@ -121,6 +122,12 @@ class ServicesRouter {
     path: AppRoutes.allArtisansView,
     builder: (BuildContext context, GoRouterState state) {
       return const AllArtisansView();
+    },
+  );
+  static final marketPlaceView = GoRoute(
+    path: AppRoutes.marketPlaceView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const MarketplaceView();
     },
   );
   static final artisanDetailsView = GoRoute(

@@ -23,4 +23,8 @@ class ImagePickerNotifier extends _$ImagePickerNotifier {
   void deleteImage(String imagePath) {
     state = state.where((path) => path.path != imagePath).toList();
   }
+
+  void clearImages() {
+    state = [];
+  }
 }

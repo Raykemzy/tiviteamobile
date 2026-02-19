@@ -15,7 +15,7 @@ dependencies:
   gap: ^3.0.1
   iconsax: ^0.0.8
   intl: ^0.20.2
-  google_fonts: ^6.2.1
+  google_fonts: ^7.0.0
   intl_phone_field: ^3.2.0
   flutter_screenutil: ^5.9.3
   dio: ^5.7.0

@@ -5,6 +5,7 @@ import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:tivi_tea/features/home/view/widgets/category_section.dart';
 import 'package:tivi_tea/features/home/view/widgets/home_container.dart';
 import 'package:tivi_tea/features/home/view/widgets/welcome_back_text.dart';
+import 'package:tivi_tea/features/services/view_model/service_provider/partner_services_notifier.dart';
 import 'package:tivi_tea/features/services/view_model/services_notifier.dart';
 
 class ServiceProviderHomeScreen extends ConsumerStatefulWidget {
@@ -21,6 +22,7 @@ class _ServiceProviderHomeScreenState extends ConsumerState<ServiceProviderHomeS
     super.initState();
     ref.read(servicesNotiferProvider.notifier).getCategories();
     ref.read(servicesNotiferProvider.notifier).getListing();
+    ref.read(partnerServicesNotiferProvider.notifier).getPartnerListing();
   }
 
   @override

@@ -14,6 +14,9 @@ import 'package:tivi_tea/features/home/model/client/category_response_model.dart
 import 'package:tivi_tea/features/home/model/client/client_dashboard_model.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/model/service_provider/service_provider_dashboard_model.dart';
+import 'package:tivi_tea/features/marketplace/model/create_marketplace_item_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/edit_marketplace_item_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/owner_marketplace_item_model.dart';
 import 'package:tivi_tea/features/kyc/model/client_kyc_request_body.dart';
 import 'package:tivi_tea/features/kyc/model/partner_kyc_request_body.dart';
 import 'package:tivi_tea/features/login/model/general/delete_account_request_body.dart';
@@ -141,6 +144,25 @@ abstract class RestClient {
   @GET('/listings/categories')
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories();
+  @GET('/listings/market-place/items')
+  Future<BaseResponse<GenericPaginatedResponse<ListingResponseModel>>>
+      getMarketPlaceItems(@Query('page') int page);
+  @GET('/listings/market-place/owners-items')
+  Future<BaseResponse<GenericPaginatedResponse<OwnerMarketplaceItemModel>>>
+      getOwnersMarketPlaceItems(@Query('page') int page);
+  @POST('/listings/market-place/item/create')
+  Future<BaseResponse<dynamic>> createMarketplaceItem(
+    @Body() CreateMarketplaceItemRequestBody data,
+  );
+  @PUT('/listings/market-place/item/{item_id}')
+  Future<BaseResponse<dynamic>> editMarketplaceItem(
+    @Path('item_id') String itemId,
+    @Body() EditMarketplaceItemRequestBody data,
+  );
+  @DELETE('/listings/market-place/item/{item_id}')
+  Future<BaseResponse<dynamic>> deleteMarketplaceItem(
+    @Path('item_id') String itemId,
+  );
 
   //<====================> Bookings <====================>
   @POST('/bookings/client/{listingId}')

@@ -18,24 +18,29 @@ class ReusableAddTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-        style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(color),
-            shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30)))),
-        onPressed: () {
-          onTap();
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(Iconsax.add, color: fontColor, size: 15),
-            const SizedBox(width: 7),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                  fontSize: 14, fontWeight: FontWeight.w700, color: fontColor),
-            )
-          ],
-        ));
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(color),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+      ),
+      onPressed: () {
+        onTap();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(Iconsax.add, color: fontColor, size: 15),
+          const SizedBox(width: 7),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+                fontSize: 14, fontWeight: FontWeight.w700, color: fontColor),
+          )
+        ],
+      ),
+    );
   }
 }
