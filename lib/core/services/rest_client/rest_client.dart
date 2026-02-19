@@ -5,6 +5,8 @@ import 'package:retrofit/retrofit.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/response/generic_paginated_response.dart';
 import 'package:tivi_tea/features/artisans/model/artisan_response_model.dart';
+import 'package:tivi_tea/features/artisans/model/request_quotation_request_body.dart';
+import 'package:tivi_tea/features/artisans/model/request_quotation_response_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_request_body.dart';
 import 'package:tivi_tea/features/history/model/booking_history_model.dart';
@@ -131,6 +133,11 @@ abstract class RestClient {
   @GET('/listings/artisans')
   Future<BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>>
       getArtisansList(@Query('page') int page);
+  @POST('/bookings/request-quotation/{artisanId}')
+  Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
+    @Path('artisanId') String artisanId,
+    @Body() RequestQuotationRequestBody data,
+  );
   @GET('/listings/categories')
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories();

@@ -3,7 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/config/extensions/string_extensions.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
@@ -155,8 +157,15 @@ class _AllArtisansViewState extends ConsumerState<AllArtisansView> {
                       childAspectRatio: 0.64,
                     ),
                     itemBuilder: (context, index) {
-                      return _ArtisanListingCard(
-                          artisan: filteredArtisans[index]);
+                      final artisan = filteredArtisans[index];
+                      return InkWell(
+                        onTap: () => context.push(
+                          '${AppRoutes.servicesView}/${AppRoutes.artisanDetailsView}',
+                          extra: artisan,
+                        ),
+                        borderRadius: BorderRadius.circular(10.r),
+                        child: _ArtisanListingCard(artisan: artisan),
+                      );
                     },
                   );
                 },

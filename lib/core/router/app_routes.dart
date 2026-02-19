@@ -46,5 +46,6 @@ class AppRoutes {
   static const String artisanGalleryView = 'artisanGalleryView';
   static const String jobHistoryView = 'jobHistoryView';
   static const String allArtisansView = 'allArtisansView';
-  static const String artisanDetailsView = '/artisanDetailsView';
+  static const String artisanDetailsView = 'artisanDetailsView';
+  static const String artisanGalleryFullView = 'artisanGalleryFullView';
 }

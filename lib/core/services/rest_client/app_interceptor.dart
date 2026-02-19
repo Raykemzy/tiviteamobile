@@ -64,22 +64,63 @@ class DioInterceptor extends Interceptor {
     debugLog('[ERROR PATH] ${err.requestOptions.path}');
     debugLog('[ERROR RESPONSE TYPE] ${err.requestOptions.responseType}');
 
-    if (err.response?.data != null &&
-        err.response?.data?['message'] != "Invalid creditials.") {
-      if (err.response != null &&
-          ((err.response!.statusCode == 401 &&
-                  err.response?.data?['message']
-                          ?.contains("User not verified") ==
-                      false) ||
-              err.response!.statusCode == 403)) {
-        await _refreshToken(err, handler, dio, userRepository);
-        return;
-      }
+    final shouldHandleUnauthorized = _shouldHandleUnauthorized(err);
+    if (shouldHandleUnauthorized) {
+      await _refreshToken(err, handler, dio, userRepository);
+      return;
     }
     debugLog('[ERROR] ${err.requestOptions.uri}');
     debugLog('[ERROR] ${err.response}');
     handler.next(err);
     return err;
+  }
+
+  bool _shouldHandleUnauthorized(DioException err) {
+    final response = err.response;
+    if (response == null) return false;
+
+    final data = response.data;
+    final message = _extractMessage(data)?.toLowerCase();
+    final reason = _extractReason(data)?.toLowerCase();
+    final statusCode = response.statusCode;
+
+    // Keep existing behavior: do not trigger auth refresh for verification flow.
+    final isUserNotVerified = message?.contains('user not verified') == true;
+    if (isUserNotVerified) return false;
+
+    final isUnauthorizedByStatus = statusCode == 401 || statusCode == 403;
+    final isUnauthorizedByReason = reason == 'unauthorized';
+    final isUnauthorizedByMessage = message == 'invalid or expired token';
+
+    return isUnauthorizedByStatus ||
+        isUnauthorizedByReason ||
+        isUnauthorizedByMessage;
+  }
+
+  String? _extractMessage(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final message = data['message'];
+      if (message is String) return message;
+      final error = data['error'];
+      if (error is Map<String, dynamic>) {
+        final errorMessage = error['message'];
+        if (errorMessage is String) return errorMessage;
+      }
+    }
+    return null;
+  }
+
+  String? _extractReason(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final reason = data['reason'];
+      if (reason is String) return reason;
+      final error = data['error'];
+      if (error is Map<String, dynamic>) {
+        final errorReason = error['reason'];
+        if (errorReason is String) return errorReason;
+      }
+    }
+    return null;
   }
 
   Future<void> handleError(
@@ -128,7 +169,7 @@ class DioInterceptor extends Interceptor {
       debugLog('refresh error===>> $e');
       // Emit token expiration event when refresh fails
       tokenExpirationService.emitTokenExpired();
-      //ref.read(profileNotifierProvider.notifier).logout();
+      handler.next(error);
       return;
     }
   }

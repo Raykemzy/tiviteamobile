@@ -93,6 +93,7 @@ final GoRouter router = GoRouter(
                 ServicesRouter.createFootSoldierView,
                 ServicesRouter.createTransferRecepientView,
                 ServicesRouter.allArtisansView,
+                ServicesRouter.artisanDetailsView,
               ],
             ),
           ],

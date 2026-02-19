@@ -4,6 +4,7 @@ import 'package:tivi_tea/features/artisans/model/artisan_response_model.dart';
 class ArtisansState {
   const ArtisansState({
     required this.loadState,
+    required this.requestQuotationLoadState,
     required this.artisans,
     required this.currentPage,
     required this.totalPages,
@@ -14,6 +15,7 @@ class ArtisansState {
   factory ArtisansState.initial() {
     return const ArtisansState(
       loadState: LoadState.loading,
+      requestQuotationLoadState: LoadState.idle,
       artisans: [],
       currentPage: 0,
       totalPages: 1,
@@ -23,6 +25,7 @@ class ArtisansState {
   }
 
   final LoadState loadState;
+  final LoadState requestQuotationLoadState;
   final List<ArtisanResponseModel> artisans;
   final int currentPage;
   final int totalPages;
@@ -31,6 +34,7 @@ class ArtisansState {
 
   ArtisansState copyWith({
     LoadState? loadState,
+    LoadState? requestQuotationLoadState,
     List<ArtisanResponseModel>? artisans,
     int? currentPage,
     int? totalPages,
@@ -39,6 +43,8 @@ class ArtisansState {
   }) {
     return ArtisansState(
       loadState: loadState ?? this.loadState,
+      requestQuotationLoadState:
+          requestQuotationLoadState ?? this.requestQuotationLoadState,
       artisans: artisans ?? this.artisans,
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,

@@ -1,6 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/config/dio_config.dart';
+import 'package:tivi_tea/core/services/third_party_services/cloudinary_service.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/features/artisans/model/request_quotation_request_body.dart';
 import 'package:tivi_tea/features/artisans/view_model/artisans_state.dart';
 import 'package:tivi_tea/repositories/artisans/artisans_repo.dart';
 
@@ -9,10 +13,16 @@ part 'artisans_notifier.g.dart';
 @riverpod
 class ArtisansNotifier extends _$ArtisansNotifier {
   late final ArtisansRepo _repo;
+  late final CloudinaryService _cloudinaryService;
 
   @override
   ArtisansState build() {
+    const String cloudName = 'tivitea';
+    const String uploadPreset = 'hobmtu4o';
     _repo = ArtisansRepo(restClient: ref.read(restClient));
+    _cloudinaryService = CloudinaryService(
+      cloudinary: CloudinaryPublic(cloudName, uploadPreset),
+    );
     return ArtisansState.initial();
   }
 
@@ -53,6 +63,47 @@ class ArtisansNotifier extends _$ArtisansNotifier {
         loadState: LoadState.error,
         errorMessage: e.toString(),
       );
+    }
+  }
+
+  Future<void> requestQuotation({
+    required String artisanId,
+    required String clientNote,
+    required DateTime clientEndDate,
+    List<XFile> images = const [],
+    required void Function(String message) onSuccess,
+    required void Function(String message) onError,
+  }) async {
+    state = state.copyWith(
+      requestQuotationLoadState: LoadState.loading,
+      errorMessage: null,
+    );
+
+    try {
+      final imageUrls = images.isEmpty
+          ? <String>[]
+          : await _cloudinaryService.uploadImages(images);
+
+      final requestBody = RequestQuotationRequestBody(
+        clientNote: clientNote,
+        images: imageUrls,
+        clientEndDate: clientEndDate.toUtc().toIso8601String(),
+      );
+
+      final response = await _repo.requestQuotation(artisanId, requestBody);
+      if (!response.isSuccess()) {
+        throw response.error?.message ?? response.message ?? 'An error occurred';
+      }
+
+      state = state.copyWith(requestQuotationLoadState: LoadState.success);
+      onSuccess(response.message ?? 'Quotation Request Sent.');
+    } catch (e) {
+      final message = e.toString();
+      state = state.copyWith(
+        requestQuotationLoadState: LoadState.error,
+        errorMessage: message,
+      );
+      onError(message);
     }
   }
 }
