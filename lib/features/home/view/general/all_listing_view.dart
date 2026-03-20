@@ -7,19 +7,27 @@ import 'package:tivi_tea/features/common/app_appbar.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:tivi_tea/features/common/search_text_field.dart';
 import 'package:tivi_tea/features/home/model/client/category_response_model.dart';
+import 'package:tivi_tea/features/home/view/widgets/category_section.dart';
 import 'package:tivi_tea/features/home/view/widgets/secondary_listing_widget.dart';
-import 'package:tivi_tea/features/home/view_model/home_notifier.dart';
 import 'package:tivi_tea/features/services/view_model/services_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
-class AllListingsView extends StatelessWidget {
+class AllListingsView extends StatefulWidget {
   const AllListingsView({super.key});
+
+  @override
+  State<AllListingsView> createState() => _AllListingsViewState();
+}
+
+class _AllListingsViewState extends State<AllListingsView> {
+  String? _selectedCategoryId;
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       appbar: CustomAppBar(
         title: context.l10n.services,
+        showBackButton: false,
         padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
           right: 10.w,
@@ -42,8 +50,17 @@ class AllListingsView extends StatelessWidget {
             ),
           ),
           20.verticalSpace,
-          // const CategoryList(),
-          const SecondaryListingView(),
+          Categories(
+            selectedCategoryId: _selectedCategoryId,
+            onCategorySelected: (categoryId) {
+              setState(() {
+                _selectedCategoryId =
+                    _selectedCategoryId == categoryId ? null : categoryId;
+              });
+            },
+          ),
+          20.verticalSpace,
+          SecondaryListingView(selectedCategoryId: _selectedCategoryId),
         ],
       ),
     );
@@ -51,7 +68,14 @@ class AllListingsView extends StatelessWidget {
 }
 
 class CategoryList extends ConsumerStatefulWidget {
-  const CategoryList({super.key});
+  const CategoryList({
+    super.key,
+    required this.selectedCategoryId,
+    required this.onCategorySelected,
+  });
+
+  final String? selectedCategoryId;
+  final ValueChanged<String> onCategorySelected;
 
   @override
   ConsumerState<CategoryList> createState() => _CategoryListState();
@@ -77,9 +101,6 @@ class _CategoryListState extends ConsumerState<CategoryList> {
     final categories = ref.watch(
       servicesNotiferProvider.select((value) => value.categories),
     );
-    final selectedCategory = ref.watch(
-      homeNotiferProvider.select((value) => value.selectedCategoryId),
-    );
     return Container(
       height: 40.h,
       margin: EdgeInsets.only(top: 10.h, bottom: 20.h),
@@ -99,7 +120,7 @@ class _CategoryListState extends ConsumerState<CategoryList> {
           separatorBuilder: (ctx, i) => 10.horizontalSpace,
           itemBuilder: (ctx, i) {
             final category = categories[i];
-            final bool isSelected = selectedCategory == category.id;
+            final bool isSelected = widget.selectedCategoryId == category.id;
             return GestureDetector(
               onTap: () => _selectCategory(category),
               child: Padding(
@@ -122,7 +143,10 @@ class _CategoryListState extends ConsumerState<CategoryList> {
   }
 
   void _selectCategory(CategoryResponseModel category) {
-    final notifier = ref.read(homeNotiferProvider.notifier);
-    notifier.selectCategory(category.id, onSelected: (id) {});
+    final categoryId = category.id;
+    if (categoryId == null) {
+      return;
+    }
+    widget.onCategorySelected(categoryId);
   }
 }

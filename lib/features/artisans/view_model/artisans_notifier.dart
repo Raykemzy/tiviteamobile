@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/config/dio_config.dart';
 import 'package:tivi_tea/core/services/third_party_services/cloudinary_service.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/core/utils/logger.dart';
 import 'package:tivi_tea/features/artisans/model/request_quotation_request_body.dart';
 import 'package:tivi_tea/features/artisans/view_model/artisans_state.dart';
 import 'package:tivi_tea/repositories/artisans/artisans_repo.dart';
@@ -41,7 +42,9 @@ class ArtisansNotifier extends _$ArtisansNotifier {
     try {
       final response = await _repo.getArtisansList(page);
       if (!response.isSuccess()) {
-        throw response.error?.message ?? response.message ?? 'An error occurred';
+        throw response.error?.message ??
+            response.message ??
+            'An error occurred';
       }
 
       final payload = response.data;
@@ -90,9 +93,20 @@ class ArtisansNotifier extends _$ArtisansNotifier {
         clientEndDate: clientEndDate.toUtc().toIso8601String(),
       );
 
+      debugLog(
+        '[REQUEST QUOTATION][REQUEST] artisanId=$artisanId body=${requestBody.toJson()}',
+      );
+
       final response = await _repo.requestQuotation(artisanId, requestBody);
+      debugLog(
+        '[REQUEST QUOTATION][RESPONSE] status=${response.status} '
+        'message=${response.message} code=${response.code} '
+        'error=${response.error?.toJson()} data=${response.data?.toJson()}',
+      );
       if (!response.isSuccess()) {
-        throw response.error?.message ?? response.message ?? 'An error occurred';
+        throw response.error?.message ??
+            response.message ??
+            'An error occurred';
       }
 
       state = state.copyWith(requestQuotationLoadState: LoadState.success);

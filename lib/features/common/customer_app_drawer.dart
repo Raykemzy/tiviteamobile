@@ -25,10 +25,11 @@ class CustomerAppDrawer extends ConsumerWidget {
     const settings = '${AppRoutes.profile}/${AppRoutes.settingsView}';
     const bookingHistory =
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
-    const artisanGallery =
-        '${AppRoutes.profile}/${AppRoutes.artisanGalleryView}';
     const jobHistory = '${AppRoutes.profile}/${AppRoutes.jobHistoryView}';
-    const allArtisans = "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
+    const allArtisans =
+        "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
+    const marketPlace =
+        '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
     return Drawer(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -70,14 +71,14 @@ class CustomerAppDrawer extends ConsumerWidget {
               onTap: () => context.go(AppRoutes.profile),
             ),
           if (appAccessState != AppAccessState.guest)
-            if (entityType == EntityType.artisan)
-              DrawerListTile(
-                icon: Assets.svgs.listingDrawerIcon.path,
-                label: 'My Gallery',
-                isSelected: routePath == artisanGallery,
-                onTap: () => context.go(artisanGallery),
-              )
-            else
+            // if (entityType == EntityType.artisan)
+            //   DrawerListTile(
+            //     icon: Assets.svgs.listingDrawerIcon.path,
+            //     label: 'My Gallery',
+            //     isSelected: routePath == artisanGallery,
+            //     onTap: () => context.go(artisanGallery),
+            //   )
+            // else
               DrawerListTile(
                 icon: Assets.svgs.listingDrawerIcon.path,
                 label: context.l10n.myFavorites,
@@ -92,6 +93,12 @@ class CustomerAppDrawer extends ConsumerWidget {
               isSelected: routePath == allArtisans,
               onTap: () => context.go(allArtisans),
             ),
+          DrawerListTile(
+            icon: Assets.svgs.listingDrawerIcon.path,
+            label: 'Marketplace',
+            isSelected: routePath == marketPlace,
+            onTap: () => context.go(marketPlace),
+          ),
           if (appAccessState != AppAccessState.guest)
             if (entityType == EntityType.artisan)
               DrawerListTile(

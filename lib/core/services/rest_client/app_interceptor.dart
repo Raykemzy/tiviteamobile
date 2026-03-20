@@ -10,11 +10,14 @@ class DioInterceptor extends Interceptor {
   final Dio dio;
   final UserRepository userRepository;
   final TokenExpirationService tokenExpirationService;
+  final Future<Map<String, dynamic>> Function(String refreshToken)?
+      refreshTokenRequest;
 
   DioInterceptor({
     required this.dio,
     required this.userRepository,
     required this.tokenExpirationService,
+    this.refreshTokenRequest,
   });
 
   @override
@@ -78,6 +81,18 @@ class DioInterceptor extends Interceptor {
   bool _shouldHandleUnauthorized(DioException err) {
     final response = err.response;
     if (response == null) return false;
+    if (_hasAlreadyRetried(err.requestOptions)) {
+      tokenExpirationService.emitTokenExpired();
+      return false;
+    }
+
+    if (_shouldSkipRefresh(err.requestOptions.path)) {
+      return false;
+    }
+
+    if (userRepository.getRefreshToken().isEmpty) {
+      return false;
+    }
 
     final data = response.data;
     final message = _extractMessage(data)?.toLowerCase();
@@ -88,13 +103,24 @@ class DioInterceptor extends Interceptor {
     final isUserNotVerified = message?.contains('user not verified') == true;
     if (isUserNotVerified) return false;
 
-    final isUnauthorizedByStatus = statusCode == 401 || statusCode == 403;
+    final isUnauthorizedByStatus = statusCode == 401;
     final isUnauthorizedByReason = reason == 'unauthorized';
     final isUnauthorizedByMessage = message == 'invalid or expired token';
 
     return isUnauthorizedByStatus ||
         isUnauthorizedByReason ||
         isUnauthorizedByMessage;
+  }
+
+  bool _shouldSkipRefresh(String path) {
+    return path.contains('/authentication/login') ||
+        path.contains('/user/token/refresh') ||
+        path.contains('/forgot-password') ||
+        path.contains('/change-password');
+  }
+
+  bool _hasAlreadyRetried(RequestOptions requestOptions) {
+    return requestOptions.extra['retriedAfterRefresh'] == true;
   }
 
   String? _extractMessage(dynamic data) {
@@ -135,6 +161,10 @@ class DioInterceptor extends Interceptor {
         'Authorization': 'JWT ${userRepository.getToken()}',
       },
       responseType: err.requestOptions.responseType,
+      extra: {
+        ...err.requestOptions.extra,
+        'retriedAfterRefresh': true,
+      },
     );
     final cloneReq = await dio.request(
       err.requestOptions.path,
@@ -154,16 +184,13 @@ class DioInterceptor extends Interceptor {
   ) async {
     final refreshToken = userRepository.getRefreshToken();
     try {
-      final r = await Dio().post(
-        '${BaseEnv.baseUrl}/user/token/refresh',
-        data: {"refresh": refreshToken},
+      final refreshedTokens = await _requestRefreshedTokens(refreshToken);
+      await userRepository
+          .saveToken(refreshedTokens['access'] as String? ?? '');
+      await userRepository.saveRefreshToken(
+        refreshedTokens['refresh'] as String? ?? refreshToken,
       );
-
-      if (r.statusCode == 200) {
-        userRepository.saveToken(r.data['access']);
-        userRepository.saveRefreshToken(r.data['refresh']);
-        debugLog("Access Token gotten and saved");
-      }
+      debugLog("Access Token gotten and saved");
       return handleError(handler, error, dio);
     } on DioException catch (e) {
       debugLog('refresh error===>> $e');
@@ -172,5 +199,27 @@ class DioInterceptor extends Interceptor {
       handler.next(error);
       return;
     }
+  }
+
+  Future<Map<String, dynamic>> _requestRefreshedTokens(
+      String refreshToken) async {
+    if (refreshTokenRequest != null) {
+      return refreshTokenRequest!(refreshToken);
+    }
+
+    final r = await Dio().post(
+      '${BaseEnv.baseUrl}/user/token/refresh',
+      data: {"refresh": refreshToken},
+    );
+
+    if (r.statusCode == 200 && r.data is Map<String, dynamic>) {
+      return r.data as Map<String, dynamic>;
+    }
+
+    throw DioException(
+      requestOptions: RequestOptions(path: '/user/token/refresh'),
+      response: r,
+      error: 'Token refresh failed',
+    );
   }
 }

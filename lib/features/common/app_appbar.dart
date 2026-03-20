@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/common/app_navbar.dart';
@@ -85,7 +86,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               )
             else
               const Spacer(),
-            if (!isGuest) AppSvgWidget(path: Assets.svgs.notificationIcon.path),
+            if (!isGuest)
+              InkWell(
+                onTap: () => context.push(AppRoutes.notificationsView),
+                child: AppSvgWidget(path: Assets.svgs.notificationIcon.path),
+              ),
             if (!isGuest) 10.horizontalSpace,
             user.profilePicture == null
                 ? const CircleAvatar()
@@ -158,7 +163,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       if (!isGuest)
-                        AppSvgWidget(path: Assets.svgs.notificationIcon.path),
+                        InkWell(
+                          onTap: () =>
+                              context.push(AppRoutes.notificationsView),
+                          child: AppSvgWidget(
+                            path: Assets.svgs.notificationIcon.path,
+                          ),
+                        ),
                       10.horizontalSpace,
                       user.profilePicture == null
                           ? const CircleAvatar()

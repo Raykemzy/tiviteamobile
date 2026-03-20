@@ -22,10 +22,12 @@ import 'package:tivi_tea/features/kyc/model/partner_kyc_request_body.dart';
 import 'package:tivi_tea/features/login/model/general/delete_account_request_body.dart';
 import 'package:tivi_tea/features/login/model/general/login_request_object.dart';
 import 'package:tivi_tea/features/login/model/general/login_response_object.dart';
+import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
+import 'package:tivi_tea/features/profile/model/switch_account_request_body.dart';
 import 'package:tivi_tea/features/registration/model/artisan/artisan_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/model/client/customer_sign_up_request_body.dart';
 import 'package:tivi_tea/features/registration/model/client/social_auth_model.dart';
@@ -164,6 +166,21 @@ abstract class RestClient {
     @Path('item_id') String itemId,
   );
 
+  //<====================> Notifications <====================>
+  @GET('/notifications/')
+  Future<BaseResponse<GenericPaginatedResponse<NotificationModel>>>
+      getNotifications(@Query('page') int page);
+  @POST('/notifications/mark-as-read')
+  Future<BaseResponse<dynamic>> markNotificationsAsRead(
+    @Body() Map<String, dynamic> data,
+  );
+  @POST('/notifications/mark-all-as-read')
+  Future<BaseResponse<dynamic>> markAllNotificationsAsRead();
+  @POST('/notifications/archive-notifications')
+  Future<BaseResponse<dynamic>> archiveNotifications(
+    @Body() Map<String, dynamic> data,
+  );
+
   //<====================> Bookings <====================>
   @POST('/bookings/client/{listingId}')
   Future<BaseResponse<BookWorkSpaceResponse>> bookWorkspace(
@@ -201,6 +218,10 @@ abstract class RestClient {
   Future<BaseResponse<GetUserProfileResponse>> getUserProfile();
   @POST('/dashboard/edit-profile')
   Future<BaseResponse<User>> updateUserProfile(@Body() EditProfileModel data);
+  @POST('/authentication/user/switch-account')
+  Future<BaseResponse<dynamic>> switchAccount(
+    @Body() SwitchAccountRequestBody data,
+  );
   @POST('/dashboard/client/listing/favorite')
   Future<BaseResponse> favoriteListing(@Body() FavoriteListingRequestBody data);
   @GET('/dashboard/client/listing/favorite')

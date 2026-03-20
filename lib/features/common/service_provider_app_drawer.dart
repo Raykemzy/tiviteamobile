@@ -6,14 +6,17 @@ import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/features/common/app_drawer_list_tile.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
+import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
 
 class ServiceProviderAppDrawer extends ConsumerWidget {
   const ServiceProviderAppDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userNotifierProvider);
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;
     final routePath = GoRouterState.of(context).matchedLocation;
@@ -24,12 +27,13 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
     const payment = '${AppRoutes.profile}/${AppRoutes.paymentView}';
     const withdrawals = '${AppRoutes.profile}/${AppRoutes.withdrawalView}';
-    const marketPlace =
-        '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
-    const myMarketplace =
-        '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}';
-    const allArtisans =
-        "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
+    const artisanGallery =
+        '${AppRoutes.profile}/${AppRoutes.artisanGalleryView}';
+    // const marketPlace =
+    //     '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
+    const myMarketplace = '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}';
+    // const allArtisans =
+    //     "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
     return Drawer(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -78,19 +82,27 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
               onTap: () => context.go(AppRoutes.myListingView),
             ),
           if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.listingDrawerIcon.path,
-              label: 'All Artisans',
-              isSelected: routePath == allArtisans,
-              onTap: () => context.go(allArtisans),
-            ),
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.listingDrawerIcon.path,
-              label: 'Marketplace',
-              isSelected: routePath == marketPlace,
-              onTap: () => context.go(marketPlace),
-            ),
+            if (user.entityType == EntityType.artisan)
+              DrawerListTile(
+                icon: Assets.svgs.listingDrawerIcon.path,
+                label: 'My Gallery',
+                isSelected: routePath == artisanGallery,
+                onTap: () => context.go(artisanGallery),
+              ),
+          // if (appAccessState != AppAccessState.guest)
+          //   DrawerListTile(
+          //     icon: Assets.svgs.listingDrawerIcon.path,
+          //     label: 'All Artisans',
+          //     isSelected: routePath == allArtisans,
+          //     onTap: () => context.go(allArtisans),
+          //   ),
+          // if (appAccessState != AppAccessState.guest)
+          // DrawerListTile(
+          //   icon: Assets.svgs.listingDrawerIcon.path, 
+          //   label: 'Marketplace',
+          //   isSelected: routePath == marketPlace,
+          //   onTap: () => context.go(marketPlace),
+          // ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
               icon: Assets.svgs.listingDrawerIcon.path,

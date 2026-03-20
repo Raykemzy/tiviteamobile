@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tivi_tea/core/services/local_storage/local_storage.dart';
-import 'package:tivi_tea/core/services/local_storage/storage_keys.dart';
 import 'package:tivi_tea/core/services/remember_me_service.dart';
-import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
+import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
 // Mock LocalStorage implementation for testing
@@ -48,6 +49,18 @@ class MockLocalStorage implements LocalStorage {
   }
 }
 
+String _buildJwt({required DateTime expiresAt}) {
+  String encode(Map<String, dynamic> data) {
+    return base64Url.encode(utf8.encode(jsonEncode(data))).replaceAll('=', '');
+  }
+
+  final header = encode({'alg': 'HS256', 'typ': 'JWT'});
+  final payload = encode({
+    'exp': expiresAt.toUtc().millisecondsSinceEpoch ~/ 1000,
+  });
+  return '$header.$payload.signature';
+}
+
 void main() {
   group('RememberMeService Tests', () {
     late MockLocalStorage mockStorage;
@@ -82,7 +95,9 @@ void main() {
         expect(result, equals(false));
       });
 
-      test('should return false when remember me is true but user data is invalid', () async {
+      test(
+          'should return false when remember me is true but user data is invalid',
+          () async {
         // Arrange
         userRepoImpl.saveRememberMe(true);
         // No user data saved
@@ -209,6 +224,55 @@ void main() {
 
         // Assert
         expect(result, equals(true));
+      });
+
+      test(
+          'should return true when access token is expired but refresh token is still valid',
+          () async {
+        userRepoImpl.saveRememberMe(true);
+        final validUser = User(
+          id: '123',
+          email: 'test@example.com',
+          entityType: EntityType.client,
+          isActive: true,
+        );
+        await userRepoImpl.saveUser(validUser);
+        await userRepoImpl.saveToken(
+          _buildJwt(
+              expiresAt:
+                  DateTime.now().toUtc().subtract(const Duration(minutes: 5))),
+        );
+        await userRepoImpl.saveRefreshToken(
+          _buildJwt(
+              expiresAt: DateTime.now().toUtc().add(const Duration(days: 7))),
+        );
+
+        final result = rememberMeService.validateRememberMeData();
+
+        expect(result, equals(true));
+      });
+
+      test(
+          'should return false when both access and refresh tokens are expired',
+          () async {
+        userRepoImpl.saveRememberMe(true);
+        final validUser = User(
+          id: '123',
+          email: 'test@example.com',
+          entityType: EntityType.client,
+          isActive: true,
+        );
+        await userRepoImpl.saveUser(validUser);
+        final expiredToken = _buildJwt(
+          expiresAt:
+              DateTime.now().toUtc().subtract(const Duration(minutes: 5)),
+        );
+        await userRepoImpl.saveToken(expiredToken);
+        await userRepoImpl.saveRefreshToken(expiredToken);
+
+        final result = rememberMeService.validateRememberMeData();
+
+        expect(result, equals(false));
       });
 
       test('should return true for partner entity type', () async {
@@ -352,7 +416,7 @@ void main() {
         final result = rememberMeService.validateRememberMeData();
 
         // Assert
-        // Note: Due to User model's defaultValue: EntityType.client, 
+        // Note: Due to User model's defaultValue: EntityType.client,
         // null entityType gets converted to EntityType.client during serialization
         // So this test actually passes validation
         expect(result, equals(true));

@@ -23,14 +23,14 @@ import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/models/user_model.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  ConsumerState<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginViewState extends ConsumerState<LoginView> {
   final TextEditingController emailNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FocusNode emailFocusNode = FocusNode();
@@ -44,6 +44,8 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
+    rememberMe =
+        ref.read(loginNotifierProvider.notifier).getRememberUserValue();
     // Give focus to the first text field when the page initializes
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   emailFocusNode.requestFocus();
@@ -131,6 +133,7 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 AppCheckbox(
+                  initialValue: rememberMe,
                   onChanged: (value) {
                     rememberMe = value;
                     setState(() {});
@@ -320,7 +323,7 @@ class _LoginViewState extends State<LoginView> {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.setAppAccessState(AppAccessState.user);
     //TODO: Uncomment this when the artisan KYC is implemented
-    
+
     // if (user?.entityType == EntityType.artisan &&
     //     user?.hasUploadedKycDocuments == false) {
     //   context.go(AppRoutes.artisanKYCView);

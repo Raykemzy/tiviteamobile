@@ -14,13 +14,23 @@ import 'package:tivi_tea/features/services/model/enums.dart';
 import 'package:tivi_tea/features/services/view_model/services_notifier.dart';
 
 class ListingsView extends ConsumerWidget {
-  const ListingsView({super.key});
+  const ListingsView({
+    super.key,
+    this.selectedCategoryId,
+  });
+
+  final String? selectedCategoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final listings = ref.watch(
       servicesNotiferProvider.select((value) => value.listing),
     );
+    final filteredListings = selectedCategoryId == null
+        ? listings
+        : listings
+            .where((listing) => listing.category?.id == selectedCategoryId)
+            .toList();
     return Column(
       children: [
         SizedBox(
@@ -30,10 +40,11 @@ class ListingsView extends ConsumerWidget {
             padding: EdgeInsets.only(left: 18.w, top: 10.h),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: listings.length,
+              itemCount: filteredListings.length,
               shrinkWrap: true,
               separatorBuilder: (ctx, i) => 10.horizontalSpace,
-              itemBuilder: (ctx, i) => _ListingWidget(listing: listings[i]),
+              itemBuilder: (ctx, i) =>
+                  _ListingWidget(listing: filteredListings[i]),
             ),
           ),
         ),
@@ -132,8 +143,9 @@ class _ImageDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final listingType = listing.listingType?.enumType;
     final isListingTypeWorkSpace = listingType == CreateListingType.workSpace;
-    final amount =
-        isListingTypeWorkSpace ? listing.rooms?.first.amount : listing.amountPlusFootSoldierFee;
+    final amount = isListingTypeWorkSpace
+        ? listing.rooms?.first.amount
+        : listing.amountPlusFootSoldierFee;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 0.h),
       child: Column(

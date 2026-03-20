@@ -18,7 +18,12 @@ import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
 class SecondaryListingView extends ConsumerStatefulWidget {
-  const SecondaryListingView({super.key});
+  const SecondaryListingView({
+    super.key,
+    this.selectedCategoryId,
+  });
+
+  final String? selectedCategoryId;
 
   @override
   ConsumerState<SecondaryListingView> createState() =>
@@ -60,6 +65,12 @@ class _SecondaryListingViewState extends ConsumerState<SecondaryListingView> {
     final listings = ref.watch(
       servicesNotiferProvider.select((value) => value.listing),
     );
+    final filteredListings = widget.selectedCategoryId == null
+        ? listings
+        : listings
+            .where(
+                (listing) => listing.category?.id == widget.selectedCategoryId)
+            .toList();
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () async {
@@ -67,14 +78,19 @@ class _SecondaryListingViewState extends ConsumerState<SecondaryListingView> {
           final notifier = ref.read(servicesNotiferProvider.notifier);
           notifier.getListing();
         },
-        child: listings.isEmpty
-            ? Center(child: Text('No listings found', style: context.theme.textTheme.displaySmall))
+        child: filteredListings.isEmpty
+            ? Center(
+                child: Text(
+                  'No listings found',
+                  style: context.theme.textTheme.displaySmall,
+                ),
+              )
             : ListView.separated(
                 controller: _scrollController,
-                itemCount: listings.length,
+                itemCount: filteredListings.length,
                 separatorBuilder: (ctx, i) => 10.verticalSpace,
                 itemBuilder: (ctx, i) => SecondaryListingWidget(
-                  listing: listings[i],
+                  listing: filteredListings[i],
                 ),
               ),
       ),
@@ -269,7 +285,8 @@ class _ImageDetails extends StatelessWidget {
                         if (listing.partner?.user?.isVerified ?? false)
                           Padding(
                             padding: EdgeInsets.only(left: 5.w),
-                            child: AppSvgWidget(path: Assets.svgs.verified.path),
+                            child:
+                                AppSvgWidget(path: Assets.svgs.verified.path),
                           )
                       ],
                     ),

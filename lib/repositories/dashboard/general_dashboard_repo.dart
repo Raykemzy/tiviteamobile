@@ -5,6 +5,8 @@ import 'package:tivi_tea/core/config/exceptions/app_exception.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/services/rest_client/rest_client.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
+import 'package:tivi_tea/features/profile/model/switch_account_request_body.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/user/user_repo.dart';
 
@@ -52,6 +54,16 @@ final class GeneralDashboardRepo {
     }
   }
 
+  Future<BaseResponse<dynamic>> switchAccount(EntityType entityType) async {
+    try {
+      return await restClient.switchAccount(
+        SwitchAccountRequestBody(entityType: entityType),
+      );
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
   Future<BaseResponse<UploadProfilePicResponse>> uploadProfilePic({
     required File image,
   }) async {
@@ -59,7 +71,7 @@ final class GeneralDashboardRepo {
       final result = await restClient.uploadProfilePic(image: image);
       final user = userRepository.getUser();
       final userWithProfilePic = user.copyWith(profilePicture: result.imageUrl);
-      
+
       await userRepository.saveUser(userWithProfilePic);
 
       return const BaseResponse(status: 'Success');

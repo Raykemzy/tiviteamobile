@@ -51,9 +51,7 @@ class LoginNotifier extends _$LoginNotifier {
       final response = await _repo.login(
         data,
         saveUserState: (user) async {
-          if (rememberMe) {
-            await _userRepo.saveRememberMe(rememberMe);
-          }
+          await _userRepo.saveRememberMe(rememberMe);
           final userStateNotifier = ref.read(userNotifierProvider.notifier);
           userStateNotifier.updateUser(user);
         },
@@ -155,7 +153,10 @@ class LoginNotifier extends _$LoginNotifier {
     state = state.copyWith(logoutState: LoadState.loading);
     try {
       _repo.logout(onDataCleared: onDataCleared);
-      state = state.copyWith(logoutState: LoadState.success);
+      state = state.copyWith(
+        logoutState: LoadState.success,
+        appAccessState: AppAccessState.guest,
+      );
     } catch (e) {
       state = state.copyWith(logoutState: LoadState.error);
     }

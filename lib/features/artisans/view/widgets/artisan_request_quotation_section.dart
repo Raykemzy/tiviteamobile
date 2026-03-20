@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
@@ -101,10 +103,12 @@ class _ArtisanRequestQuotationSectionState
             onTap: () => _pickDate(context),
           ),
           20.verticalSpace,
-          AppButton(
-            buttonText: 'REQUEST A QUOTE',
-            isLoading: requestQuotationLoadState == LoadState.loading,
-            onPressed: _handleRequestQuote,
+          Center(
+            child: AppButton(
+              buttonText: 'REQUEST A QUOTE',
+              isLoading: requestQuotationLoadState == LoadState.loading,
+              onPressed: _handleRequestQuote,
+            ),
           ),
         ],
       ),
@@ -154,6 +158,7 @@ class _ArtisanRequestQuotationSectionState
       onSuccess: (message) {
         if (!mounted) return;
         context.showSuccess(message);
+        context.go(AppRoutes.homeView);
       },
       onError: (message) {
         if (!mounted) return;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tivi_tea/features/common/app_dropdown.dart';
 import 'package:tivi_tea/features/common/app_text_field.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_condition_dropdown.dart';
 
 class AddMarketplaceItemConditionPriceSection extends StatelessWidget {
   const AddMarketplaceItemConditionPriceSection({
@@ -19,11 +19,6 @@ class AddMarketplaceItemConditionPriceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const List<String> marketplaceConditionOptions = [
-      'New',
-      'Good',
-      'Second-hand'
-    ];
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -33,9 +28,9 @@ class AddMarketplaceItemConditionPriceSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppDropdown<String>(
-            items: marketplaceConditionOptions,
-            onItemSelected: onConditionSelected,
+          MarketplaceConditionDropdown(
+            selectedCondition: selectedCondition,
+            onSelected: onConditionSelected,
           ),
           SizedBox(height: 16.h),
           AppTextField(

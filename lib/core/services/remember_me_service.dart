@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/user/user_repo.dart';
@@ -6,7 +8,7 @@ import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 /// Service to handle remember me functionality and validation
 class RememberMeService {
   RememberMeService(this._userRepo);
-  
+
   final UserRepository _userRepo;
 
   /// Validates if the stored user data is complete and valid for remember me
@@ -23,10 +25,14 @@ class RememberMeService {
       return false;
     }
 
-    // Check if tokens exist
     final token = _userRepo.getToken();
     final refreshToken = _userRepo.getRefreshToken();
     if (token.isEmpty || refreshToken.isEmpty) {
+      return false;
+    }
+
+    // Allow persisted login when at least one token is still usable.
+    if (!_isTokenUsable(token) && !_isTokenUsable(refreshToken)) {
       return false;
     }
 
@@ -39,11 +45,11 @@ class RememberMeService {
     if (user.id == null || user.id!.isEmpty) {
       return false;
     }
-    
+
     if (user.email == null || user.email!.isEmpty) {
       return false;
     }
-    
+
     if (user.entityType == null) {
       return false;
     }
@@ -73,6 +79,53 @@ class RememberMeService {
   /// Checks if remember me should be used and data is valid
   bool shouldUseRememberMe() {
     return validateRememberMeData();
+  }
+
+  bool _isTokenUsable(String token) {
+    if (token.trim().isEmpty) {
+      return false;
+    }
+
+    final expiry = _getTokenExpiry(token);
+    if (expiry == null) {
+      return true;
+    }
+
+    return expiry.isAfter(DateTime.now().toUtc());
+  }
+
+  DateTime? _getTokenExpiry(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      return null;
+    }
+
+    try {
+      final normalized = base64Url.normalize(parts[1]);
+      final payload = utf8.decode(base64Url.decode(normalized));
+      final json = jsonDecode(payload);
+      if (json is! Map<String, dynamic>) {
+        return null;
+      }
+
+      final exp = json['exp'];
+      if (exp is int) {
+        return DateTime.fromMillisecondsSinceEpoch(
+          exp * 1000,
+          isUtc: true,
+        );
+      }
+      if (exp is num) {
+        return DateTime.fromMillisecondsSinceEpoch(
+          exp.toInt() * 1000,
+          isUtc: true,
+        );
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
   }
 }
 

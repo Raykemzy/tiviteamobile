@@ -5,10 +5,12 @@ import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 class AppCheckbox extends StatefulWidget {
   final double width, height;
   final void Function(bool) onChanged;
+  final bool initialValue;
   const AppCheckbox({
     super.key,
     this.height = 20,
     this.width = 20,
+    this.initialValue = false,
     required this.onChanged,
   });
 
@@ -17,7 +19,14 @@ class AppCheckbox extends StatefulWidget {
 }
 
 class _AppCheckboxState extends State<AppCheckbox> {
-  bool isChecked = false;
+  late bool isChecked;
+
+  @override
+  void initState() {
+    super.initState();
+    isChecked = widget.initialValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

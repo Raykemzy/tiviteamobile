@@ -10,6 +10,9 @@ import 'package:tivi_tea/features/common/app_navbar.dart';
 import 'package:tivi_tea/features/home/view/general_widget.dart';
 import 'package:tivi_tea/features/login/view/pages/forgot_password.dart';
 import 'package:tivi_tea/features/login/view/pages/login_view.dart';
+import 'package:tivi_tea/features/notifications/model/notification_model.dart';
+import 'package:tivi_tea/features/notifications/view/pages/notification_detail_view.dart';
+import 'package:tivi_tea/features/notifications/view/pages/notifications_view.dart';
 import 'package:tivi_tea/features/onboarding/view/pages/select_user_type_view.dart';
 import 'package:tivi_tea/features/onboarding/view/pages/splash_screen.dart';
 import 'package:tivi_tea/features/payment/view/payment_webview.dart';
@@ -168,6 +171,21 @@ final GoRouter router = GoRouter(
       builder: (BuildContext context, GoRouterState state) {
         return const ForgotPasswordView();
       },
+    ),
+    GoRoute(
+      path: AppRoutes.notificationsView,
+      builder: (BuildContext context, GoRouterState state) {
+        return const NotificationsView();
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.notificationDetailsView,
+          builder: (BuildContext context, GoRouterState state) {
+            final notification = state.extra as NotificationModel;
+            return NotificationDetailView(notification: notification);
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.createCustomerAccount,

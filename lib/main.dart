@@ -9,6 +9,7 @@ import 'package:tivi_tea/core/services/local_storage/storage_keys.dart';
 import 'package:tivi_tea/core/theme/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tivi_tea/firebase_options.dart';
+import 'package:tivi_tea/features/common/session_expiration_listener.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,11 @@ class MyApp extends StatelessWidget {
               title: 'tiviTea',
               theme: ref.read(lightTheme),
               routerConfig: router,
+              builder: (context, child) {
+                return SessionExpirationListener(
+                  child: child ?? const SizedBox.shrink(),
+                );
+              },
             );
           },
         );

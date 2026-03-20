@@ -9,8 +9,10 @@ class AppRoutes {
   static const String createCustomerAccount = '/createCustomerAccount';
   static const String createArtisanAccount = '/createArtisanAccount';
   static const String artisanKYCView = '/artisanKYCView';
-  static const String createServiceProviderAccount = '/createServiceProviderAccount';
-  static const String createServiceProviderAccountSecondView = '/createServiceProviderAccountSecondView';
+  static const String createServiceProviderAccount =
+      '/createServiceProviderAccount';
+  static const String createServiceProviderAccountSecondView =
+      '/createServiceProviderAccountSecondView';
   static const String serviceProviderDashboard = 'serviceProviderDashboard';
   static const String clientDashboard = 'clientDashboard';
   static const String servicesView = '/servicesView';
@@ -35,11 +37,12 @@ class AppRoutes {
   static const String paymentWebview = '/paymentWebview';
   static const String eReceiptView = 'eReceiptView';
   static const String eTicketView = 'eTicketView';
-  static const String bookingHistoryView  = 'bookingHistoryView';
+  static const String bookingHistoryView = 'bookingHistoryView';
   static const String bookingHistoryDetails = 'bookingHistoryDetails';
   static const String settingsView = 'settingsView';
   static const String createFootSoldierView = 'createFootSoldierView';
-  static const String createTransferRecepientView = 'createTransferRecepientView';
+  static const String createTransferRecepientView =
+      'createTransferRecepientView';
   static const String paymentView = 'paymentView';
   static const String withdrawalView = 'withdrawalView';
   static const String scanQRCodeView = 'scanQRCodeView';
@@ -52,4 +55,6 @@ class AppRoutes {
   static const String myMarketplaceView = 'myMarketplaceView';
   static const String addMarketplaceItemView = 'addMarketplaceItemView';
   static const String editMarketplaceItemView = 'editMarketplaceItemView';
+  static const String notificationsView = '/notificationsView';
+  static const String notificationDetailsView = 'notificationDetailsView';
 }

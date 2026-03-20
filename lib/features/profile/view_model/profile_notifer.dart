@@ -6,6 +6,9 @@ import 'package:tivi_tea/core/config/dio_config.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/view_model/profile_notifier_state.dart';
+import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
+import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/dashboard/general_dashboard_repo.dart';
 import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
@@ -67,6 +70,39 @@ class ProfileNotifer extends _$ProfileNotifer {
     } catch (e) {
       state = state.copyWith(profilePicLoadState: LoadState.error);
       onError();
+    }
+  }
+
+  void switchAccount(
+    EntityType targetEntityType, {
+    required VoidCallback onSuccess,
+    required Function(String) onError,
+  }) async {
+    state = state.copyWith(switchAccountLoadState: LoadState.loading);
+    try {
+      final result = await _repo.switchAccount(targetEntityType);
+      if (result.isSuccess() == false) {
+        throw result.error?.message ??
+            result.message ??
+            'Unable to switch account';
+      }
+
+      User updatedUser;
+      final refreshedUser = await _repo.getUserProfile();
+      if (refreshedUser.isSuccess() && refreshedUser.data?.user != null) {
+        updatedUser = refreshedUser.data!.user!;
+      } else {
+        final existingUser = ref.read(userRepositoryProvider).getUser();
+        updatedUser = existingUser.copyWith(entityType: targetEntityType);
+        await ref.read(userRepositoryProvider).saveUser(updatedUser);
+      }
+
+      ref.read(userNotifierProvider.notifier).updateUser(updatedUser);
+      state = state.copyWith(switchAccountLoadState: LoadState.success);
+      onSuccess();
+    } catch (e) {
+      state = state.copyWith(switchAccountLoadState: LoadState.error);
+      onError(e.toString());
     }
   }
 }
