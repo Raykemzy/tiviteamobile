@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/const/app_colors.dart';
 import 'package:tivi_tea/core/widget/custom_dialog.dart';
 import 'package:tivi_tea/core/widget/reusbale_buttons.dart';
@@ -35,11 +36,11 @@ class SummaryPageState extends State<SummaryPage> {
               width: double.infinity,
               height: 44,
               onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const CustomDialog();
-                    });
+                context.showCustomDialog<void>(
+                  verticalPadding: 24,
+                  horizontalPadding: 20,
+                  child: const CustomDialog(),
+                );
               },
               color: Colors.white,
               bgColor: AppColors.deepBlue,

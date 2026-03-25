@@ -15,7 +15,12 @@ import 'package:tivi_tea/features/home/model/client/client_dashboard_model.dart'
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/model/service_provider/service_provider_dashboard_model.dart';
 import 'package:tivi_tea/features/marketplace/model/create_marketplace_item_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/create_marketplace_payment_request_body.dart';
 import 'package:tivi_tea/features/marketplace/model/edit_marketplace_item_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_add_remove_cart_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_cart_item_model.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_create_order_request_body.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_order_create_response.dart';
 import 'package:tivi_tea/features/marketplace/model/owner_marketplace_item_model.dart';
 import 'package:tivi_tea/features/kyc/model/client_kyc_request_body.dart';
 import 'package:tivi_tea/features/kyc/model/partner_kyc_request_body.dart';
@@ -164,6 +169,38 @@ abstract class RestClient {
   @DELETE('/listings/market-place/item/{item_id}')
   Future<BaseResponse<dynamic>> deleteMarketplaceItem(
     @Path('item_id') String itemId,
+  );
+
+  @GET('/listings/market-place/item/{item_id}')
+  Future<BaseResponse<ListingResponseModel>> getMarketPlaceItem(
+    @Path('item_id') String itemId,
+  );
+
+  @POST('/listings/market-place/add-or-remove-cart-items/{item_id}')
+  Future<BaseResponse<dynamic>> addOrRemoveMarketPlaceCartItem(
+    @Path('item_id') String itemId,
+    @Body() MarketplaceAddRemoveCartRequestBody body,
+  );
+
+  @GET('/listings/market-place/cart/items')
+  Future<
+      BaseResponse<
+          GenericPaginatedResponse<MarketplaceCartItemModel>>> getMarketPlaceCartItems();
+
+  @POST('/listings/market-place/order')
+  Future<BaseResponse<MarketplaceOrderCreateResponse>> createMarketPlaceOrder(
+    @Body() MarketplaceCreateOrderRequestBody body,
+  );
+
+  @POST('/listings/market-place/order/item/cancel/{order_id}')
+  Future<BaseResponse<dynamic>> cancelMarketPlaceOrderItem(
+    @Path('order_id') String orderId,
+  );
+
+  @POST('/payment/market-place/{orderId}')
+  Future<BaseResponse<CreatePaymentResponse>> createMarketPlaceOrderPayment(
+    @Path('orderId') String orderId,
+    @Body() CreateMarketplacePaymentRequestBody body,
   );
 
   //<====================> Notifications <====================>

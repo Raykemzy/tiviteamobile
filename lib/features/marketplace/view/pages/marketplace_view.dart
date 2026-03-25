@@ -6,13 +6,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
-import 'package:tivi_tea/features/common/app_button.dart';
-import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:tivi_tea/features/common/search_text_field.dart';
-import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_item_detail_dialog.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_listing_card.dart';
 import 'package:tivi_tea/features/marketplace/view_model/marketplace_notifier.dart';
-import 'package:tivi_tea/features/onboarding/view/widgets/slide_indicator.dart';
 import 'package:tivi_tea/features/registration/view/widgets/registration_appbar.dart';
 
 class MarketplaceView extends ConsumerStatefulWidget {
@@ -83,6 +81,8 @@ class _MarketplaceViewState extends ConsumerState<MarketplaceView> {
         padding: EdgeInsets.symmetric(horizontal: 18.w),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
                 width: context.width,
@@ -134,10 +134,18 @@ class _MarketplaceViewState extends ConsumerState<MarketplaceView> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 12.w,
                       mainAxisSpacing: 12.h,
-                      childAspectRatio: 0.64,
+                      // width/height; higher ratio => shorter tiles, less empty space
+                      // below short cards (keep ~0.55–0.60 if tall content overflows).
+                      childAspectRatio: 0.58,
                     ),
-                    itemBuilder: (context, index) =>
-                        _MarketplaceListingCard(item: filteredItems[index]),
+                    itemBuilder: (context, index) {
+                      final item = filteredItems[index];
+                      return MarketplaceListingCard(
+                        item: item,
+                        onTap: () =>
+                            MarketplaceItemDetailDialog.show(context, item),
+                      );
+                    },
                   );
                 },
               ),
@@ -150,126 +158,5 @@ class _MarketplaceViewState extends ConsumerState<MarketplaceView> {
 
   void _onRetry() {
     ref.read(marketplaceNotifierProvider.notifier).getMarketPlaceItems();
-  }
-}
-
-class _MarketplaceListingCard extends StatefulWidget {
-  const _MarketplaceListingCard({required this.item});
-
-  final ListingResponseModel item;
-
-  @override
-  State<_MarketplaceListingCard> createState() =>
-      _MarketplaceListingCardState();
-}
-
-class _MarketplaceListingCardState extends State<_MarketplaceListingCard> {
-  int _currentImageIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final images = widget.item.images ?? const <String>[];
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.r),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 5),
-            blurRadius: 3,
-            color: Colors.black.withValues(alpha: 0.1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 140.h,
-            margin: EdgeInsets.only(bottom: 7.h),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.r),
-                    child: images.isEmpty
-                        ? Container(
-                            color: context.theme.dividerColor,
-                            alignment: Alignment.center,
-                            child: Text(
-                              'No Image',
-                              style: context.theme.textTheme.labelSmall,
-                            ),
-                          )
-                        : PageView.builder(
-                            itemCount: images.length,
-                            onPageChanged: (i) =>
-                                setState(() => _currentImageIndex = i),
-                            itemBuilder: (_, i) =>
-                                AppImageWidget(imagePath: images[i]),
-                          ),
-                  ),
-                ),
-                if (images.length > 1)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 10,
-                    child: SlideIndicatorWidget(
-                      slideLength: images.length,
-                      currentIndex: _currentImageIndex,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.item.name ?? 'Untitled',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.theme.textTheme.titleMedium?.copyWith(
-                    fontSize: 13.sp,
-                  ),
-                ),
-                8.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _formatPrice(widget.item.amount),
-                      style: context.theme.textTheme.labelMedium?.copyWith(
-                        color: const Color(0xFF737380),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 28.h,
-                      child: AppButton(
-                        buttonText: 'ADD TO CART',
-                        onPressed: () {},
-                        textStyle: context.theme.textTheme.labelSmall?.copyWith(
-                          fontSize: 10.sp,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                8.verticalSpace,
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatPrice(num? amount) {
-    if (amount == null) return '—';
-    return '\$${amount.toStringAsFixed(2)}';
   }
 }

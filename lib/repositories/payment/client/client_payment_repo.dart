@@ -7,6 +7,7 @@ import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/services/rest_client/custom_rest_client_class.dart';
 import 'package:tivi_tea/core/services/rest_client/rest_client.dart';
 import 'package:tivi_tea/core/utils/logger.dart';
+import 'package:tivi_tea/features/marketplace/model/create_marketplace_payment_request_body.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
 
 final class ClientPaymentRepo {
@@ -22,6 +23,21 @@ final class ClientPaymentRepo {
   }) async {
     try {
       return await restClient.createPayment(bookingId: bookingId);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
+  /// POST `/payment/market-place/:orderId` — use with Paystack webview (see booking flow).
+  Future<BaseResponse<CreatePaymentResponse>> createMarketPlaceOrderPayment({
+    required String orderId,
+    bool saveCard = true,
+  }) async {
+    try {
+      return await restClient.createMarketPlaceOrderPayment(
+        orderId,
+        CreateMarketplacePaymentRequestBody(saveCard: saveCard),
+      );
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

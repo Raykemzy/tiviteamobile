@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'custom_pin_widget.dart';
 
 /// Example usage of the CustomPinWidget in various scenarios
@@ -341,48 +342,56 @@ class _PinWidgetExampleState extends State<PinWidgetExample> {
   }
 
   void _showDialogExample() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enter PIN'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: CustomPinWidget(
-            pinCount: 4,
-            controller: _dialogPinController,
-            enableHapticFeedback: true,
-            numberBackgroundColor: Colors.purple[50],
-            numberTextColor: Colors.purple[800],
-            numberWidth: 60.w,
-            numberHeight: 60.h,
-            onCompleted: (pin) {
-              setState(() {
-                _dialogPin = pin;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Dialog PIN completed: $pin')),
-              );
-            },
-            onChanged: (pin) {
-              setState(() {
-                _dialogPin = pin;
-              });
-            },
+    context.showCustomDialog<void>(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text('Enter PIN'),
+          SizedBox(height: 16.h),
+          SizedBox(
+            width: double.maxFinite,
+            child: CustomPinWidget(
+              pinCount: 4,
+              controller: _dialogPinController,
+              enableHapticFeedback: true,
+              numberBackgroundColor: Colors.purple[50],
+              numberTextColor: Colors.purple[800],
+              numberWidth: 60.w,
+              numberHeight: 60.h,
+              onCompleted: (pin) {
+                setState(() {
+                  _dialogPin = pin;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Dialog PIN completed: $pin')),
+                );
+              },
+              onChanged: (pin) {
+                setState(() {
+                  _dialogPin = pin;
+                });
+              },
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _dialogPinController.clearPin();
-              setState(() {
-                _dialogPin = '';
-              });
-            },
-            child: const Text('Clear'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+          SizedBox(height: 16.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {
+                  _dialogPinController.clearPin();
+                  setState(() {
+                    _dialogPin = '';
+                  });
+                },
+                child: const Text('Clear'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
           ),
         ],
       ),

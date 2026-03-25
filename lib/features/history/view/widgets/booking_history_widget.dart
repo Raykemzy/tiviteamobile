@@ -66,7 +66,7 @@ class BookingHistoryWidget extends StatelessWidget {
                   Text(
                     (booking.amount ?? 0).formatAmount,
                     style: context.theme.textTheme.titleSmall?.copyWith(
-                      color: context.theme.colorScheme.primary,
+                      color: context.theme.primaryColor,
                     ),
                   ),
                   const SizedBox(height: 4),

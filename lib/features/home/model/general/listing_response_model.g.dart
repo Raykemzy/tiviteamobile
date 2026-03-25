@@ -10,10 +10,7 @@ ListingResponseModel _$ListingResponseModelFromJson(
         Map<String, dynamic> json) =>
     ListingResponseModel(
       id: json['id'] as String?,
-      category: json['category'] == null
-          ? null
-          : CategoryResponseModel.fromJson(
-              json['category'] as Map<String, dynamic>),
+      category: _listingCategoryFromJson(json['category']),
       amenities: (json['amenities'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -32,17 +29,23 @@ ListingResponseModel _$ListingResponseModelFromJson(
       meta: json['meta'] as Map<String, dynamic>?,
       name: json['name'] as String?,
       description: json['description'] as String?,
-      address: json['address'] as String?,
+      address: _readAddressOrPickUp(json, 'address') as String?,
       images:
           (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
       listingType: json['listing_type'] as String?,
-      amount: json['amount'] as num?,
+      amount: _readAmountOrPrice(json, 'amount') as num?,
+      user: json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
+      quantity: (json['quantity'] as num?)?.toInt(),
+      condition: json['condition'] as String?,
       status: json['status'] as String?,
       pricingOption: json['pricing_option'] as String?,
       footSoldier: json['foot_soldier'] as bool?,
       cautionaryFee: json['cautionary_fee'] as num?,
       isFavorites: json['is_favorites'] as bool?,
-      availability: json['availability'] as bool?,
+      availability: _readAvailabilityOrInStock(json, 'availability') as bool?,
+      reviewCount: _reviewCountFromJson(_readReviewCount(json, 'review_count')),
       serviceFee: json['service_charge'] as num?,
       footSoldierAmount: json['foot_soldier_amount'] as num?,
       amountPlusFootSoldierFee: json['amount_plus_foot_soldier_fee'] as num?,
@@ -65,6 +68,9 @@ Map<String, dynamic> _$ListingResponseModelToJson(
       'images': instance.images,
       'listing_type': instance.listingType,
       'amount': instance.amount,
+      'user': instance.user?.toJson(),
+      'quantity': instance.quantity,
+      'condition': instance.condition,
       'status': instance.status,
       'pricing_option': instance.pricingOption,
       'foot_soldier': instance.footSoldier,
@@ -74,6 +80,7 @@ Map<String, dynamic> _$ListingResponseModelToJson(
       'foot_soldier_amount': instance.footSoldierAmount,
       'amount_plus_foot_soldier_fee': instance.amountPlusFootSoldierFee,
       'availability': instance.availability,
+      'review_count': instance.reviewCount,
     };
 
 Room _$RoomFromJson(Map<String, dynamic> json) => Room(

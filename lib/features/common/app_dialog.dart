@@ -20,6 +20,7 @@ class AppDialog extends StatefulWidget {
 class _MessageDialogState extends State<AppDialog> {
   @override
   Widget build(BuildContext context) {
+    final maxBodyHeight = MediaQuery.sizeOf(context).height * 0.88;
     return Dialog(
       surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
@@ -31,7 +32,10 @@ class _MessageDialogState extends State<AppDialog> {
           horizontal: widget.horizontalPadding.w,
           vertical: widget.verticalPadding.h,
         ),
-        child: IntrinsicHeight(child: widget.child),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxBodyHeight),
+          child: widget.child,
+        ),
       ),
     );
   }

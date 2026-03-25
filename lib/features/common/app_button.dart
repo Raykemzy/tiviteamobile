@@ -12,6 +12,11 @@ class AppButton extends StatelessWidget {
   final Color? textColor;
   final TextStyle? textStyle;
   final Widget? prefixIcon;
+
+  /// When true (default), the button uses infinite width to fill the parent.
+  /// Set false inside a [Row], [Wrap], or anywhere horizontal constraints are unbounded.
+  final bool expandWidth;
+
   const AppButton({
     super.key,
     this.onPressed,
@@ -23,13 +28,14 @@ class AppButton extends StatelessWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.isEnabled = true,
+    this.expandWidth = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      width: isLoading ? null : double.infinity,
+      width: (isLoading || !expandWidth) ? null : double.infinity,
       child: ElevatedButton(
         onPressed: (isEnabled && (isLoading == false)) ? onPressed : null,
         style: ButtonStyle(
@@ -59,7 +65,10 @@ class AppButton extends StatelessWidget {
                 if (prefixIcon != null) prefixIcon!,
                 Text(
                   buttonText ?? context.l10n.next,
-                  style: textStyle,
+                  style: (isEnabled && textColor != null)
+                      ? (textStyle?.copyWith(color: textColor) ??
+                          TextStyle(color: textColor))
+                      : textStyle,
                 ),
               ],
             ),

@@ -7,6 +7,9 @@ import 'package:tivi_tea/features/artisans/view/artisan_detail_view.dart';
 import 'package:tivi_tea/features/artisans/view/artisan_gallery_full_view.dart';
 import 'package:tivi_tea/features/home/model/general/booking_summary_params.dart';
 import 'package:tivi_tea/features/marketplace/view/pages/marketplace_view.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/marketplace_delivery_view.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/marketplace_order_summary_view.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/my_cart_view.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/view/general/all_listing_view.dart';
 import 'package:tivi_tea/features/kyc/model/partner_kyc_request_body.dart';
@@ -128,6 +131,24 @@ class ServicesRouter {
     path: AppRoutes.marketPlaceView,
     builder: (BuildContext context, GoRouterState state) {
       return const MarketplaceView();
+    },
+  );
+  static final myCartView = GoRoute(
+    path: AppRoutes.myCartView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const MyCartView();
+    },
+  );
+  static final marketplaceDeliveryView = GoRoute(
+    path: AppRoutes.marketplaceDeliveryView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const MarketplaceDeliveryView();
+    },
+  );
+  static final marketplaceOrderSummaryView = GoRoute(
+    path: AppRoutes.marketplaceOrderSummaryView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const MarketplaceOrderSummaryView();
     },
   );
   static final artisanDetailsView = GoRoute(

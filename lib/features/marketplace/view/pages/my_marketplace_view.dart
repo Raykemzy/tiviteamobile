@@ -319,21 +319,33 @@ class _ItemActions extends ConsumerWidget {
     WidgetRef ref,
     OwnerMarketplaceItemModel item,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete item?'),
-        content: Text(
-          'Are you sure you want to delete "${item.name ?? 'this item'}"? This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+    final confirmed = await context.showCustomDialog<bool>(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Delete item?',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+          const SizedBox(height: 16),
+          Text(
+            'Are you sure you want to delete "${item.name ?? 'this item'}"? This cannot be undone.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => context.pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => context.pop(true),
+                child: Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
         ],
       ),

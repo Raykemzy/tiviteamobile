@@ -161,21 +161,33 @@ class PsrtnerListingTile extends ConsumerWidget {
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete Listing'),
-            content: const Text(
-              'Are you sure you want to delete this listing?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => context.pop(false),
-                child: const Text('Cancel'),
+        return await context.showCustomDialog<bool>(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Delete Listing',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              TextButton(
-                onPressed: () => context.pop(true),
-                child: const Text('Delete'),
+              const SizedBox(height: 16),
+              Text(
+                'Are you sure you want to delete this listing?',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => context.pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => context.pop(true),
+                    child: const Text('Delete'),
+                  ),
+                ],
               ),
             ],
           ),

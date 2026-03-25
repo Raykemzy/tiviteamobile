@@ -5,9 +5,48 @@ import 'package:tivi_tea/models/user_model.dart';
 
 part 'listing_response_model.g.dart';
 
+CategoryResponseModel? _listingCategoryFromJson(Object? json) {
+  if (json == null) return null;
+  if (json is String) {
+    final trimmed = json.trim();
+    if (trimmed.isEmpty) return null;
+    return CategoryResponseModel(name: trimmed);
+  }
+  if (json is Map<String, dynamic>) {
+    return CategoryResponseModel.fromJson(json);
+  }
+  return null;
+}
+
+Object? _readAmountOrPrice(Map<dynamic, dynamic> json, String key) {
+  return json['amount'] ?? json['price'];
+}
+
+Object? _readAddressOrPickUp(Map<dynamic, dynamic> json, String key) {
+  return json['address'] ?? json['pick_up_address'];
+}
+
+Object? _readAvailabilityOrInStock(Map<dynamic, dynamic> json, String key) {
+  return json['availability'] ?? json['in_stock'];
+}
+
+Object? _readReviewCount(Map<dynamic, dynamic> json, String key) {
+  return json['review_count'] ??
+      json['reviews_count'] ??
+      json['total_reviews'];
+}
+
+int? _reviewCountFromJson(Object? json) {
+  if (json == null) return null;
+  if (json is int) return json;
+  if (json is num) return json.toInt();
+  return int.tryParse(json.toString());
+}
+
 @JsonSerializable(explicitToJson: true)
 class ListingResponseModel {
   final String? id;
+  @JsonKey(fromJson: _listingCategoryFromJson)
   final CategoryResponseModel? category;
   final List<String>? amenities;
   final List<Room>? rooms;
@@ -19,11 +58,16 @@ class ListingResponseModel {
   final Map<String, dynamic>? meta;
   final String? name;
   final String? description;
+  @JsonKey(name: 'address', readValue: _readAddressOrPickUp)
   final String? address;
   final List<String>? images;
   @JsonKey(name: 'listing_type')
   final String? listingType;
+  @JsonKey(name: 'amount', readValue: _readAmountOrPrice)
   final num? amount;
+  final User? user;
+  final int? quantity;
+  final String? condition;
   final String? status;
   @JsonKey(name: 'pricing_option')
   final String? pricingOption;
@@ -39,7 +83,14 @@ class ListingResponseModel {
   final num? footSoldierAmount;
   @JsonKey(name: 'amount_plus_foot_soldier_fee')
   final num? amountPlusFootSoldierFee;
+  @JsonKey(name: 'availability', readValue: _readAvailabilityOrInStock)
   final bool? availability;
+  @JsonKey(
+    name: 'review_count',
+    readValue: _readReviewCount,
+    fromJson: _reviewCountFromJson,
+  )
+  final int? reviewCount;
 
   ListingResponseModel({
     this.id,
@@ -56,12 +107,16 @@ class ListingResponseModel {
     this.images,
     this.listingType,
     this.amount,
+    this.user,
+    this.quantity,
+    this.condition,
     this.status,
     this.pricingOption,
     this.footSoldier,
     this.cautionaryFee,
     this.isFavorites,
     this.availability,
+    this.reviewCount,
     this.serviceFee,
     this.footSoldierAmount,
     this.amountPlusFootSoldierFee,
@@ -87,14 +142,19 @@ class ListingResponseModel {
     List<String>? images,
     String? listingType,
     num? amount,
+    User? user,
+    int? quantity,
+    String? condition,
     String? status,
     String? pricingOption,
     bool? footSoldier,
     num? cautionaryFee,
     bool? isFavorites,
     bool? availability,
+    int? reviewCount,
     num? serviceFee,
     num? footSoldierAmount,
+    num? amountPlusFootSoldierFee,
   }) {
     return ListingResponseModel(
       id: id ?? this.id,
@@ -111,14 +171,20 @@ class ListingResponseModel {
       images: images ?? this.images,
       listingType: listingType ?? this.listingType,
       amount: amount ?? this.amount,
+      user: user ?? this.user,
+      quantity: quantity ?? this.quantity,
+      condition: condition ?? this.condition,
       status: status ?? this.status,
       pricingOption: pricingOption ?? this.pricingOption,
       footSoldier: footSoldier ?? this.footSoldier,
       cautionaryFee: cautionaryFee ?? this.cautionaryFee,
       isFavorites: isFavorites ?? this.isFavorites,
       availability: availability ?? this.availability,
+      reviewCount: reviewCount ?? this.reviewCount,
       serviceFee: serviceFee ?? this.serviceFee,
       footSoldierAmount: footSoldierAmount ?? this.footSoldierAmount,
+      amountPlusFootSoldierFee:
+          amountPlusFootSoldierFee ?? this.amountPlusFootSoldierFee,
     );
   }
 }
