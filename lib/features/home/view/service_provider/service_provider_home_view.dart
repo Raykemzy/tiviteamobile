@@ -12,17 +12,24 @@ class ServiceProviderHomeScreen extends ConsumerStatefulWidget {
   const ServiceProviderHomeScreen({super.key});
 
   @override
-  ConsumerState<ServiceProviderHomeScreen> createState() => _ServiceProviderHomeScreenState();
+  ConsumerState<ServiceProviderHomeScreen> createState() =>
+      _ServiceProviderHomeScreenState();
 }
 
-class _ServiceProviderHomeScreenState extends ConsumerState<ServiceProviderHomeScreen> {
-
+class _ServiceProviderHomeScreenState
+    extends ConsumerState<ServiceProviderHomeScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(servicesNotiferProvider.notifier).getCategories();
-    ref.read(servicesNotiferProvider.notifier).getListing();
-    ref.read(partnerServicesNotiferProvider.notifier).getPartnerListing();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      ref.read(servicesNotiferProvider.notifier).getCategories();
+      ref.read(servicesNotiferProvider.notifier).getListing();
+      ref.read(partnerServicesNotiferProvider.notifier).getPartnerListing();
+    });
   }
 
   @override

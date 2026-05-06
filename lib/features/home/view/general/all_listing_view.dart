@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:adaptive_scrollbar/adaptive_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,15 +14,55 @@ import 'package:tivi_tea/features/home/view/widgets/secondary_listing_widget.dar
 import 'package:tivi_tea/features/services/view_model/services_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
-class AllListingsView extends StatefulWidget {
+class AllListingsView extends ConsumerStatefulWidget {
   const AllListingsView({super.key});
 
   @override
-  State<AllListingsView> createState() => _AllListingsViewState();
+  ConsumerState<AllListingsView> createState() => _AllListingsViewState();
 }
 
-class _AllListingsViewState extends State<AllListingsView> {
+class _AllListingsViewState extends ConsumerState<AllListingsView> {
   String? _selectedCategoryId;
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      final state = ref.read(servicesNotiferProvider);
+      final notifier = ref.read(servicesNotiferProvider.notifier);
+
+      if (state.categories.isEmpty) {
+        notifier.getCategories();
+      }
+
+      if (state.listing.isEmpty) {
+        notifier.getListing();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      final query = value.trim();
+      ref.read(servicesNotiferProvider.notifier).getListing(
+            name: query.isEmpty ? null : query,
+          );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +84,11 @@ class _AllListingsViewState extends State<AllListingsView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: SearchTextField(hintText: context.l10n.search),
+                  child: SearchTextField(
+                    hintText: context.l10n.search,
+                    controller: _searchController,
+                    onChanged: _onSearchChanged,
+                  ),
                 ),
                 // 10.horizontalSpace,
                 // const FiltersWidget(),
@@ -60,7 +106,9 @@ class _AllListingsViewState extends State<AllListingsView> {
             },
           ),
           20.verticalSpace,
-          SecondaryListingView(selectedCategoryId: _selectedCategoryId),
+          SecondaryListingView(
+            selectedCategoryId: _selectedCategoryId,
+          ),
         ],
       ),
     );

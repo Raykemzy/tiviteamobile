@@ -26,8 +26,14 @@ class _ServiceProviderDashboardState
   @override
   void initState() {
     super.initState();
-    final notifier = ref.read(dashboardNotiferProvider.notifier);
-    notifier.getServiceProviderDashboardDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      final notifier = ref.read(dashboardNotiferProvider.notifier);
+      notifier.getServiceProviderDashboardDetails();
+    });
   }
 
   @override
@@ -81,7 +87,7 @@ class CreateListingButton extends StatelessWidget {
   final Color? iconColor;
   final Color? textColor;
   final double? width;
-  
+
   const CreateListingButton({
     super.key,
     required this.text,

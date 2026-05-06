@@ -11,6 +11,7 @@ class SearchTextField extends StatelessWidget {
     super.key,
     this.padding = const SizedBox(height: 24.0),
     this.onTap,
+    this.onChanged,
     this.hintText,
     this.controller,
     this.suffixIcon,
@@ -21,6 +22,7 @@ class SearchTextField extends StatelessWidget {
   final String? hintText;
   final TextEditingController? controller;
   final void Function()? onTap;
+  final ValueChanged<String>? onChanged;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final String? label;
@@ -40,6 +42,7 @@ class SearchTextField extends StatelessWidget {
             children: [
               TextFormField(
                 onTap: onTap,
+                onChanged: onChanged,
                 textAlign: TextAlign.left,
                 style: context.theme.textTheme.displaySmall,
                 cursorColor: Colors.black,

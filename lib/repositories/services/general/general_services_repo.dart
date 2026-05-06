@@ -23,9 +23,9 @@ final class GeneralServicesRepo {
   }
 
   Future<BaseResponse<GenericPaginatedResponse<ListingResponseModel>>>
-      getListing(int page) async {
+      getListing(int page, {String? name}) async {
     try {
-      return await restClient.getListing(page);
+      return await restClient.getListing(page, name: name);
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

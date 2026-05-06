@@ -11,8 +11,8 @@ import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/common/customizable_row.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
+import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
-import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -41,7 +41,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;
-    final user = ref.read(userRepositoryProvider).getUser();
+    final user = ref.watch(userNotifierProvider);
     return Container(
       padding: padding ??
           EdgeInsets.only(

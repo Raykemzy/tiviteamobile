@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tivi_tea/core/services/local_storage/local_storage_impl.dart';
-import 'package:tivi_tea/core/services/local_storage/storage_keys.dart';
+import 'package:tivi_tea/core/services/auth_token_service.dart';
 import 'package:tivi_tea/core/services/rest_client/app_interceptor.dart';
 import 'package:tivi_tea/core/services/rest_client/rest_client.dart';
 import 'package:tivi_tea/core/services/token_expiration_service.dart';
@@ -27,9 +26,9 @@ ProviderFamily<Dio, String> _dio = Provider.family<Dio, String>((ref, baseUrl) {
   dio.interceptors.add(
     DioInterceptor(
       dio: dio,
-      userRepository: UserRepoImpl(LocalStorageImpl(HiveKeys.appBox)),
-      tokenExpirationService: TokenExpirationService(),
-      //ref: ref,
+      userRepository: ref.read(userRepositoryProvider),
+      tokenExpirationService: ref.read(tokenExpirationServiceProvider),
+      authTokenService: ref.read(authTokenServiceProvider),
     ),
   );
   return dio;

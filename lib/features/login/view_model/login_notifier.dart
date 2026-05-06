@@ -227,4 +227,11 @@ class LoginNotifier extends _$LoginNotifier {
   void setAppAccessState(AppAccessState appAccessState) {
     state = state.copyWith(appAccessState: appAccessState);
   }
+
+  Future<void> continueAsGuest() async {
+    await _userRepo.clearUserSession();
+    await _userRepo.saveRememberMe(false);
+    ref.read(userNotifierProvider.notifier).refreshUser();
+    state = state.copyWith(appAccessState: AppAccessState.guest);
+  }
 }

@@ -10,7 +10,18 @@ class EditProfileModel {
   @JsonKey(name: 'profile_picture')
   final String? profilePicture;
 
-  EditProfileModel({this.phoneNumber, this.profilePicture});
+  @JsonKey(name: 'first_name')
+  final String? firstName;
+
+  @JsonKey(name: 'last_name')
+  final String? lastName;
+
+  EditProfileModel({
+    this.phoneNumber,
+    this.profilePicture,
+    this.firstName,
+    this.lastName,
+  });
 
   factory EditProfileModel.fromJson(Map<String, dynamic> json) =>
       _$EditProfileModelFromJson(json);

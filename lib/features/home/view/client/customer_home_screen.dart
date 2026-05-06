@@ -20,9 +20,13 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(servicesNotiferProvider.notifier).getCategories();
-    ref.read(servicesNotiferProvider.notifier).getListing();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      ref.read(servicesNotiferProvider.notifier).getCategories();
+      ref.read(servicesNotiferProvider.notifier).getListing();
       ref.read(favoriteListingNotifierProvider.notifier).getFavoriteListings();
     });
   }
@@ -37,14 +41,14 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
           ref.read(servicesNotiferProvider.notifier).getCategories();
           ref.read(servicesNotiferProvider.notifier).getListing();
         },
-        child: const SingleChildScrollView(
+        child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              WelcomeBackText(),
-              HomeViewContainer(),
-              CategorySection(),
+              const WelcomeBackText(),
+              const HomeViewContainer(),
+              const CategorySection(),
             ],
           ),
         ),

@@ -22,8 +22,14 @@ class _ClientDashboardState extends ConsumerState<ClientDashboard> {
   @override
   void initState() {
     super.initState();
-    final notifier = ref.read(dashboardNotiferProvider.notifier);
-    notifier.getClientDashboardDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      final notifier = ref.read(dashboardNotiferProvider.notifier);
+      notifier.getClientDashboardDetails();
+    });
   }
 
   @override

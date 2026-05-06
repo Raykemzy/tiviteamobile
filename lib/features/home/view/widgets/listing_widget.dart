@@ -87,44 +87,42 @@ class __ListingWidgetState extends State<_ListingWidget> {
         ),
         child: Column(
           children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 7.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 200.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: PageView.builder(
-                      itemCount: widget.listing.images?.length,
-                      onPageChanged: (i) {
-                        setState(() {
-                          currentIndex = i;
-                        });
-                      },
-                      itemBuilder: (ctx, i) {
-                        final imagePath = widget.listing.images?[i] ?? '';
-                        return AppImageWidget(imagePath: imagePath);
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 10,
-                    child: Visibility(
-                      visible: (widget.listing.images?.length ?? 0) > 1,
-                      child: SlideIndicatorWidget(
-                        slideLength: widget.listing.images?.length ?? 0,
-                        currentIndex: currentIndex,
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.only(bottom: 7.h),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: PageView.builder(
+                        itemCount: widget.listing.images?.length,
+                        onPageChanged: (i) {
+                          setState(() {
+                            currentIndex = i;
+                          });
+                        },
+                        itemBuilder: (ctx, i) {
+                          final imagePath = widget.listing.images?[i] ?? '';
+                          return AppImageWidget(imagePath: imagePath);
+                        },
                       ),
                     ),
-                  )
-                ],
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 10,
+                      child: Visibility(
+                        visible: (widget.listing.images?.length ?? 0) > 1,
+                        child: SlideIndicatorWidget(
+                          slideLength: widget.listing.images?.length ?? 0,
+                          currentIndex: currentIndex,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             _ImageDetails(listing: widget.listing),
@@ -156,10 +154,14 @@ class _ImageDetails extends StatelessWidget {
             style: context.theme.textTheme.titleMedium?.copyWith(
               fontSize: 14.sp,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
             listing.address ?? '',
             style: context.theme.textTheme.labelMedium,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,

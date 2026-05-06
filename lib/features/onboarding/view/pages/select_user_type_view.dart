@@ -10,7 +10,6 @@ import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_onboarding_scaffold.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
-import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/features/onboarding/model/enums/enums.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
@@ -101,9 +100,10 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
     );
   }
 
-  void _onContinueAsGuest(WidgetRef ref) {
+  Future<void> _onContinueAsGuest(WidgetRef ref) async {
     final notifier = ref.read(loginNotifierProvider.notifier);
-    notifier.setAppAccessState(AppAccessState.guest);
+    await notifier.continueAsGuest();
+    if (!mounted) return;
     context.go(AppRoutes.homeView);
   }
 

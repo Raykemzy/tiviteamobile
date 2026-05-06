@@ -45,7 +45,15 @@ class ProfileView extends ConsumerWidget with ProfileItemMixin {
                   onTap: profileItems[i].onTap,
                   child: Row(
                     children: [
-                      AppSvgWidget(path: profileItems[i].icon),
+                      if (profileItems[i].icon != null)
+                        AppSvgWidget(path: profileItems[i].icon!)
+                      else
+                        Icon(
+                          Icons.swap_horiz_rounded,
+                          key: const ValueKey('switchIcon'),
+                          size: 18.sp,
+                          color: Colors.black.withValues(alpha: 0.55),
+                        ),
                       10.horizontalSpace,
                       Text(
                         profileItems[i].label,
@@ -63,10 +71,12 @@ class ProfileView extends ConsumerWidget with ProfileItemMixin {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18.w) + EdgeInsets.only(bottom: 20.h),
+            padding: EdgeInsets.symmetric(horizontal: 18.w) +
+                EdgeInsets.only(bottom: 20.h),
             child: AppButton(
               buttonText: context.l10n.editProfile,
-              onPressed: () => context.push('${AppRoutes.profile}/${AppRoutes.editProfileView}'),
+              onPressed: () => context
+                  .push('${AppRoutes.profile}/${AppRoutes.editProfileView}'),
             ),
           )
         ],

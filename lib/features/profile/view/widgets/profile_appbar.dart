@@ -29,7 +29,7 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userNotifierProvider);
-    final profilePicLoadState = ref.watch(profileNotiferProvider.select(
+    final editProfileLoadState = ref.watch(profileNotiferProvider.select(
       (value) => value.editProfileLoadState,
     ));
     final imageUploadState = ref.watch(partnerServicesNotiferProvider.select(
@@ -46,7 +46,7 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
           duration: const Duration(milliseconds: 500),
           child: Column(
             children: [
-              profilePicLoadState == LoadState.loading ||
+              editProfileLoadState == LoadState.loading ||
                       imageUploadState == LoadState.loading
                   ? const CupertinoActivityIndicator()
                   : GestureDetector(
@@ -58,7 +58,6 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
                               : Container(
                                   width: 90.w,
                                   height: 90.h,
-                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: context

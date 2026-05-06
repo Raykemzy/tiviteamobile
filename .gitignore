@@ -49,3 +49,9 @@ key.properties
 
 /assets/icons/flags/
 /docs/api-risk-findings.md
+
+# Claude Code
+.claude/
+CLAUDE.md
+.bug-tracker.md
+*.pdf

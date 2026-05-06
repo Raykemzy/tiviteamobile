@@ -335,9 +335,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
     );
   }
 
-  void _onGuestLoginSuccess(WidgetRef ref) {
+  Future<void> _onGuestLoginSuccess(WidgetRef ref) async {
     final notifier = ref.read(loginNotifierProvider.notifier);
-    notifier.setAppAccessState(AppAccessState.guest);
+    await notifier.continueAsGuest();
+    if (!mounted) return;
     context.go(AppRoutes.homeView);
   }
 }

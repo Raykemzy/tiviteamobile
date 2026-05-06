@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:tivi_tea/core/config/dio_config.dart';
+import 'package:tivi_tea/core/services/auth_token_service.dart';
 import 'package:tivi_tea/core/services/token_expiration_service.dart';
 import 'package:tivi_tea/core/utils/logger.dart';
 import 'package:tivi_tea/repositories/user/user_repo.dart';
@@ -10,14 +10,13 @@ class DioInterceptor extends Interceptor {
   final Dio dio;
   final UserRepository userRepository;
   final TokenExpirationService tokenExpirationService;
-  final Future<Map<String, dynamic>> Function(String refreshToken)?
-      refreshTokenRequest;
+  final AuthTokenService authTokenService;
 
   DioInterceptor({
     required this.dio,
     required this.userRepository,
     required this.tokenExpirationService,
-    this.refreshTokenRequest,
+    required this.authTokenService,
   });
 
   @override
@@ -97,6 +96,7 @@ class DioInterceptor extends Interceptor {
     final data = response.data;
     final message = _extractMessage(data)?.toLowerCase();
     final reason = _extractReason(data)?.toLowerCase();
+    final code = _extractCode(data)?.toLowerCase();
     final statusCode = response.statusCode;
 
     // Keep existing behavior: do not trigger auth refresh for verification flow.
@@ -105,10 +105,14 @@ class DioInterceptor extends Interceptor {
 
     final isUnauthorizedByStatus = statusCode == 401;
     final isUnauthorizedByReason = reason == 'unauthorized';
-    final isUnauthorizedByMessage = message == 'invalid or expired token';
+    final isUnauthorizedByCode = code == 'token_not_valid';
+    final isUnauthorizedByMessage =
+        message?.contains('invalid or expired token') == true ||
+            message?.contains('token is invalid or expired') == true;
 
     return isUnauthorizedByStatus ||
         isUnauthorizedByReason ||
+        isUnauthorizedByCode ||
         isUnauthorizedByMessage;
   }
 
@@ -149,6 +153,19 @@ class DioInterceptor extends Interceptor {
     return null;
   }
 
+  String? _extractCode(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final code = data['code'];
+      if (code is String) return code;
+      final error = data['error'];
+      if (error is Map<String, dynamic>) {
+        final errorCode = error['code'];
+        if (errorCode is String) return errorCode;
+      }
+    }
+    return null;
+  }
+
   Future<void> handleError(
     ErrorInterceptorHandler handler,
     DioException err,
@@ -184,7 +201,7 @@ class DioInterceptor extends Interceptor {
   ) async {
     final refreshToken = userRepository.getRefreshToken();
     try {
-      final refreshedTokens = await _requestRefreshedTokens(refreshToken);
+      final refreshedTokens = await authTokenService.refreshToken(refreshToken);
       await userRepository
           .saveToken(refreshedTokens['access'] as String? ?? '');
       await userRepository.saveRefreshToken(
@@ -199,27 +216,5 @@ class DioInterceptor extends Interceptor {
       handler.next(error);
       return;
     }
-  }
-
-  Future<Map<String, dynamic>> _requestRefreshedTokens(
-      String refreshToken) async {
-    if (refreshTokenRequest != null) {
-      return refreshTokenRequest!(refreshToken);
-    }
-
-    final r = await Dio().post(
-      '${BaseEnv.baseUrl}/user/token/refresh',
-      data: {"refresh": refreshToken},
-    );
-
-    if (r.statusCode == 200 && r.data is Map<String, dynamic>) {
-      return r.data as Map<String, dynamic>;
-    }
-
-    throw DioException(
-      requestOptions: RequestOptions(path: '/user/token/refresh'),
-      response: r,
-      error: 'Token refresh failed',
-    );
   }
 }

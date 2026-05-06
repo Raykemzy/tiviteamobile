@@ -17,6 +17,7 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(userNotifierProvider);
+    final entityType = user.entityType ?? EntityType.partner;
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;
     final routePath = GoRouterState.of(context).matchedLocation;
@@ -75,12 +76,13 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
               onTap: () => context.go(AppRoutes.profile),
             ),
           if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.listingDrawerIcon.path,
-              label: context.l10n.myListing,
-              isSelected: routePath == AppRoutes.myListingView,
-              onTap: () => context.go(AppRoutes.myListingView),
-            ),
+            if (entityType != EntityType.artisan)
+              DrawerListTile(
+                icon: Assets.svgs.listingDrawerIcon.path,
+                label: context.l10n.myListing,
+                isSelected: routePath == AppRoutes.myListingView,
+                onTap: () => context.go(AppRoutes.myListingView),
+              ),
           if (appAccessState != AppAccessState.guest)
             if (user.entityType == EntityType.artisan)
               DrawerListTile(
@@ -98,7 +100,7 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
           //   ),
           // if (appAccessState != AppAccessState.guest)
           // DrawerListTile(
-          //   icon: Assets.svgs.listingDrawerIcon.path, 
+          //   icon: Assets.svgs.listingDrawerIcon.path,
           //   label: 'Marketplace',
           //   isSelected: routePath == marketPlace,
           //   onTap: () => context.go(marketPlace),

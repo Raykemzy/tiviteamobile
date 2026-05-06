@@ -124,7 +124,48 @@ class __MyListingsListState extends ConsumerState<_MyListingsList> {
         (value) => value.listing,
       ),
     );
+    final listingLoadState = ref.watch(
+      partnerServicesNotiferProvider.select(
+        (value) => value.listingLoadState,
+      ),
+    );
     final notifier = ref.read(partnerServicesNotiferProvider.notifier);
+
+    if (partnerListings.isEmpty &&
+        (listingLoadState == LoadState.success ||
+            listingLoadState == LoadState.done)) {
+      return SizedBox(
+        height: 200.h,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.list_alt_outlined,
+                size: 48.w,
+                color: const Color(0xFF77797D),
+              ),
+              16.verticalSpace,
+              Text(
+                'You have no listings yet',
+                style: context.theme.textTheme.bodyLarge?.copyWith(
+                  color: const Color(0xFF77797D),
+                ),
+              ),
+              8.verticalSpace,
+              Text(
+                'Tap "Add New" to create your first listing',
+                style: context.theme.textTheme.displaySmall?.copyWith(
+                  fontSize: 12.sp,
+                  color: const Color(0xFF77797D),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return RefreshIndicator(
       onRefresh: () async => notifier.getPartnerListing(),
       child: ListView.separated(

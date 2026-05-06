@@ -33,36 +33,50 @@ class ServicesNotifer extends _$ServicesNotifer {
     }
   }
 
-  void getListing({int page = 1, bool loadmore = false}) async {
-    if (loadmore) {
-      state = state.copyWith(listingLoadState: LoadState.loadmore);
+  Future<void> getListing({
+    int page = 1,
+    bool loadmore = false,
+    String? name,
+  }) async {
+    if (loadmore &&
+        (state.listingLoadState == LoadState.loadmore || !state.hasMorePages)) {
+      return;
     }
+
+    final effectiveName = loadmore ? state.searchQuery : name;
+
+    state = state.copyWith(
+      listingLoadState: loadmore ? LoadState.loadmore : LoadState.loading,
+      hasMorePages: loadmore ? state.hasMorePages : true,
+      errorMessage: null,
+      searchQuery: loadmore ? state.searchQuery : name,
+    );
+
     try {
-      final response = await _repo.getListing(page);
+      final response = await _repo.getListing(page, name: effectiveName);
       if (!response.isSuccess()) {
         throw response.error?.message ?? response.message ?? '';
       }
-      state = state.copyWith(listingLoadState: LoadState.success);
-      if (response.data?.results?.isEmpty ?? false) {
-        return;
-      }
-      final listings = response.data?.results ?? [];
-      final hasMorePages =
-          (response.data?.page ?? 0) < (response.data?.totalPages ?? 1);
-
-      if (listings.isEmpty) {
-        state = state.copyWith(
-          listingLoadState: hasMorePages ? LoadState.success : LoadState.done,
-        );
-        return;
-      }
+      final payload = response.data;
+      final listings = payload?.results ?? const [];
+      final currentPage = payload?.page ?? page;
+      final totalPages = payload?.totalPages ?? state.totalPages;
+      final hasReliableTotalPages = (payload?.totalPages ?? 0) > 0;
+      final hasMorePages = listings.isNotEmpty &&
+          (!hasReliableTotalPages || currentPage < totalPages);
 
       state = state.copyWith(
         listingLoadState: hasMorePages ? LoadState.success : LoadState.done,
+        currentPage: currentPage,
+        totalPages: totalPages,
+        hasMorePages: hasMorePages,
         listing: loadmore ? [...state.listing, ...listings] : listings,
       );
     } catch (e) {
-      state = state.copyWith(listingLoadState: LoadState.error);
+      state = state.copyWith(
+        listingLoadState: LoadState.error,
+        errorMessage: e.toString(),
+      );
     }
   }
 

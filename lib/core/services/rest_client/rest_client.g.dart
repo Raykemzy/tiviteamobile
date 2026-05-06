@@ -389,9 +389,10 @@ class _RestClient implements RestClient {
 
   @override
   Future<BaseResponse<GenericPaginatedResponse<ListingResponseModel>>>
-      getListing(int page) async {
+      getListing(int page, {String? name}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page};
+    final queryParameters = <String, dynamic>{r'page': page, r'name': name};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<
@@ -1154,9 +1155,8 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<
-      BaseResponse<
-          GenericPaginatedResponse<MarketplaceCartItemModel>>> getMarketPlaceCartItems() async {
+  Future<BaseResponse<GenericPaginatedResponse<MarketplaceCartItemModel>>>
+      getMarketPlaceCartItems() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -1744,6 +1744,39 @@ class _RestClient implements RestClient {
           .compose(
             _dio.options,
             '/authentication/user/switch-account',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<dynamic> _value;
+    try {
+      _value = BaseResponse<dynamic>.fromJson(
+        _result.data!,
+        (json) => json as dynamic,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<dynamic>> createOtherEntityAccount(
+    CreateOtherEntityAccountRequestBody data,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(data.toJson());
+    final _options = _setStreamType<BaseResponse<dynamic>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/authentication/user/create-other-entity-account',
             queryParameters: queryParameters,
             data: _data,
           )

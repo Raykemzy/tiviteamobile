@@ -7,7 +7,8 @@ class HomeNotifer extends _$HomeNotifer {
   @override
   HomeState build() => HomeState.initial();
 
-  void selectCategory(String? categoryId, {
+  void selectCategory(
+    String? categoryId, {
     required void Function(String) onSelected,
   }) {
     if (categoryId == null) {

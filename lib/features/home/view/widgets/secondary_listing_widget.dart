@@ -32,7 +32,7 @@ class SecondaryListingView extends ConsumerStatefulWidget {
 
 class _SecondaryListingViewState extends ConsumerState<SecondaryListingView> {
   final ScrollController _scrollController = ScrollController();
-  int _currentPage = 1;
+
   @override
   void initState() {
     super.initState();
@@ -46,53 +46,130 @@ class _SecondaryListingViewState extends ConsumerState<SecondaryListingView> {
   }
 
   void _onScroll() {
-    final notifier = ref.read(servicesNotiferProvider.notifier);
-    final state = ref.read(servicesNotiferProvider);
-
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 100 &&
-        state.listingLoadState == LoadState.success) {
-      _currentPage++;
-      if (state.listingLoadState == LoadState.done) {
-        return;
-      }
-      notifier.getListing(page: _currentPage, loadmore: true);
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.extentAfter < 200) {
+      _maybeLoadMore();
     }
+  }
+
+  void _maybeLoadMore() {
+    final state = ref.read(servicesNotiferProvider);
+    if (state.listingLoadState == LoadState.loadmore ||
+        state.listingLoadState == LoadState.loading ||
+        state.listingLoadState == LoadState.done ||
+        !state.hasMorePages) {
+      return;
+    }
+    ref.read(servicesNotiferProvider.notifier).getListing(
+          page: state.currentPage + 1,
+          loadmore: true,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final listings = ref.watch(
-      servicesNotiferProvider.select((value) => value.listing),
-    );
+    final state = ref.watch(servicesNotiferProvider);
+    final listings = state.listing;
+    final listingLoadState = state.listingLoadState;
     final filteredListings = widget.selectedCategoryId == null
         ? listings
         : listings
             .where(
                 (listing) => listing.category?.id == widget.selectedCategoryId)
             .toList();
+    final notifier = ref.read(servicesNotiferProvider.notifier);
+    final isInitialLoading =
+        listingLoadState == LoadState.loading && listings.isEmpty;
+    final showPaginationIndicator = listingLoadState == LoadState.loadmore;
+
+    if (listingLoadState == LoadState.success && filteredListings.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_scrollController.hasClients) return;
+        if (_scrollController.position.extentAfter < 200) {
+          _maybeLoadMore();
+        }
+      });
+    }
+
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () async {
-          _currentPage = 1;
-          final notifier = ref.read(servicesNotiferProvider.notifier);
-          notifier.getListing();
+          await notifier.getListing();
         },
-        child: filteredListings.isEmpty
-            ? Center(
-                child: Text(
-                  'No listings found',
-                  style: context.theme.textTheme.displaySmall,
-                ),
-              )
-            : ListView.separated(
-                controller: _scrollController,
-                itemCount: filteredListings.length,
-                separatorBuilder: (ctx, i) => 10.verticalSpace,
-                itemBuilder: (ctx, i) => SecondaryListingWidget(
+        child: Builder(
+          builder: (context) {
+            if (isInitialLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (listingLoadState == LoadState.error && listings.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: 300.h,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            state.errorMessage ?? 'Failed to load listings',
+                            style: context.theme.textTheme.displaySmall,
+                            textAlign: TextAlign.center,
+                          ),
+                          12.verticalSpace,
+                          ElevatedButton(
+                            onPressed: () => notifier.getListing(),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (filteredListings.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: 300.h,
+                    child: Center(
+                      child: Text(
+                        'No listings found',
+                        style: context.theme.textTheme.displaySmall,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return ListView.separated(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount:
+                  filteredListings.length + (showPaginationIndicator ? 1 : 0),
+              separatorBuilder: (ctx, i) => 10.verticalSpace,
+              itemBuilder: (ctx, i) {
+                if (i == filteredListings.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                return SecondaryListingWidget(
                   listing: filteredListings[i],
-                ),
-              ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -135,11 +212,14 @@ class SecondaryListingWidget extends StatelessWidget {
               child: Stack(
                 children: [
                   if (listing.images?.isNotEmpty ?? false)
-                    AppImageWidget(
-                      imagePath: listing.images?.first ?? '',
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8.sp),
-                        bottomLeft: Radius.circular(8.sp),
+                    Positioned.fill(
+                      child: AppImageWidget(
+                        imagePath: listing.images?.first ?? '',
+                        fit: BoxFit.cover,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8.sp),
+                          bottomLeft: Radius.circular(8.sp),
+                        ),
                       ),
                     ),
                   if (moreThanOneImage)
@@ -193,7 +273,9 @@ class SecondaryListingWidget extends StatelessWidget {
                 ],
               ),
             ),
-            _ImageDetails(listing: listing)
+            Expanded(
+              child: _ImageDetails(listing: listing),
+            )
           ],
         ),
       ),
@@ -235,14 +317,15 @@ class _ImageDetails extends StatelessWidget {
               fontSize: 16.sp,
               color: context.theme.primaryColor,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           5.verticalSpace,
           Row(
             children: [
               AppSvgWidget(path: Assets.svgs.location.path),
               5.horizontalSpace,
-              SizedBox(
-                width: 150.w,
+              Expanded(
                 child: Text(
                   listing.address ?? '',
                   style: context.theme.textTheme.labelMedium?.copyWith(
@@ -256,12 +339,11 @@ class _ImageDetails extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          SizedBox(
-            width: 196,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -275,11 +357,16 @@ class _ImageDetails extends StatelessWidget {
                     5.verticalSpace,
                     Row(
                       children: [
-                        Text(
-                          '${listing.partner?.user?.firstName ?? ''} ${listing.partner?.user?.lastName ?? ''}',
-                          style: context.theme.textTheme.displaySmall?.copyWith(
-                            fontSize: 9.8.sp,
-                            color: const Color(0xFF77797D),
+                        Expanded(
+                          child: Text(
+                            '${listing.partner?.user?.firstName ?? ''} ${listing.partner?.user?.lastName ?? ''}',
+                            style:
+                                context.theme.textTheme.displaySmall?.copyWith(
+                              fontSize: 9.8.sp,
+                              color: const Color(0xFF77797D),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (listing.partner?.user?.isVerified ?? false)
@@ -292,15 +379,21 @@ class _ImageDetails extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Spacer(),
-                amount.getCurrencyText(
-                  style: context.theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: context.theme.primaryColor,
+              ),
+              8.horizontalSpace,
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: amount.getCurrencyText(
+                    style: context.theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: context.theme.primaryColor,
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           )
         ],
       ),

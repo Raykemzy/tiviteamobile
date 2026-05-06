@@ -15,6 +15,16 @@ import 'package:tivi_tea/models/enums/enums.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+class _NavbarDestinationItem {
+  const _NavbarDestinationItem({
+    required this.branchIndex,
+    required this.destination,
+  });
+
+  final int branchIndex;
+  final NavigationDestination destination;
+}
+
 class Navbar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   const Navbar({Key? key, required this.navigationShell})
@@ -57,24 +67,25 @@ class Navbar extends StatelessWidget {
           builder: (context, ref, _) {
             final user = ref.watch(userNotifierProvider);
             final isClient = user.entityType == EntityType.client;
+            final isArtisan = user.entityType == EntityType.artisan;
             final appAccessState =
                 ref.watch(loginNotifierProvider).appAccessState;
-            return NavigationBar(
-              selectedIndex: navigationShell.currentIndex,
-              backgroundColor: context.theme.primaryColor,
-              height: 80.h,
-              indicatorColor: Colors.transparent,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: [
-                NavigationDestination(
+            final destinations = <_NavbarDestinationItem>[
+              _NavbarDestinationItem(
+                branchIndex: 0,
+                destination: NavigationDestination(
                   label: context.l10n.home,
                   icon: AppSvgWidget(
                     path: Assets.svgs.homeNavBarIcon.path,
                     color: const Color(0xFF737380),
                   ),
-                  selectedIcon: AppSvgWidget(path: Assets.svgs.homeNavBarIcon.path),
+                  selectedIcon:
+                      AppSvgWidget(path: Assets.svgs.homeNavBarIcon.path),
                 ),
-                NavigationDestination(
+              ),
+              _NavbarDestinationItem(
+                branchIndex: 1,
+                destination: NavigationDestination(
                   label: context.l10n.services,
                   icon: AppSvgWidget(path: Assets.svgs.servicesNavBarIcon.path),
                   selectedIcon: AppSvgWidget(
@@ -82,28 +93,51 @@ class Navbar extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                if (appAccessState != AppAccessState.guest)
-                  NavigationDestination(
+              ),
+              if (appAccessState != AppAccessState.guest && !isArtisan)
+                _NavbarDestinationItem(
+                  branchIndex: 2,
+                  destination: NavigationDestination(
                     label: isClient
                         ? context.l10n.myFavorites
                         : context.l10n.myListing,
-                    icon: AppSvgWidget(path: Assets.svgs.historyNavBarIcon.path),
+                    icon:
+                        AppSvgWidget(path: Assets.svgs.historyNavBarIcon.path),
                     selectedIcon: AppSvgWidget(
                       path: Assets.svgs.historyNavBarIcon.path,
                       color: Colors.white,
                     ),
                   ),
-                if (appAccessState != AppAccessState.guest)
-                  NavigationDestination(
+                ),
+              if (appAccessState != AppAccessState.guest)
+                _NavbarDestinationItem(
+                  branchIndex: 3,
+                  destination: NavigationDestination(
                     label: context.l10n.profile,
-                    icon: AppSvgWidget(path: Assets.svgs.profileNavBarIcon.path),
+                    icon:
+                        AppSvgWidget(path: Assets.svgs.profileNavBarIcon.path),
                     selectedIcon: AppSvgWidget(
                       path: Assets.svgs.profileNavBarIcon.path,
                       color: Colors.white,
                     ),
                   ),
-              ],
-              onDestinationSelected: _goBranch,
+                ),
+            ];
+            final selectedIndex = destinations.indexWhere(
+              (item) => item.branchIndex == navigationShell.currentIndex,
+            );
+
+            return NavigationBar(
+              selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
+              backgroundColor: context.theme.primaryColor,
+              height: 80.h,
+              indicatorColor: Colors.transparent,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations:
+                  destinations.map((item) => item.destination).toList(),
+              onDestinationSelected: (index) {
+                _goBranch(destinations[index].branchIndex);
+              },
             );
           },
         ),

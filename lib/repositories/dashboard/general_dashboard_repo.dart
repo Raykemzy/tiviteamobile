@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:tivi_tea/core/config/exceptions/app_exception.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/services/rest_client/rest_client.dart';
+import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/model/switch_account_request_body.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
@@ -64,6 +65,16 @@ final class GeneralDashboardRepo {
     }
   }
 
+  Future<BaseResponse<dynamic>> createOtherEntityAccount(
+    CreateOtherEntityAccountRequestBody data,
+  ) async {
+    try {
+      return await restClient.createOtherEntityAccount(data);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
   Future<BaseResponse<UploadProfilePicResponse>> uploadProfilePic({
     required File image,
   }) async {
@@ -74,7 +85,7 @@ final class GeneralDashboardRepo {
 
       await userRepository.saveUser(userWithProfilePic);
 
-      return const BaseResponse(status: 'Success');
+      return BaseResponse(status: 'Success', data: result);
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

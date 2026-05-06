@@ -31,6 +31,7 @@ import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
+import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/model/switch_account_request_body.dart';
 import 'package:tivi_tea/features/registration/model/artisan/artisan_sign_up_request_body.dart';
@@ -95,7 +96,7 @@ abstract class RestClient {
   //<====================> Service <====================>
   @GET('/listings/')
   Future<BaseResponse<GenericPaginatedResponse<ListingResponseModel>>>
-      getListing(@Query('page') int page);
+      getListing(@Query('page') int page, {@Query('name') String? name});
 
   @POST('/listings/')
   Future<BaseResponse<ListingResponseModel>> postWorkSpace(
@@ -258,6 +259,10 @@ abstract class RestClient {
   @POST('/authentication/user/switch-account')
   Future<BaseResponse<dynamic>> switchAccount(
     @Body() SwitchAccountRequestBody data,
+  );
+  @POST('/authentication/user/create-other-entity-account')
+  Future<BaseResponse<dynamic>> createOtherEntityAccount(
+    @Body() CreateOtherEntityAccountRequestBody data,
   );
   @POST('/dashboard/client/listing/favorite')
   Future<BaseResponse> favoriteListing(@Body() FavoriteListingRequestBody data);

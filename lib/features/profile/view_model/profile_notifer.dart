@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tivi_tea/core/config/dio_config.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/view_model/profile_notifier_state.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
@@ -32,7 +31,7 @@ class ProfileNotifer extends _$ProfileNotifer {
     try {
       final result = await _repo.getUserProfile();
       if (result.isSuccess() == false) throw result.message ?? '';
-      //ref.read(currentUserProvider);
+      _syncUserState(result.data?.user);
       state = state.copyWith(profileLoadState: LoadState.success);
     } catch (e) {
       state = state.copyWith(profileLoadState: LoadState.error);
@@ -46,8 +45,14 @@ class ProfileNotifer extends _$ProfileNotifer {
   }) async {
     state = state.copyWith(editProfileLoadState: LoadState.loading);
     try {
-      final result = await _repo.updateUserProfile(data);
+      final result = await _repo.updateUserProfile(_mergeWithCurrentUser(data));
       if (result.isSuccess() == false) throw result.message ?? '';
+      final refreshedUser = await _repo.getUserProfile();
+      if (refreshedUser.isSuccess()) {
+        _syncUserState(refreshedUser.data?.user);
+      } else {
+        _syncUserState(result.data);
+      }
       state = state.copyWith(editProfileLoadState: LoadState.success);
       onSuccess();
     } catch (e) {
@@ -56,21 +61,23 @@ class ProfileNotifer extends _$ProfileNotifer {
     }
   }
 
-  void uploadProfilePic(
-    File image, {
-    required VoidCallback onSuccess,
-    required VoidCallback onError,
-  }) async {
-    state = state.copyWith(profilePicLoadState: LoadState.loading);
-    try {
-      final result = await _repo.uploadProfilePic(image: image);
-      if (result.isSuccess() == false) throw result.message ?? '';
-      state = state.copyWith(profilePicLoadState: LoadState.success);
-      onSuccess();
-    } catch (e) {
-      state = state.copyWith(profilePicLoadState: LoadState.error);
-      onError();
+  EditProfileModel _mergeWithCurrentUser(EditProfileModel data) {
+    final user = ref.read(userRepositoryProvider).getUser();
+    return EditProfileModel(
+      phoneNumber: data.phoneNumber ?? user.phoneNumber ?? '',
+      profilePicture: data.profilePicture ?? user.profilePicture ?? '',
+      firstName: data.firstName ?? user.firstName ?? '',
+      lastName: data.lastName ?? user.lastName ?? '',
+    );
+  }
+
+  void _syncUserState(User? user) {
+    final notifier = ref.read(userNotifierProvider.notifier);
+    if (user != null) {
+      notifier.updateUser(user);
+      return;
     }
+    notifier.refreshUser();
   }
 
   void switchAccount(
@@ -102,6 +109,36 @@ class ProfileNotifer extends _$ProfileNotifer {
       onSuccess();
     } catch (e) {
       state = state.copyWith(switchAccountLoadState: LoadState.error);
+      onError(e.toString());
+    }
+  }
+
+  void createOtherEntityAccount(
+    CreateOtherEntityAccountRequestBody data, {
+    required VoidCallback onSuccess,
+    required Function(String) onError,
+  }) async {
+    state = state.copyWith(
+      createOtherEntityAccountLoadState: LoadState.loading,
+    );
+    try {
+      final result = await _repo.createOtherEntityAccount(data);
+      if (result.isSuccess() == false) {
+        throw result.error?.message ??
+            result.message ??
+            'Unable to create account';
+      }
+
+      await _repo.getUserProfile();
+      ref.read(userNotifierProvider.notifier).refreshUser();
+      state = state.copyWith(
+        createOtherEntityAccountLoadState: LoadState.success,
+      );
+      onSuccess();
+    } catch (e) {
+      state = state.copyWith(
+        createOtherEntityAccountLoadState: LoadState.error,
+      );
       onError(e.toString());
     }
   }
