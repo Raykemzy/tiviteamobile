@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/core/services/websocket/notification_websocket_service.dart';
 import 'package:tivi_tea/features/common/app_drawer_list_tile.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
@@ -156,6 +157,9 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                 DrawerListTile(
                   icon: Assets.svgs.headphonesDrawerIcon.path,
                   label: context.l10n.customerSupport,
+                  onTap: () => context.go(
+                    '${AppRoutes.profile}/${AppRoutes.contactUsView}',
+                  ),
                 ),
                 if (appAccessState != AppAccessState.guest)
                   DrawerListTile(
@@ -182,6 +186,9 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                           _navigateToLogin(context);
                           return;
                         }
+                        ref
+                            .read(notificationWebSocketServiceProvider.notifier)
+                            .disconnect();
                         notifier.logout(
                           onDataCleared: () => _navigateToLogin(context),
                         );

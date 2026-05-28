@@ -139,6 +139,7 @@ final GoRouter router = GoRouter(
                 ProfileRouter.artisanGalleryView,
                 ProfileRouter.jobHistoryView,
                 ProfileRouter.myMarketplaceView,
+                ProfileRouter.contactUsView,
               ],
             ),
           ],

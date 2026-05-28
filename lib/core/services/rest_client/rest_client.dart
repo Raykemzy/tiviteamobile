@@ -294,4 +294,10 @@ abstract class RestClient {
   Future<BaseResponse> createTransactionPin(@Body() UpdatePinModel data);
   @POST('/payment/withdraw-from-wallet')
   Future<BaseResponse> withdrawFromWallet(@Body() WithdrawFromWalletModel data);
+
+  //<====================> Contact Us <====================>
+  @POST('/contact_us/')
+  Future<BaseResponse<dynamic>> contactUs(
+    @Body() Map<String, dynamic> data,
+  );
 }

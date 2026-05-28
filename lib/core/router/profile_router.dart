@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/contact_us/view/pages/contact_us_view.dart';
 import 'package:tivi_tea/features/payment/view/payment_view.dart';
 import 'package:tivi_tea/features/payment/view/withdrawl_view.dart';
 import 'package:tivi_tea/features/profile/view/artisan_gallery_view.dart';
@@ -56,6 +57,13 @@ class ProfileRouter {
       return const JobHistoryView();
     },
   );
+  static final contactUsView = GoRoute(
+    path: AppRoutes.contactUsView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const ContactUsView();
+    },
+  );
+
   static final myMarketplaceView = GoRoute(
     path: AppRoutes.myMarketplaceView,
     builder: (BuildContext context, GoRouterState state) {

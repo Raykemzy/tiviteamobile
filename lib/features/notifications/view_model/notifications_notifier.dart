@@ -176,6 +176,19 @@ class NotificationsNotifier extends _$NotificationsNotifier {
     }
   }
 
+  /// Called by [NotificationWebSocketService] when a new real-time
+  /// notification arrives. Prepends to the list so it appears at the top.
+  void prependNotification(NotificationModel notification) {
+    // Avoid duplicates if the same notification arrives twice
+    final alreadyExists =
+        state.notifications.any((n) => n.id == notification.id);
+    if (alreadyExists) return;
+    state = state.copyWith(
+      notifications: [notification, ...state.notifications],
+      totalItems: state.totalItems + 1,
+    );
+  }
+
   bool _isNotificationRead(String notificationId) {
     return state.notifications.any(
       (item) => item.id == notificationId && item.isRead,

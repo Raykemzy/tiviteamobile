@@ -111,7 +111,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           ] else ...[
             Expanded(
               child: CustomizableRow(
-                flexValues: const [1, 4, 0],
+                flexValues: const [1, 4, 1],
                 children: [
                   if (showHamburgerMenu)
                     Align(

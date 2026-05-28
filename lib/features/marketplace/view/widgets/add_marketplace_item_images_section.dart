@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
@@ -54,14 +55,49 @@ class AddMarketplaceItemImagesSection extends ConsumerWidget {
         SizedBox(height: 10.h),
         IntrinsicWidth(
           child: ReusableAddTextButton(
-            onTap: () =>
-                ref.read(imagePickerNotifierProvider.notifier).selectImages(),
-            title: 'Add Image',
+            onTap: () => _showImageSourceSheet(context, ref),
+            title: 'Add Images',
             color: const Color(0xFFE8E8EB),
             fontColor: Colors.black,
           ),
         ),
       ],
+    );
+  }
+
+  void _showImageSourceSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(context);
+                ref
+                    .read(imagePickerNotifierProvider.notifier)
+                    .selectImages(source: ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                ref
+                    .read(imagePickerNotifierProvider.notifier)
+                    .selectImages(source: ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

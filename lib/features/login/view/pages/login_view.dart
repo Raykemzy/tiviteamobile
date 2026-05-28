@@ -16,6 +16,7 @@ import 'package:tivi_tea/features/common/app_onboarding_scaffold.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/common/app_text_field.dart';
 import 'package:tivi_tea/features/login/model/general/login_request_object.dart';
+import 'package:tivi_tea/core/services/websocket/notification_websocket_service.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
@@ -322,13 +323,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
   void _onLoginSuccess(WidgetRef ref, User? user) {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.setAppAccessState(AppAccessState.user);
-    //TODO: Uncomment this when the artisan KYC is implemented
 
-    // if (user?.entityType == EntityType.artisan &&
-    //     user?.hasUploadedKycDocuments == false) {
-    //   context.go(AppRoutes.artisanKYCView);
-    //   return;
-    // }
+    // Start real-time notification WebSocket
+    ref.read(notificationWebSocketServiceProvider.notifier).connect();
+
+    if (user?.entityType == EntityType.artisan &&
+        user?.hasUploadedKycDocuments == false) {
+      context.go(AppRoutes.artisanKYCView);
+      return;
+    }
     context.go(
       AppRoutes.homeView,
       extra: user?.entityType ?? EntityType.client,

@@ -50,6 +50,7 @@ dependencies:
   package_rename: ^1.10.0
   mobile_scanner: ^6.0.10
   file_picker: ^8.1.7
+  web_socket_channel: ^3.0.1
 
 # flutter_native_splash:
 #   android: true

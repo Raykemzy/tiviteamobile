@@ -60,4 +60,5 @@ class AppRoutes {
   static const String editMarketplaceItemView = 'editMarketplaceItemView';
   static const String notificationsView = '/notificationsView';
   static const String notificationDetailsView = 'notificationDetailsView';
+  static const String contactUsView = 'contactUsView';
 }
