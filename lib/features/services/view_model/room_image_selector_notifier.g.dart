@@ -7,7 +7,7 @@ part of 'room_image_selector_notifier.dart';
 // **************************************************************************
 
 String _$roomImageSelectorNotifierHash() =>
-    r'c7127dbd43366f114472c92fc9ee96990fc0f9d2';
+    r'5b04702c1ccb9c24f877e96108291320d46df01b';
 
 /// See also [RoomImageSelectorNotifier].
 @ProviderFor(RoomImageSelectorNotifier)

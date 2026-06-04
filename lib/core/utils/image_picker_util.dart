@@ -76,4 +76,38 @@ class ImagePickerUtil {
       return [];
     }
   }
+
+  /// Picks multiple images and/or videos from the gallery.
+  static Future<List<XFile>> pickMultipleMedia() async {
+    bool permissionGranted = await _requestPermission();
+
+    try {
+      if (!permissionGranted) {
+        throw Exception('Permission not granted to access media.');
+      }
+      final ImagePicker picker = ImagePicker();
+      final List<XFile> media = await picker.pickMultipleMedia();
+      return media;
+    } catch (e) {
+      debugLog("Pick Multiple Media error => ${e.toString()}");
+      return [];
+    }
+  }
+
+  /// Picks a single video from the given [imageSource] (camera or gallery).
+  static Future<XFile?> pickVideo(ImageSource imageSource) async {
+    bool permissionGranted = await _requestPermission();
+
+    try {
+      if (!permissionGranted) {
+        throw Exception('Permission not granted to access media.');
+      }
+      final ImagePicker picker = ImagePicker();
+      final XFile? video = await picker.pickVideo(source: imageSource);
+      return video;
+    } catch (e) {
+      debugLog("Pick Video error => ${e.toString()}");
+      return null;
+    }
+  }
 }

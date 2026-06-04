@@ -835,6 +835,38 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<BaseResponse<ArtisanResponseModel>> getArtisan(
+    String artisanId,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<ArtisanResponseModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/listings/artisan/${artisanId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<ArtisanResponseModel> _value;
+    try {
+      _value = BaseResponse<ArtisanResponseModel>.fromJson(
+        _result.data!,
+        (json) => ArtisanResponseModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
     String artisanId,
     RequestQuotationRequestBody data,

@@ -144,6 +144,10 @@ abstract class RestClient {
   @GET('/listings/artisans')
   Future<BaseResponse<GenericPaginatedResponse<ArtisanResponseModel>>>
       getArtisansList(@Query('page') int page);
+  @GET('/listings/artisan/{artisanId}')
+  Future<BaseResponse<ArtisanResponseModel>> getArtisan(
+    @Path('artisanId') String artisanId,
+  );
   @POST('/bookings/request-quotation/{artisanId}')
   Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
     @Path('artisanId') String artisanId,

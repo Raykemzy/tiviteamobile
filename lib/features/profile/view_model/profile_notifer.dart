@@ -68,6 +68,9 @@ class ProfileNotifer extends _$ProfileNotifer {
       profilePicture: data.profilePicture ?? user.profilePicture ?? '',
       firstName: data.firstName ?? user.firstName ?? '',
       lastName: data.lastName ?? user.lastName ?? '',
+      // Only sent when a gallery update is in progress; omitted otherwise so
+      // ordinary profile edits never touch the artisan's gallery.
+      artisanGalleryImages: data.artisanGalleryImages,
     );
   }
 

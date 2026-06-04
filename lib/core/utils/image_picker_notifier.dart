@@ -20,6 +20,19 @@ class ImagePickerNotifier extends _$ImagePickerNotifier {
     state = [...state, ...results];
   }
 
+  /// Picks multiple images and/or videos from the gallery.
+  void selectMedia() async {
+    final results = await ImagePickerUtil.pickMultipleMedia();
+    state = [...state, ...results];
+  }
+
+  /// Picks a single video from [source].
+  void selectVideo({ImageSource source = ImageSource.camera}) async {
+    final result = await ImagePickerUtil.pickVideo(source);
+    if (result == null) return;
+    state = [...state, result];
+  }
+
   void deleteImage(String imagePath) {
     state = state.where((path) => path.path != imagePath).toList();
   }

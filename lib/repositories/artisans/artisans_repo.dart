@@ -21,6 +21,16 @@ final class ArtisansRepo {
     }
   }
 
+  Future<BaseResponse<ArtisanResponseModel>> getArtisan(
+    String artisanId,
+  ) async {
+    try {
+      return await restClient.getArtisan(artisanId);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
   Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
     String artisanId,
     RequestQuotationRequestBody data,

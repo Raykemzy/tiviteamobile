@@ -16,11 +16,15 @@ class EditProfileModel {
   @JsonKey(name: 'last_name')
   final String? lastName;
 
+  @JsonKey(name: 'artisan_gallery_images', includeIfNull: false)
+  final List<String>? artisanGalleryImages;
+
   EditProfileModel({
     this.phoneNumber,
     this.profilePicture,
     this.firstName,
     this.lastName,
+    this.artisanGalleryImages,
   });
 
   factory EditProfileModel.fromJson(Map<String, dynamic> json) =>
