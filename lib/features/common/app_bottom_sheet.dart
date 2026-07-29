@@ -18,6 +18,7 @@ class AppBottomSheet extends StatelessWidget {
     this.hasHeaders = true,
     this.showButton,
     this.onButtonPressed,
+    this.maxHeightFactor = .95,
   });
   final String? title;
   final Widget? titleWidget;
@@ -32,6 +33,11 @@ class AppBottomSheet extends StatelessWidget {
   final bool? showButton;
   final VoidCallback? onButtonPressed;
 
+  /// Share of the screen height the sheet may grow to before its content
+  /// starts scrolling. Long forms should pass something well under 1 so the
+  /// sheet still reads as a sheet rather than a full page.
+  final double maxHeightFactor;
+
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
@@ -41,7 +47,7 @@ class AppBottomSheet extends StatelessWidget {
       ),
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * .95,
+          maxHeight: MediaQuery.of(context).size.height * maxHeightFactor,
           minHeight: 100,
           minWidth: width ?? MediaQuery.of(context).size.width,
         ),
@@ -58,14 +64,14 @@ class AppBottomSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       title ?? '',
-                      style: context.theme.textTheme.bodySmall,
+                      style: context.theme.textTheme.titleSmall,
                     ),
                     10.horizontalSpace,
-                    InkWell(
+                    if(!(showButton ?? false)) InkWell(
                       onTap: () => context.pop(),
                       child: const Icon(
                         Icons.close,

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_cart_line.dart';
 import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_listing_text.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_quantity_stepper.dart';
+import 'package:tivi_tea/features/marketplace/view_model/marketplace_cart_notifier.dart';
 import 'package:tivi_tea/features/onboarding/view/widgets/slide_indicator.dart';
 
-class MarketplaceListingCard extends StatefulWidget {
+class MarketplaceListingCard extends ConsumerStatefulWidget {
   const MarketplaceListingCard({
     super.key,
     required this.item,
@@ -17,16 +22,53 @@ class MarketplaceListingCard extends StatefulWidget {
   final VoidCallback? onTap;
 
   @override
-  State<MarketplaceListingCard> createState() => _MarketplaceListingCardState();
+  ConsumerState<MarketplaceListingCard> createState() =>
+      _MarketplaceListingCardState();
 }
 
-class _MarketplaceListingCardState extends State<MarketplaceListingCard> {
+class _MarketplaceListingCardState
+    extends ConsumerState<MarketplaceListingCard> {
   int _currentImageIndex = 0;
+  bool _isAdding = false;
+
+  Future<void> _addToCart() async {
+    if (_isAdding) return;
+    setState(() => _isAdding = true);
+    await ref.read(marketplaceCartProvider.notifier).addItem(
+          widget.item,
+          onError: (m) {
+            if (mounted) context.showError(m);
+          },
+        );
+    if (mounted) setState(() => _isAdding = false);
+  }
+
+  void _increment(MarketplaceCartLine line) {
+    ref.read(marketplaceCartProvider.notifier).increment(
+          line,
+          onError: (m) {
+            if (mounted) context.showError(m);
+          },
+        );
+  }
+
+  void _decrement(MarketplaceCartLine line) {
+    ref.read(marketplaceCartProvider.notifier).decrement(
+          line,
+          onError: (m) {
+            if (mounted) context.showError(m);
+          },
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     final images = widget.item.images ?? const <String>[];
     final reviewCount = marketplaceVisibleReviewCount(widget.item);
+    final cartLine = ref
+        .watch(marketplaceCartProvider)
+        .lines
+        .lineForListing(widget.item);
 
     // Grid tiles have a fixed height; Align + mainAxisSize.min keeps the card
     // only as tall as its content instead of stretching the white box.
@@ -188,27 +230,46 @@ class _MarketplaceListingCardState extends State<MarketplaceListingCard> {
                             ),
                             6.horizontalSpace,
                           ],
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              height: 30.h,
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              decoration: BoxDecoration(
-                                color: context.theme.primaryColor,
-                                borderRadius: BorderRadius.circular(6.r),
-                              ),
-                              child: Text(
-                                'ADD TO CART',
-                                style: context.theme.textTheme.labelSmall
-                                    ?.copyWith(
-                                  fontSize: 9.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                          if (cartLine != null)
+                            MarketplaceQuantityStepper(
+                              quantity: cartLine.quantity,
+                              primary: context.theme.primaryColor,
+                              onIncrement: cartLine.canIncrement
+                                  ? () => _increment(cartLine)
+                                  : null,
+                              onDecrement: () => _decrement(cartLine),
+                            )
+                          else
+                            GestureDetector(
+                              onTap: _isAdding ? null : _addToCart,
+                              child: Container(
+                                height: 30.h,
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                decoration: BoxDecoration(
+                                  color: context.theme.primaryColor,
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
+                                child: _isAdding
+                                    ? SizedBox(
+                                        height: 12.sp,
+                                        width: 12.sp,
+                                        child: const CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        'ADD TO CART',
+                                        style: context.theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          fontSize: 9.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ],

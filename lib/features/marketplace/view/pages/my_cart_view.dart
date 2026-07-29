@@ -85,9 +85,17 @@ class _MyCartViewState extends ConsumerState<MyCartView> {
                               padding: EdgeInsets.symmetric(horizontal: 18.w),
                               child: AppButton(
                                 buttonText: 'Choose delivery',
-                                onPressed: () => context.push(
-                                  '${AppRoutes.servicesView}/${AppRoutes.marketplaceDeliveryView}',
-                                ),
+                                onPressed: () async {
+                                  // Make sure quantity edits are saved before
+                                  // moving toward checkout.
+                                  await ref
+                                      .read(marketplaceCartProvider.notifier)
+                                      .commitPendingQuantity();
+                                  if (!context.mounted) return;
+                                  context.push(
+                                    '${AppRoutes.servicesView}/${AppRoutes.marketplaceDeliveryView}',
+                                  );
+                                },
                               ),
                             ),
                             16.verticalSpace,

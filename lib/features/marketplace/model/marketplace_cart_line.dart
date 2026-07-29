@@ -14,11 +14,32 @@ class MarketplaceCartLine {
   final int quantity;
 
   num get lineSubtotal => (listing.amount ?? 0) * quantity;
+
+  /// Units available in stock for this listing (null = unspecified/unlimited).
+  int? get availableStock => listing.quantity;
+
+  /// Whether another unit can be added without exceeding available stock.
+  bool get canIncrement {
+    final stock = availableStock;
+    return stock == null || quantity < stock;
+  }
 }
 
 extension MarketplaceCartLinesX on List<MarketplaceCartLine> {
   num get itemsSubtotal =>
       fold<num>(0, (sum, line) => sum + line.lineSubtotal);
+
+  /// Total number of units across all cart lines (for the cart badge).
+  int get totalQuantity => fold<int>(0, (sum, line) => sum + line.quantity);
+
+  /// The cart line matching [listing], or null if it isn't in the cart.
+  MarketplaceCartLine? lineForListing(ListingResponseModel listing) {
+    final key = marketplaceCartLineKey(listing);
+    for (final line in this) {
+      if (marketplaceCartLineKey(line.listing) == key) return line;
+    }
+    return null;
+  }
 
   /// First non-empty listing address (e.g. pickup location).
   String? get firstListingAddress {

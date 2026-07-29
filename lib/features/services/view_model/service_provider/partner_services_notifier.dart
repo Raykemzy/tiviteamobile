@@ -7,6 +7,7 @@ import 'package:tivi_tea/core/services/third_party_services/cloudinary_service.d
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/services/model/create_foot_soldier_model.dart';
+import 'package:tivi_tea/core/services/third_party_services/media_upload_exception.dart';
 import 'package:tivi_tea/features/services/model/create_foot_soldier_response.dart';
 import 'package:tivi_tea/features/services/model/post_listing_model.dart';
 import 'package:tivi_tea/features/services/model/post_worktool_model.dart';
@@ -173,6 +174,11 @@ class PartnerServicesNotifer extends _$PartnerServicesNotifer {
       final results = await _cloudinaryService.uploadImages(imagePaths);
       state = state.copyWith(cloudinaryUploadState: LoadState.success);
       return results;
+    } on MediaUploadException {
+      // A rejected selection is the user's to fix, so let it reach the view
+      // instead of quietly returning an empty list.
+      state = state.copyWith(cloudinaryUploadState: LoadState.error);
+      rethrow;
     } catch (e) {
       state = state.copyWith(cloudinaryUploadState: LoadState.error);
       return [];

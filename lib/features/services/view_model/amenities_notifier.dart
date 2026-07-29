@@ -5,12 +5,15 @@ part 'amenities_notifier.g.dart';
 
 @riverpod
 class AmenitiesNotifier extends _$AmenitiesNotifier {
+  /// Unselected by default — the submit path only sends amenities whose
+  /// [AmenityModel.isSelected] is true, so pre-selecting these would attach
+  /// all of them to every new listing regardless of what the user ticked.
   final List<AmenityModel> _defaultAmenities = [
-    AmenityModel(label: '24 hours Electricity', isSelected: true),
-    AmenityModel(label: 'Parking', isSelected: true),
-    AmenityModel(label: 'Wifi', isSelected: true),
-    AmenityModel(label: 'CCTV', isSelected: true),
-    AmenityModel(label: 'Cafeteria', isSelected: true),
+    AmenityModel(label: '24 hours Electricity', isSelected: false),
+    AmenityModel(label: 'Parking', isSelected: false),
+    AmenityModel(label: 'Wifi', isSelected: false),
+    AmenityModel(label: 'CCTV', isSelected: false),
+    AmenityModel(label: 'Cafeteria', isSelected: false),
   ];
   @override
   List<AmenityModel> build() => _defaultAmenities;

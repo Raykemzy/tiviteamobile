@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
+import 'package:tivi_tea/core/services/third_party_services/media_upload_exception.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
@@ -213,7 +214,14 @@ class _CreateNewListingSecondViewState
         .where((amenity) => amenity.isSelected)
         .map((amenity) => amenity.label)
         .toList();
-    final images = await _uploadImages(ref);
+    final List<String> images;
+    try {
+      images = await _uploadImages(ref);
+    } on MediaUploadException catch (e) {
+      if (!mounted) return;
+      context.showError(e.message);
+      return;
+    }
 
     final data = PostListingModel(
       name: nameController.text,

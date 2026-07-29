@@ -282,7 +282,10 @@ class __RoomContainerState extends State<_RoomContainer> {
     final images = await _uploadImages(ref);
 
     final room = WorkspaceRoomModel(
-      id: widget.room?.id ?? '',
+      // Left null for new rooms so `room_id` is omitted from the payload —
+      // it only applies when editing an existing room. An empty string would
+      // still serialise, which is what broke add-space.
+      id: widget.room?.id,
       name: nameController.text,
       description: shortDescriptionController.text,
       maxCapacity: int.parse(maxCapacityController.text),

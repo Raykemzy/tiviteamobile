@@ -321,7 +321,7 @@ class _BookingSummaryViewState extends ConsumerState<BookingSummaryView> {
   }
 
   void _navigateToPaymentView(String paymentUrl, String paymentId) {
-    final args = PaymentWebviewArgs(
+    final args = PaymentWebviewArgs.booking(
       bookingId: bookingId,
       paystackUrl: paymentUrl,
     );

@@ -16,6 +16,7 @@ import 'package:tivi_tea/features/common/app_onboarding_scaffold.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/common/app_text_field.dart';
 import 'package:tivi_tea/features/login/model/general/login_request_object.dart';
+import 'package:tivi_tea/features/login/view/widgets/login_entity_picker_sheet.dart';
 import 'package:tivi_tea/core/services/websocket/notification_websocket_service.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
@@ -292,13 +293,34 @@ class _LoginViewState extends ConsumerState<LoginView> {
       password: passwordController.text,
     );
 
+    _submitLogin(ref, data);
+  }
+
+  void _submitLogin(WidgetRef ref, LoginRequestObject data) {
     final notifier = ref.read(loginNotifierProvider.notifier);
     notifier.login(
       data,
       rememberMe: rememberMe,
       onSuccess: (user) => _onLoginSuccess(ref, user),
       onError: (error) => context.showError(error),
+      onEntityRequired: (options) => _promptForEntity(ref, data, options),
     );
+  }
+
+  /// The account owns several entities: ask which one, then retry the same
+  /// credentials with that entity attached.
+  Future<void> _promptForEntity(
+    WidgetRef ref,
+    LoginRequestObject data,
+    List<EntityType> options,
+  ) async {
+    final choice = await context.showBottomSheet<EntityType>(
+      title: 'Choose a profile',
+      showButton: false,
+      child: LoginEntityPickerSheet(options: options),
+    );
+    if (choice == null || !mounted) return;
+    _submitLogin(ref, data.withEntityType(choice));
   }
 
   void _signInWithGoogle(WidgetRef ref) {

@@ -8,6 +8,7 @@ import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/marketplace/model/marketplace_cart_line.dart';
 import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_listing_text.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_quantity_stepper.dart';
 import 'package:tivi_tea/features/marketplace/view_model/marketplace_cart_notifier.dart';
 
 const double _kCartTileMinHeight = 145;
@@ -142,7 +143,7 @@ class MarketplaceCartLineTile extends ConsumerWidget {
                           absorbing: cartBusy,
                           child: Opacity(
                             opacity: cartBusy ? 0.45 : 1,
-                            child: _QuantityStepper(
+                            child: MarketplaceQuantityStepper(
                               quantity: line.quantity,
                               primary: primary,
                               onDecrement: () => ref
@@ -151,12 +152,14 @@ class MarketplaceCartLineTile extends ConsumerWidget {
                                     line,
                                     onError: (m) => context.showError(m),
                                   ),
-                              onIncrement: () => ref
-                                  .read(marketplaceCartProvider.notifier)
-                                  .increment(
-                                    line,
-                                    onError: (m) => context.showError(m),
-                                  ),
+                              onIncrement: line.canIncrement
+                                  ? () => ref
+                                      .read(marketplaceCartProvider.notifier)
+                                      .increment(
+                                        line,
+                                        onError: (m) => context.showError(m),
+                                      )
+                                  : null,
                             ),
                           ),
                         ),
@@ -167,89 +170,6 @@ class MarketplaceCartLineTile extends ConsumerWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _QuantityStepper extends StatelessWidget {
-  const _QuantityStepper({
-    required this.quantity,
-    required this.primary,
-    required this.onDecrement,
-    required this.onIncrement,
-  });
-
-  final int quantity;
-  final Color primary;
-  final VoidCallback onDecrement;
-  final VoidCallback onIncrement;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _CircleIconButton(
-          icon: Icons.remove,
-          color: primary,
-          onTap: onDecrement,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
-          child: Text(
-            '$quantity',
-            style: context.theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: 14.sp,
-            ),
-          ),
-        ),
-        _CircleIconButton(
-          icon: Icons.add,
-          color: primary,
-          onTap: onIncrement,
-        ),
-      ],
-    );
-  }
-}
-
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 28.r,
-          height: 28.r,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: const Color(0xFFD8D8DD),
-              width: 0.5,
-            ),
-          ),
-          child: Icon(
-            icon,
-            size: 16.sp,
-            color: color,
-          ),
         ),
       ),
     );

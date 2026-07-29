@@ -22,10 +22,9 @@ final class GeneralDashboardRepo {
 
   Future<BaseResponse<GetUserProfileResponse>> getUserProfile() async {
     try {
+      final cachedUser = userRepository.getUser();
       final result = await restClient.getUserProfile();
       final userLoginData = result.data?.user;
-
-      userRepository.saveUser(userLoginData);
 
       //This was done this way for a reason at the time, and can't remember.
       //TODO: Revisit
@@ -34,6 +33,13 @@ final class GeneralDashboardRepo {
         userLoginData?.copyWith(
           kycIsVerified: userLoginData.kycIsVerified,
           profilePicture: userLoginData.profilePicture,
+          // This payload doesn't always carry the address or the owned-entity
+          // list. copyWith keeps the cached value when the new one is
+          // null/empty, so refreshing never silently drops either.
+          address: result.data?.address ?? cachedUser.address,
+          availableEntityTypes: userLoginData.availableEntityTypes.isEmpty
+              ? cachedUser.availableEntityTypes
+              : userLoginData.availableEntityTypes,
         ),
       );
       return result;

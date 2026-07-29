@@ -47,6 +47,34 @@ class ClientPaymentNotifier extends _$ClientPaymentNotifier {
     }
   }
 
+  /// POST `/payment/market-place/{orderId}` — the marketplace counterpart to
+  /// [createPayment]. Returns the same Paystack authorization payload, so the
+  /// webview and status polling are shared with the booking flow.
+  void createMarketPlaceOrderPayment(
+    String orderId, {
+    required Function(CreatePaymentResponse) onSuccess,
+    required Function(String) onError,
+  }) async {
+    state = state.copyWith(createPaymentLoadState: LoadState.loading);
+    try {
+      final result = await _repo.createMarketPlaceOrderPayment(
+        orderId: orderId,
+      );
+      if (result.isSuccess() == false) throw result.message ?? '';
+
+      state = state.copyWith(
+        createPaymentLoadState: LoadState.success,
+        paymentId: result.data?.reference ?? '',
+      );
+      if (result.data != null) {
+        onSuccess(result.data!);
+      }
+    } catch (e) {
+      state = state.copyWith(createPaymentLoadState: LoadState.error);
+      onError(e.toString());
+    }
+  }
+
   Future<void> getPaymentStatus(
     String paymentId, {
     required Function(bool, String?) onSuccess,

@@ -51,20 +51,6 @@ class MarketplacePaymentSummaryCard extends StatelessWidget {
             labelStyle: labelStyle,
             valueStyle: valueStyle,
           ),
-          6.verticalSpace,
-          _SummaryRow(
-            label: 'Service charge (3%)',
-            value: pricing.serviceCharge,
-            labelStyle: labelStyle,
-            valueStyle: valueStyle,
-          ),
-          6.verticalSpace,
-          _SummaryRow(
-            label: 'VAT (5%)',
-            value: pricing.vat,
-            labelStyle: labelStyle,
-            valueStyle: valueStyle,
-          ),
           if (pricing.deliveryFee > 0) ...[
             6.verticalSpace,
             _SummaryRow(

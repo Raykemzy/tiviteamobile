@@ -74,6 +74,7 @@ class _MarketplaceViewState extends ConsumerState<MarketplaceView> {
 
     return AppScaffold(
       appbar: const RegistrationAppBar(
+        showCartIcon: true,
         headerSectionTitle: 'Marketplace',
         headerSectionSubtitle: 'Browse and add items to your cart',
       ),
@@ -142,8 +143,7 @@ class _MarketplaceViewState extends ConsumerState<MarketplaceView> {
                       final item = filteredItems[index];
                       return MarketplaceListingCard(
                         item: item,
-                        onTap: () =>
-                            MarketplaceItemDetailDialog.show(context, item),
+                        onTap: () => MarketplaceItemDetailDialog.show(context, item),
                       );
                     },
                   );

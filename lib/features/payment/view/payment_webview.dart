@@ -10,9 +10,38 @@ import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentWebviewArgs {
-  final String bookingId;
   final String paystackUrl;
-  PaymentWebviewArgs({required this.bookingId, required this.paystackUrl});
+
+  /// Where to send the user once Paystack redirects back. When null the
+  /// webview just pops, leaving the caller to resolve the outcome — which is
+  /// what the marketplace flow does so it can show its success dialog.
+  final String? redirectLocation;
+  final Object? redirectExtra;
+
+  PaymentWebviewArgs({
+    required this.paystackUrl,
+    this.redirectLocation,
+    this.redirectExtra,
+  });
+
+  /// Booking payments land on the booking's detail page.
+  factory PaymentWebviewArgs.booking({
+    required String bookingId,
+    required String paystackUrl,
+  }) =>
+      PaymentWebviewArgs(
+        paystackUrl: paystackUrl,
+        redirectLocation:
+            '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}',
+        redirectExtra: bookingId,
+      );
+
+  /// Marketplace payments pop back to the order summary, which checks the
+  /// payment status and takes it from there.
+  factory PaymentWebviewArgs.marketplaceOrder({
+    required String paystackUrl,
+  }) =>
+      PaymentWebviewArgs(paystackUrl: paystackUrl);
 }
 
 class PaymentWebview extends StatefulWidget {
@@ -30,6 +59,9 @@ class _PaymentWebviewState extends State<PaymentWebview> {
   };
 
   bool _isLoading = true;
+
+  /// Guards against the redirect handler firing twice.
+  bool _hasLeftWebview = false;
 
   @override
   void initState() {
@@ -83,10 +115,17 @@ class _PaymentWebviewState extends State<PaymentWebview> {
           onNavigationRequest: (NavigationRequest request) {
             debugLog("onNavigationRequest: ${request.url}");
             if (request.url.contains('https://tivitea.africa/')) {
-              if (mounted) {
-                const bookingHistoryDetail =
-                    '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}';
-                context.go(bookingHistoryDetail, extra: widget.args.bookingId);
+              if (mounted && !_hasLeftWebview) {
+                // Paystack can fire this more than once on the way back; only
+                // act on the first, or we navigate out from under ourselves.
+                _hasLeftWebview = true;
+                final location = widget.args.redirectLocation;
+                if (location == null) {
+                  // Caller resolves the outcome — pop back to it.
+                  context.pop();
+                } else {
+                  context.go(location, extra: widget.args.redirectExtra);
+                }
               }
             }
             return NavigationDecision.navigate;

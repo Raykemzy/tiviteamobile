@@ -2,11 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
-import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/common/app_image_widget.dart';
@@ -15,6 +13,7 @@ import 'package:tivi_tea/features/kyc/model/enums.dart';
 import 'package:tivi_tea/features/kyc/view/widgets/bottom_sheet_widget.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/view/widgets/profile_appbar_header.dart';
+import 'package:tivi_tea/features/profile/view/widgets/switch_account_sheet.dart';
 import 'package:tivi_tea/features/profile/view_model/profile_notifer.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/features/services/view_model/service_provider/partner_services_notifier.dart';
@@ -98,14 +97,16 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ],
           ),
         ),
-        if ((user.entityType == EntityType.artisan ||
-            user.entityType == EntityType.partner))
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _ProfileTypeSwitchTag(entityType: user.entityType!),
-            ],
-          ),
+        // Every entity can switch — clients included, since they can create a
+        // partner or artisan account from the switch sheet.
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _ProfileTypeSwitchTag(
+              entityType: user.entityType ?? EntityType.client,
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -194,18 +195,12 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     final isLoading = switchLoadState == LoadState.loading;
     final currentEntityType =
         ref.watch(userNotifierProvider).entityType ?? widget.entityType;
-    final targetEntityType = _getSwitchTarget(currentEntityType);
-    final isSwitchable = targetEntityType != null;
     final collapsedLabel = _getProfileLabel(currentEntityType);
-    final expandedLabel = _getSwitchLabel(targetEntityType);
-
-    if (!isSwitchable) {
-      return const SizedBox.shrink();
-    }
+    const expandedLabel = 'Switch account';
 
     return Center(
       child: GestureDetector(
-        onTap: isLoading ? null : () => _handleTap(context, targetEntityType),
+        onTap: isLoading ? null : () => _handleTap(context),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeInOut,
@@ -265,11 +260,7 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     );
   }
 
-  void _handleTap(BuildContext context, EntityType? targetEntityType) {
-    if (targetEntityType == null) {
-      return;
-    }
-
+  void _handleTap(BuildContext context) {
     if (!_isExpanded) {
       setState(() {
         _isExpanded = true;
@@ -279,20 +270,15 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     }
 
     _collapseTimer?.cancel();
-    ref.read(profileNotiferProvider.notifier).switchAccount(
-      targetEntityType,
-      onSuccess: () {
-        if (!mounted) return;
-        context.showSuccess('Profile switched successfully.');
-        context.go(AppRoutes.homeView);
-      },
-      onError: (message) {
-        if (!mounted) return;
-        setState(() {
-          _isExpanded = false;
-        });
-        context.showError(message);
-      },
+    setState(() {
+      _isExpanded = false;
+    });
+    // The sheet owns picking the target, creating it when the user doesn't
+    // own it yet, and the switch itself.
+    context.showBottomSheet(
+      title: 'Switch account',
+      showButton: false,
+      child: SwitchAccountSheet(hostContext: context),
     );
   }
 
@@ -308,18 +294,6 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     });
   }
 
-  EntityType? _getSwitchTarget(EntityType? entityType) {
-    switch (entityType) {
-      case EntityType.partner:
-        return EntityType.artisan;
-      case EntityType.artisan:
-        return EntityType.partner;
-      case EntityType.client:
-      case null:
-        return null;
-    }
-  }
-
   String _getProfileLabel(EntityType? entityType) {
     switch (entityType) {
       case EntityType.partner:
@@ -332,15 +306,4 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     }
   }
 
-  String _getSwitchLabel(EntityType? targetEntityType) {
-    switch (targetEntityType) {
-      case EntityType.partner:
-        return 'Switch to Partner';
-      case EntityType.artisan:
-        return 'Switch to Artisan';
-      case EntityType.client:
-      case null:
-        return 'Switch Profile';
-    }
-  }
 }

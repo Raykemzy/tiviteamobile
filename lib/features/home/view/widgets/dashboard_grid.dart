@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
 import 'package:tivi_tea/features/home/view_model/dashboard_notifier.dart';
@@ -25,21 +27,23 @@ class DashboardGrid extends ConsumerWidget {
             title: context.l10n.totalBooking,
             value: dashboardInfo?.totalBookings ?? 0,
             bookingContainerColor: const Color(0xFF2196F3),
+            onViewAll: () => context.go(
+              '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}',
+            ),
           ),
           DashboardInfoContainer(
             title: context.l10n.totalListing,
             value: dashboardInfo?.totalListings ?? 0,
             bookingContainerColor: const Color(0xFFFF5B5B),
+            onViewAll: () => context.go(AppRoutes.myListingView),
           ),
           DashboardInfoContainer(
             title: context.l10n.totalEarning,
             value: dashboardInfo?.totalRevenue ?? 0,
             bookingContainerColor: const Color(0xFF02952B),
-          ),
-          DashboardInfoContainer(
-            title: context.l10n.totalBooking,
-            value: dashboardInfo?.totalBookings ?? 0,
-            bookingContainerColor: const Color(0xFF2196F3),
+            onViewAll: () => context.go(
+              '${AppRoutes.profile}/${AppRoutes.paymentView}',
+            ),
           ),
         ],
       ),
@@ -51,11 +55,17 @@ class DashboardInfoContainer extends StatelessWidget {
   final String title;
   final num value;
   final Color bookingContainerColor;
+
+  /// Destination for the card's "View all" link. Omit to render it as plain
+  /// text with no affordance.
+  final VoidCallback? onViewAll;
+
   const DashboardInfoContainer({
     super.key,
     required this.title,
     required this.value,
     required this.bookingContainerColor,
+    this.onViewAll,
   });
 
   @override
@@ -109,13 +119,23 @@ class DashboardInfoContainer extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                context.l10n.viewAll,
-                style: context.theme.textTheme.labelMedium?.copyWith(
-                  fontSize: 9.sp,
-                  decoration: TextDecoration.underline,
-                  decorationColor: const Color(0xFF5041BC),
-                  color: const Color(0xFF5041BC),
+              InkWell(
+                onTap: onViewAll,
+                child: Padding(
+                  // Keeps the tap target usable at 9sp.
+                  padding: EdgeInsets.symmetric(
+                    vertical: 4.h,
+                    horizontal: 4.w,
+                  ),
+                  child: Text(
+                    context.l10n.viewAll,
+                    style: context.theme.textTheme.labelMedium?.copyWith(
+                      fontSize: 9.sp,
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFF5041BC),
+                      color: const Color(0xFF5041BC),
+                    ),
+                  ),
                 ),
               ),
             ],

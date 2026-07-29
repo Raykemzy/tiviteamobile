@@ -13,7 +13,7 @@ MarketplaceCreateOrderRequestBody _$MarketplaceCreateOrderRequestBodyFromJson(
           .map((e) => e as String)
           .toList(),
       pickUp: json['pick_up'] as bool,
-      deliveryAddress: json['delivery_address'] as String,
+      deliveryAddress: json['delivery_address'] as String?,
     );
 
 Map<String, dynamic> _$MarketplaceCreateOrderRequestBodyToJson(
@@ -21,5 +21,5 @@ Map<String, dynamic> _$MarketplaceCreateOrderRequestBodyToJson(
     <String, dynamic>{
       'cart_item_ids': instance.cartItemIds,
       'pick_up': instance.pickUp,
-      'delivery_address': instance.deliveryAddress,
+      if (instance.deliveryAddress case final value?) 'delivery_address': value,
     };

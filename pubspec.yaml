@@ -81,6 +81,13 @@ flutter:
   uses-material-design: true
   generate: true
 
+  # mobile_scanner ships CocoaPods only, and pulls PromisesObjC (module FBLPromises)
+  # via GoogleMLKit. Firebase/google_sign_in pull the same module through SPM, which
+  # breaks the iOS build with a duplicate-module error. Keep every plugin on CocoaPods
+  # until mobile_scanner ships a Package.swift.
+  config:
+    enable-swift-package-manager: false
+
   assets:
     - assets/images/
     - assets/svgs/

@@ -2,6 +2,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tivi_tea/core/utils/media_utils.dart';
 
 void main() {
+  group('MediaUtils upload limit', () {
+    test('the limit is 5MB', () {
+      expect(MediaUtils.maxUploadBytes, 5 * 1024 * 1024);
+      expect(MediaUtils.maxUploadLabel, '5MB');
+    });
+
+    test('accepts sizes at or under the limit', () {
+      expect(MediaUtils.isWithinUploadLimit(0), isTrue);
+      expect(MediaUtils.isWithinUploadLimit(1024), isTrue);
+      expect(MediaUtils.isWithinUploadLimit(MediaUtils.maxUploadBytes), isTrue);
+    });
+
+    test('rejects sizes over the limit', () {
+      expect(
+        MediaUtils.isWithinUploadLimit(MediaUtils.maxUploadBytes + 1),
+        isFalse,
+      );
+    });
+
+    test('a missing file passes rather than blocking the upload', () async {
+      expect(
+        await MediaUtils.fileIsWithinUploadLimit('/does/not/exist.jpg'),
+        isTrue,
+      );
+    });
+  });
+
   group('MediaUtils.isVideo', () {
     test('detects common video extensions (case-insensitive)', () {
       expect(MediaUtils.isVideo('/tmp/clip.mp4'), isTrue);

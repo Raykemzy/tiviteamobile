@@ -6,7 +6,7 @@ part of 'marketplace_cart_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$marketplaceCartHash() => r'093748724454f648b1a5e4c20a2608c7d4e0c755';
+String _$marketplaceCartHash() => r'e537d7dd7fc4734f02136354f5f49ac7ec1bcc07';
 
 /// See also [MarketplaceCart].
 @ProviderFor(MarketplaceCart)

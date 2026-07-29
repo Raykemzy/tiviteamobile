@@ -37,6 +37,17 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final VoidCallback? onTap;
   final EdgeInsets? padding;
 
+  /// Back navigation that can't dead-end. `context.pop()` throws when there's
+  /// nothing on the stack to pop — which happens whenever a screen is reached
+  /// via `go` rather than `push` — so fall back to the home tab.
+  static void goBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(AppRoutes.homeView);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
@@ -59,7 +70,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               builder: (context) {
                 return InkWell(
                   onTap: () => showBackButtonForHomeScreenAppBar
-                      ? context.pop()
+                      ? goBack(context)
                       : scaffoldKey.currentState?.openDrawer(),
                   child: AppSvgWidget(
                     path: showBackButtonForHomeScreenAppBar
@@ -120,11 +131,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                         builder: (context) {
                           return InkWell(
                             onTap: () => showBackButtonForHomeScreenAppBar
-                                ? context.pop()
+                                ? goBack(context)
                                 : scaffoldKey.currentState?.openDrawer(),
                             child: showBackButtonForHomeScreenAppBar
                                 ? IconButton(
-                                    onPressed: () => context.pop(),
+                                    onPressed: () => goBack(context),
                                     icon: const Icon(
                                       CupertinoIcons.chevron_back,
                                     ),
@@ -142,7 +153,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     switch (showBackButton) {
                       true => IconButton(
                           onPressed: () =>
-                              onTap != null ? onTap!() : context.pop(),
+                              onTap != null ? onTap!() : goBack(context),
                           icon: const Icon(CupertinoIcons.chevron_back),
                         ),
                       // AppSvgWidget(
@@ -160,35 +171,40 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      if (!isGuest)
-                        InkWell(
-                          onTap: () =>
-                              context.push(AppRoutes.notificationsView),
-                          child: AppSvgWidget(
-                            path: Assets.svgs.notificationIcon.path,
-                          ),
-                        ),
-                      10.horizontalSpace,
-                      user.profilePicture == null
-                          ? const CircleAvatar()
-                          : Container(
-                              width: 40.w,
-                              height: 40.h,
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: context
-                                    .theme.colorScheme.onPrimaryContainer,
-                              ),
-                              child: AppImageWidget(
-                                borderRadius: BorderRadius.circular(50),
-                                imagePath: user.profilePicture ?? '',
-                              ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!isGuest)
+                          InkWell(
+                            onTap: () =>
+                                context.push(AppRoutes.notificationsView),
+                            child: AppSvgWidget(
+                              path: Assets.svgs.notificationIcon.path,
                             ),
-                    ],
+                          ),
+                        10.horizontalSpace,
+                        user.profilePicture == null
+                            ? const CircleAvatar()
+                            : Container(
+                                width: 40.w,
+                                height: 40.h,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: context
+                                      .theme.colorScheme.onPrimaryContainer,
+                                ),
+                                child: AppImageWidget(
+                                  borderRadius: BorderRadius.circular(50),
+                                  imagePath: user.profilePicture ?? '',
+                                ),
+                              ),
+                      ],
+                    ),
                   )
                 ],
               ),

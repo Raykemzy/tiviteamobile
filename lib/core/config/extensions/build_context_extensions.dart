@@ -21,6 +21,7 @@ extension BuildContextExt on BuildContext {
     bool? showButton,
     bool? showTermsAndConditions,
     VoidCallback? onButtonPressed,
+    double maxHeightFactor = .95,
   }) =>
       showModalBottomSheet(
         isScrollControlled: true,
@@ -31,6 +32,7 @@ extension BuildContextExt on BuildContext {
             title: title,
             showButton: showButton,
             onButtonPressed: onButtonPressed,
+            maxHeightFactor: maxHeightFactor,
           );
         },
       );

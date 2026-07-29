@@ -1,6 +1,34 @@
+import 'dart:io';
+
 /// Helpers for distinguishing image vs video media and deriving thumbnails.
 class MediaUtils {
   MediaUtils._();
+
+  /// Largest upload the backend accepts, in bytes.
+  static const int maxUploadBytes = 5 * 1024 * 1024;
+
+  /// Human-readable form of [maxUploadBytes], for error messages.
+  static const String maxUploadLabel = '5MB';
+
+  /// Whether [bytes] is within the upload limit.
+  static bool isWithinUploadLimit(int bytes) => bytes <= maxUploadBytes;
+
+  /// Checks a file on disk against the upload limit. Missing files pass —
+  /// the upload itself will surface a more useful error than a size check.
+  static Future<bool> fileIsWithinUploadLimit(String path) async {
+    final file = File(path);
+    if (!await file.exists()) return true;
+    return isWithinUploadLimit(await file.length());
+  }
+
+  /// Returns the paths in [paths] that exceed the upload limit.
+  static Future<List<String>> oversizedFiles(Iterable<String> paths) async {
+    final oversized = <String>[];
+    for (final path in paths) {
+      if (!await fileIsWithinUploadLimit(path)) oversized.add(path);
+    }
+    return oversized;
+  }
 
   static const Set<String> _videoExtensions = {
     'mp4',

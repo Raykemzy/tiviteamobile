@@ -7,7 +7,7 @@ class MarketplaceCreateOrderRequestBody {
   MarketplaceCreateOrderRequestBody({
     required this.cartItemIds,
     required this.pickUp,
-    required this.deliveryAddress,
+    this.deliveryAddress,
   });
 
   @JsonKey(name: 'cart_item_ids')
@@ -16,8 +16,9 @@ class MarketplaceCreateOrderRequestBody {
   @JsonKey(name: 'pick_up')
   final bool pickUp;
 
-  @JsonKey(name: 'delivery_address')
-  final String deliveryAddress;
+  /// Omitted from the payload for pickup orders.
+  @JsonKey(name: 'delivery_address', includeIfNull: false)
+  final String? deliveryAddress;
 
   factory MarketplaceCreateOrderRequestBody.fromJson(
     Map<String, dynamic> json,

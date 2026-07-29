@@ -58,7 +58,7 @@ class AppButton extends StatelessWidget {
                   : WidgetStatePropertyAll<Color>(textColor!),
         ),
         child: switch (isLoading) {
-          true => const CupertinoActivityIndicator(color: Colors.white),
+          true => CupertinoActivityIndicator(color: textColor ?? Colors.white),
           _ => Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

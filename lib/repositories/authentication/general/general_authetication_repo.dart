@@ -82,6 +82,9 @@ final class GeneralAuthenticationRepo {
         kycVerificationStatus: userLoginData.kycIsVerified == true
             ? KYCVerificationStatus.documentsVerified
             : null,
+        // Returned beside the user rather than inside it; cached so the
+        // create-entity form can prefill it.
+        address: userLoginData.address,
       );
 
       await userRepository?.saveUser(updatedUser);

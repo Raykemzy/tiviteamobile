@@ -36,6 +36,23 @@ class _MarketplaceItemDetailDialogState
   late final ScrollController _thumbScrollController;
   static const int _visibleThumbs = 3;
 
+  bool _isAddingToCart = false;
+  bool _isBuyingNow = false;
+
+  /// Adds the item to the cart, returning true on success.
+  /// [busy] toggles the matching button's loading spinner.
+  Future<bool> _addToCart(void Function(bool) setBusy) async {
+    setBusy(true);
+    final ok = await ref.read(marketplaceCartProvider.notifier).addItem(
+          widget.item,
+          onError: (m) {
+            if (mounted) context.showError(m);
+          },
+        );
+    if (mounted) setBusy(false);
+    return ok;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -288,15 +305,12 @@ class _MarketplaceItemDetailDialogState
               borderColor: primary,
               textColor: primary,
               buttonText: 'ADD TO CART',
+              isLoading: _isAddingToCart,
+              isEnabled: !_isBuyingNow,
               onPressed: () async {
-                final ok = await ref
-                    .read(marketplaceCartProvider.notifier)
-                    .addItem(
-                      widget.item,
-                      onError: (m) {
-                        if (context.mounted) context.showError(m);
-                      },
-                    );
+                final ok = await _addToCart(
+                  (busy) => setState(() => _isAddingToCart = busy),
+                );
                 if (ok && context.mounted) Navigator.of(context).pop();
               },
               textStyle: dialogTheme.textTheme.labelSmall?.copyWith(
@@ -308,15 +322,12 @@ class _MarketplaceItemDetailDialogState
             AppButton(
               expandWidth: true,
               buttonText: 'BUY NOW',
+              isLoading: _isBuyingNow,
+              isEnabled: !_isAddingToCart,
               onPressed: () async {
-                final ok = await ref
-                    .read(marketplaceCartProvider.notifier)
-                    .addItem(
-                      widget.item,
-                      onError: (m) {
-                        if (context.mounted) context.showError(m);
-                      },
-                    );
+                final ok = await _addToCart(
+                  (busy) => setState(() => _isBuyingNow = busy),
+                );
                 if (!context.mounted) return;
                 if (ok) {
                   Navigator.of(context).pop();

@@ -6,6 +6,7 @@ import 'package:tivi_tea/core/services/local_storage/local_storage_impl.dart';
 
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/login/model/general/login_request_object.dart';
+import 'package:tivi_tea/features/login/model/general/multi_entity_login_prompt.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
@@ -45,6 +46,11 @@ class LoginNotifier extends _$LoginNotifier {
     ///Pass [EntityType] to determine what dashboard would be loaded
     void Function(User?)? onSuccess,
     void Function(String)? onError,
+
+    /// Called when the account owns several entities and the backend needs to
+    /// be told which one to sign in as. Retry [login] with
+    /// `data.withEntityType(choice)`.
+    void Function(List<EntityType> options)? onEntityRequired,
   }) async {
     state = state.copyWith(loadState: LoadState.loading);
     try {
@@ -57,9 +63,22 @@ class LoginNotifier extends _$LoginNotifier {
         },
       );
       if (!response.isSuccess()) {
-        throw response.error?.message ??
+        final message = response.error?.message ??
             response.message ??
             'An error occurred';
+
+        // Only prompt on the first attempt — if a retry that already named an
+        // entity comes back the same way, surface it as a normal error rather
+        // than asking again.
+        final prompt = data.entityType == null && onEntityRequired != null
+            ? MultiEntityLoginPrompt.tryParse(message)
+            : null;
+        if (prompt != null) {
+          state = state.copyWith(loadState: LoadState.idle);
+          onEntityRequired!(prompt.options);
+          return;
+        }
+        throw message;
       }
 
       state = state.copyWith(loadState: LoadState.success);

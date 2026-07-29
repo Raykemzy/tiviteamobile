@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_svg_widget.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_cart_icon_button.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
@@ -13,6 +14,7 @@ class RegistrationAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const RegistrationAppBar({
     this.homeScreenAppBar = false,
     this.showBackButton = true,
+    this.showCartIcon = false,
     this.headerSectionSubtitle,
     this.headerSectionTitle,
     this.title,
@@ -23,6 +25,7 @@ class RegistrationAppBar extends ConsumerWidget implements PreferredSizeWidget {
   });
   final bool homeScreenAppBar;
   final bool showBackButton;
+  final bool showCartIcon;
   final String? title;
   final String? headerSectionTitle;
   final String? headerSectionSubtitle;
@@ -52,7 +55,10 @@ class RegistrationAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 onTap: onTap ?? () => context.pop(),
                 child: const Icon(CupertinoIcons.chevron_left),
               ),
-              AppSvgWidget(path: Assets.svgs.hamburger.path)
+              if (showCartIcon)
+                const MarketplaceCartIconButton()
+              else
+                AppSvgWidget(path: Assets.svgs.hamburger.path)
             ],
           ),
           10.verticalSpace,
