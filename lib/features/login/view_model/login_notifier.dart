@@ -63,9 +63,8 @@ class LoginNotifier extends _$LoginNotifier {
         },
       );
       if (!response.isSuccess()) {
-        final message = response.error?.message ??
-            response.message ??
-            'An error occurred';
+        final message =
+            response.error?.message ?? response.message ?? 'An error occurred';
 
         // Only prompt on the first attempt — if a retry that already named an
         // entity comes back the same way, surface it as a normal error rather
@@ -252,5 +251,9 @@ class LoginNotifier extends _$LoginNotifier {
     await _userRepo.saveRememberMe(false);
     ref.read(userNotifierProvider.notifier).refreshUser();
     state = state.copyWith(appAccessState: AppAccessState.guest);
+  }
+
+  void updateLoginEntityType(EntityType? type) {
+    state = state.copyWith(loginEntityType: type);
   }
 }

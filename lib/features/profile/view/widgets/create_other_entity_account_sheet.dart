@@ -122,112 +122,118 @@ class _CreateOtherEntityAccountSheetState
 
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _intro,
-            style: context.theme.textTheme.displaySmall?.copyWith(
-              color: const Color(0xFF737380),
-            ),
-          ),
-          20.verticalSpace,
-          if (_isArtisan) ...[
+      child: InkWell(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Text(
-              'Service type',
-              style: context.theme.textTheme.labelMedium,
-            ),
-            10.verticalSpace,
-            AppDropdown<String>(
-              items: ArtisanServices.services,
-              onItemSelected: (value) {
-                _selectedService = value;
-              },
+              _intro,
+              style: context.theme.textTheme.displaySmall?.copyWith(
+                color: const Color(0xFF737380),
+              ),
             ),
             20.verticalSpace,
+            if (_isArtisan) ...[
+              Text(
+                'Service type',
+                style: context.theme.textTheme.labelMedium,
+              ),
+              10.verticalSpace,
+              AppDropdown<String>(
+                items: ArtisanServices.services,
+                onItemSelected: (value) {
+                  _selectedService = value;
+                },
+              ),
+              20.verticalSpace,
+            ],
+            if (_isPartner) ...[
+              AppTextField(
+                controller: _companyNameController,
+                label: 'Business name',
+                hintText: 'tiviTea Ventures',
+                validateFunction: Validators.notEmpty(),
+              ),
+              AppTextField(
+                controller: _businessTypeController,
+                label: 'Business type',
+                hintText: 'Registered or Individual',
+                validateFunction: Validators.notEmpty(),
+              ),
+              AppTextField(
+                controller: _businessDescriptionController,
+                label: 'Business description',
+                hintText: 'What does your business do?',
+                maxLines: 4,
+                minLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                validateFunction: Validators.notEmpty(),
+              ),
+              AppTextField(
+                controller: _websiteController,
+                label: 'Website',
+                hintText: 'Optional',
+              ),
+              AppPhoneTextField(
+                label: 'Alternate phone number',
+                hintText: 'Optional',
+                onChanged: (phone) =>
+                    _alternatePhoneNumber = phone.completeNumber,
+              ),
+              20.verticalSpace,
+            ],
+            AppTextField(
+              controller: _streetController,
+              label: 'Street address',
+              hintText: '8, Alli street',
+              validateFunction: Validators.notEmpty(),
+            ),
+            AppTextField(
+              controller: _cityController,
+              label: 'City',
+              hintText: 'Akowonjo',
+              validateFunction: Validators.notEmpty(),
+            ),
+            AppTextField(
+              controller: _stateController,
+              label: 'State',
+              hintText: 'Lagos',
+              validateFunction: Validators.notEmpty(),
+            ),
+            AppCountrySelector(
+              controller: _countryController,
+              validateFunction: Validators.notEmpty(),
+            ),
+            AppTextField(
+              controller: _postalCodeController,
+              label: 'Postal code',
+              hintText: '10011',
+              validateFunction: Validators.notEmpty(),
+              padding: _isArtisan
+                  ? const SizedBox(height: 24)
+                  : const SizedBox(height: 32),
+            ),
+            if (_isArtisan)
+              AppTextField(
+                controller: _summaryController,
+                label: 'Summary',
+                hintText: 'Optional short description',
+                maxLines: 4,
+                minLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                padding: const SizedBox(height: 32),
+              ),
+            Center(
+              child: AppButton(
+                buttonText: 'Create ${widget.entityType.label} Account',
+                isLoading: isLoading,
+                isEnabled: _formKey.currentState?.validate() ?? false,
+                onPressed: () => _submit(context),
+              ),
+            ),
           ],
-          if (_isPartner) ...[
-            AppTextField(
-              controller: _companyNameController,
-              label: 'Business name',
-              hintText: 'tiviTea Ventures',
-              validateFunction: Validators.notEmpty(),
-            ),
-            AppTextField(
-              controller: _businessTypeController,
-              label: 'Business type',
-              hintText: 'Registered or Individual',
-              validateFunction: Validators.notEmpty(),
-            ),
-            AppTextField(
-              controller: _businessDescriptionController,
-              label: 'Business description',
-              hintText: 'What does your business do?',
-              maxLines: 4,
-              minLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              validateFunction: Validators.notEmpty(),
-            ),
-            AppTextField(
-              controller: _websiteController,
-              label: 'Website',
-              hintText: 'Optional',
-            ),
-            AppPhoneTextField(
-              label: 'Alternate phone number',
-              hintText: 'Optional',
-              onChanged: (phone) =>
-                  _alternatePhoneNumber = phone.completeNumber,
-            ),
-            20.verticalSpace,
-          ],
-          AppTextField(
-            controller: _streetController,
-            label: 'Street address',
-            hintText: '8, Alli street',
-            validateFunction: Validators.notEmpty(),
-          ),
-          AppTextField(
-            controller: _cityController,
-            label: 'City',
-            hintText: 'Akowonjo',
-            validateFunction: Validators.notEmpty(),
-          ),
-          AppTextField(
-            controller: _stateController,
-            label: 'State',
-            hintText: 'Lagos',
-            validateFunction: Validators.notEmpty(),
-          ),
-          AppCountrySelector(
-            controller: _countryController,
-            validateFunction: Validators.notEmpty(),
-          ),
-          AppTextField(
-            controller: _postalCodeController,
-            label: 'Postal code',
-            hintText: '10011',
-            validateFunction: Validators.notEmpty(),
-            padding: _isArtisan
-                ? const SizedBox(height: 24)
-                : const SizedBox(height: 32),
-          ),
-          if (_isArtisan)
-            AppTextField(
-              controller: _summaryController,
-              label: 'Summary',
-              hintText: 'Optional short description',
-              maxLines: 4,
-              minLines: 4,
-              textCapitalization: TextCapitalization.sentences,
-              padding: const SizedBox(height: 32),
-            ),
-          AppButton(
-            buttonText: 'Create ${widget.entityType.label} Account',
-            isLoading: isLoading,
-            onPressed: () => _submit(context),
-          ),
-        ],
+        ),
       ),
     );
   }

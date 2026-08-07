@@ -6,7 +6,7 @@ part of 'amenities_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$amenitiesNotifierHash() => r'46b168bb10f2f60a76b6579172a60f21898741ed';
+String _$amenitiesNotifierHash() => r'2f80420e64527f24f63e33e003f7e8c8f7dde7ed';
 
 /// See also [AmenitiesNotifier].
 @ProviderFor(AmenitiesNotifier)

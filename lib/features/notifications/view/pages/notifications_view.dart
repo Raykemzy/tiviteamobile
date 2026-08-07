@@ -180,7 +180,7 @@ class _NotificationsViewState extends ConsumerState<NotificationsView> {
                                                 strokeWidth: 2,
                                               ),
                                             )
-                                          : const Text('Mark all as read'),
+                                          : const Text('Mark group as read'),
                                     ),
                                 ],
                               ),

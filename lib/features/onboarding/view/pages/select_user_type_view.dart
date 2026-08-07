@@ -13,15 +13,16 @@ import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/onboarding/model/enums/enums.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
 
-class SelectUserTypeView extends StatefulWidget {
+class SelectUserTypeView extends ConsumerStatefulWidget {
   const SelectUserTypeView({super.key});
 
   @override
-  State<SelectUserTypeView> createState() => _SelectUserTypeViewState();
+  ConsumerState<SelectUserTypeView> createState() => _SelectUserTypeViewState();
 }
 
-class _SelectUserTypeViewState extends State<SelectUserTypeView> {
+class _SelectUserTypeViewState extends ConsumerState<SelectUserTypeView> {
   AppUserType selectedAppUserType = AppUserType.serviceProvier;
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.l10n.howToContinue,
+            'How do you want to login?',
             style: context.theme.textTheme.titleMedium,
           ),
           20.verticalSpace,
@@ -57,24 +58,24 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                text: context.l10n.alreadyHaveAccount,
+                text: "Don't have an account? ",
                 style: context.theme.textTheme.displaySmall,
                 children: [
                   TextSpan(
-                    text: context.l10n.login,
+                    text: context.l10n.signUp,
                     style: context.theme.textTheme.displaySmall?.copyWith(
                       color: const Color(0xFFEC8305),
                       fontWeight: FontWeight.w700,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => context.go(AppRoutes.loginView),
+                      ..onTap = _navigateToCreateAccountView,
                   ),
                 ],
               ),
             ),
           ),
           100.verticalSpace,
-          AppButton(onPressed: _navigateToCreateAccountView),
+          AppButton(onPressed: () => context.go(AppRoutes.loginView)),
         ],
       ),
       bottomChildren: Consumer(
@@ -112,6 +113,15 @@ class _SelectUserTypeViewState extends State<SelectUserTypeView> {
       selectedAppUserType = type;
       setState(() {});
     }
+
+    ref
+        .read(loginNotifierProvider.notifier)
+        .updateLoginEntityType(switch (type) {
+          AppUserType.artisan => EntityType.artisan,
+          AppUserType.serviceProvier => EntityType.partner,
+          AppUserType.customer => EntityType.client,
+          AppUserType.guest => null
+        });
   }
 
   void _navigateToCreateAccountView() {

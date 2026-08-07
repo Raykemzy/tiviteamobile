@@ -28,7 +28,7 @@ class SwitchAccountSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userNotifierProvider);
-    final currentEntity = user.entityType ?? EntityType.client;
+    final currentEntity = user.signedInEntityType ?? EntityType.client;
     final owned = user.availableEntityTypes;
     final targets =
         EntityType.values.where((e) => e != currentEntity).toList();

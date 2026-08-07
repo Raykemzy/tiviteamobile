@@ -166,4 +166,37 @@ class BookingNotifer extends _$BookingNotifer {
       onError(e.toString());
     }
   }
+
+  /// Cancels a booking and drops it from the cached history so the list
+  /// reflects the change without a refetch.
+  void cancelBooking(
+    String bookingId, {
+    required Function(String) onSuccess,
+    required Function(String) onError,
+  }) async {
+    state = state.copyWith(cancelBookingLoadState: LoadState.loading);
+    try {
+      final result = await _repo.cancelBooking(bookingId);
+      if (result.isSuccess() == false) {
+        throw result.error?.message ?? result.message ?? 'Could not cancel';
+      }
+
+      state = state.copyWith(
+        cancelBookingLoadState: LoadState.success,
+        bookingHistoryList: state.bookingHistoryList
+            .where((booking) => booking.id != bookingId)
+            .toList(),
+        pageCache: {
+          for (final entry in state.pageCache.entries)
+            entry.key: entry.value
+                .where((booking) => booking.id != bookingId)
+                .toList(),
+        },
+      );
+      onSuccess(result.message ?? 'Booking cancelled.');
+    } catch (e) {
+      state = state.copyWith(cancelBookingLoadState: LoadState.error);
+      onError(e.toString());
+    }
+  }
 }

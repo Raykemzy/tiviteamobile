@@ -63,6 +63,14 @@ final class BookingRepo {
     }
   }
 
+  Future<BaseResponse<dynamic>> cancelBooking(String bookingId) async {
+    try {
+      return await restClient.cancelBooking(bookingId: bookingId);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
   Future<BaseResponse<File>> generateBookingTicket(String bookingId) async {
     try {
       debugLog('Generating booking ticket for: $bookingId');

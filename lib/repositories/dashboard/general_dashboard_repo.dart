@@ -7,6 +7,7 @@ import 'package:tivi_tea/core/services/rest_client/rest_client.dart';
 import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/model/switch_account_request_body.dart';
+import 'package:tivi_tea/models/address_model.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/user/user_repo.dart';
@@ -20,28 +21,31 @@ final class GeneralDashboardRepo {
     required this.userRepository,
   });
 
+  /// Persists [incoming] without dropping the entity context that the profile
+  /// endpoints don't always return.
+  ///
+  /// Login establishes the address, the owned-entity list and the signed-in
+  /// entity; the profile payloads may omit any of them. Saving the raw
+  /// response would blank those fields, so fall back to what's already cached.
+  void _saveMergedUser(User? incoming, {Address? address}) {
+    if (incoming == null) return;
+    final cached = userRepository.getUser();
+    userRepository.saveUser(
+      incoming.copyWith(
+        address: address ?? incoming.address ?? cached.address,
+        availableEntityTypes: incoming.availableEntityTypes.isEmpty
+            ? cached.availableEntityTypes
+            : incoming.availableEntityTypes,
+        signedInEntityType:
+            incoming.signedInEntityType ?? cached.signedInEntityType,
+      ),
+    );
+  }
+
   Future<BaseResponse<GetUserProfileResponse>> getUserProfile() async {
     try {
-      final cachedUser = userRepository.getUser();
       final result = await restClient.getUserProfile();
-      final userLoginData = result.data?.user;
-
-      //This was done this way for a reason at the time, and can't remember.
-      //TODO: Revisit
-
-      userRepository.saveUser(
-        userLoginData?.copyWith(
-          kycIsVerified: userLoginData.kycIsVerified,
-          profilePicture: userLoginData.profilePicture,
-          // This payload doesn't always carry the address or the owned-entity
-          // list. copyWith keeps the cached value when the new one is
-          // null/empty, so refreshing never silently drops either.
-          address: result.data?.address ?? cachedUser.address,
-          availableEntityTypes: userLoginData.availableEntityTypes.isEmpty
-              ? cachedUser.availableEntityTypes
-              : userLoginData.availableEntityTypes,
-        ),
-      );
+      _saveMergedUser(result.data?.user, address: result.data?.address);
       return result;
     } on DioException catch (e) {
       return AppException.handleError(e);
@@ -51,10 +55,7 @@ final class GeneralDashboardRepo {
   Future<BaseResponse<User>> updateUserProfile(EditProfileModel data) async {
     try {
       final result = await restClient.updateUserProfile(data);
-      final userLoginData = result.data;
-
-      userRepository.saveUser(userLoginData);
-
+      _saveMergedUser(result.data);
       return result;
     } on DioException catch (e) {
       return AppException.handleError(e);

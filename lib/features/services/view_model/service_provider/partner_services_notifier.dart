@@ -18,8 +18,11 @@ part 'partner_services_notifier.g.dart';
 
 @riverpod
 class PartnerServicesNotifer extends _$PartnerServicesNotifer {
-  late final ServiceProviderServicesRepo _repo;
-  late final CloudinaryService _cloudinaryService;
+  // Notifiers can rebuild on the same instance when a dependency is
+  // invalidated. These dependencies are therefore intentionally reassignable
+  // instead of `late final`.
+  late ServiceProviderServicesRepo _repo;
+  late CloudinaryService _cloudinaryService;
 
   @override
   PartnerServicesState build() {

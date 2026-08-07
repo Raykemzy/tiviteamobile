@@ -17,7 +17,7 @@ class KYCStatusView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userEntityType =
-        ref.watch(userNotifierProvider).entityType ?? EntityType.partner;
+        ref.watch(userNotifierProvider).signedInEntityType ?? EntityType.partner;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: Center(

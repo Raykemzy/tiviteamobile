@@ -37,7 +37,7 @@ class KYCDialog extends StatelessWidget {
           Consumer(
             builder: (context, ref, _) {
               final userEntityType =
-                  ref.watch(userNotifierProvider).entityType ??
+                  ref.watch(userNotifierProvider).signedInEntityType ??
                       EntityType.partner;
               return AppButton(
                 buttonText: context.l10n.startKYCProcess,

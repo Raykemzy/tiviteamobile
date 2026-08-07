@@ -64,15 +64,16 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  CreateListingButton(
-                    text: entityType == EntityType.client
-                        ? context.l10n.createBooking
-                        : context.l10n.createListing,
-                    onTap: () => entityType == EntityType.client
-                        ? context.push(AppRoutes.servicesView)
-                        : context.push(createListingPath),
-                  ),
-                  30.verticalSpace,
+                  if (entityType == EntityType.partner)
+                    CreateListingButton(
+                      text: entityType == EntityType.client
+                          ? context.l10n.createBooking
+                          : context.l10n.createListing,
+                      onTap: () => entityType == EntityType.client
+                          ? context.push(AppRoutes.servicesView)
+                          : context.push(createListingPath),
+                    ),
+                  if (entityType == EntityType.partner) 30.verticalSpace,
                 ],
               ),
             ),
@@ -161,7 +162,8 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}';
     return [
       GestureDetector(
-        onTap: () => context.push(bookingHistoryDetail, extra: booking.id ?? ''),
+        onTap: () =>
+            context.push(bookingHistoryDetail, extra: booking.id ?? ''),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(

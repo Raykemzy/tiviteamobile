@@ -58,7 +58,8 @@ final class MarketplaceRepo {
 
   Future<BaseResponse<dynamic>> deleteMarketplaceItem(String itemId) async {
     try {
-      return await restClient.deleteMarketplaceItem(itemId);
+      await restClient.deleteMarketplaceItem(itemId);
+      return BaseResponse(status: 'success');
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

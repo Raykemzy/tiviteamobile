@@ -101,13 +101,18 @@ class _MyMarketplaceViewState extends ConsumerState<MyMarketplaceView> {
                     ),
                   );
                 }
-                return ListView.separated(
-                  padding: EdgeInsets.only(bottom: 16.h),
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => 10.verticalSpace,
-                  itemBuilder: (_, i) => _MyMarketplaceItemWidget(
-                    item: items[i],
-                    isDeleting: state.deletingItemId == items[i].id,
+                return RefreshIndicator(
+                  onRefresh: () async => await ref
+                      .read(ownerMarketplaceNotifierProvider.notifier)
+                      .getOwnersMarketPlaceItems(),
+                  child: ListView.separated(
+                    padding: EdgeInsets.only(bottom: 16.h),
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => 10.verticalSpace,
+                    itemBuilder: (_, i) => _MyMarketplaceItemWidget(
+                      item: items[i],
+                      isDeleting: state.deletingItemId == items[i].id,
+                    ),
                   ),
                 );
               },

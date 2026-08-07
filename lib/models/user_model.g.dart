@@ -8,9 +8,9 @@ part of 'user_model.dart';
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
       id: json['id'] as String?,
-      entityType:
-          $enumDecodeNullable(_$EntityTypeEnumMap, json['entity_type']) ??
-              EntityType.client,
+      entityType: json['entity_type'] as String?,
+      signedInEntityType: $enumDecodeNullable(
+          _$EntityTypeEnumMap, json['signed_in_entity_type']),
       availableEntityTypes: json['available_entity_types'] == null
           ? const []
           : _availableEntityTypesFromJson(json['available_entity_types']),
@@ -43,7 +43,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'id': instance.id,
-      'entity_type': _$EntityTypeEnumMap[instance.entityType],
+      'entity_type': instance.entityType,
+      'signed_in_entity_type': _$EntityTypeEnumMap[instance.signedInEntityType],
       'available_entity_types':
           _availableEntityTypesToJson(instance.availableEntityTypes),
       'last_login': instance.lastLogin?.toIso8601String(),

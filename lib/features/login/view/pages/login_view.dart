@@ -288,9 +288,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   void _login(WidgetRef ref) {
+    final entityType = ref.read(loginNotifierProvider).loginEntityType;
     final data = LoginRequestObject(
       email: emailNameController.text,
       password: passwordController.text,
+      entityType: entityType,
     );
 
     _submitLogin(ref, data);

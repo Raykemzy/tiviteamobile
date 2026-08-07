@@ -84,7 +84,7 @@ void main() {
           email: 'test@example.com',
           firstName: 'John',
           lastName: 'Doe',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
         );
         await userRepoImpl.saveUser(validUser);
@@ -144,7 +144,7 @@ void main() {
           firstName: 'Alice',
           lastName: 'Johnson',
           phoneNumber: '+1234567890',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
           isVerified: true,
           createdAt: DateTime.now(),
@@ -173,7 +173,7 @@ void main() {
         final incompleteUser = User(
           id: '789',
           // Missing email
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
         );
         await userRepoImpl.saveUser(incompleteUser);
@@ -195,7 +195,7 @@ void main() {
         final validUser = User(
           id: '101',
           email: 'valid@example.com',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
         );
         await userRepoImpl.saveUser(validUser);
@@ -216,7 +216,7 @@ void main() {
         final inactiveUser = User(
           id: '202',
           email: 'inactive@example.com',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: false, // Inactive user
         );
         await userRepoImpl.saveUser(inactiveUser);
@@ -240,7 +240,7 @@ void main() {
         final user = User(
           id: '303',
           email: 'lifecycle@example.com',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
         );
         await userRepoImpl.saveUser(user);
@@ -268,7 +268,7 @@ void main() {
           email: 'partner@example.com',
           firstName: 'Partner',
           lastName: 'User',
-          entityType: EntityType.partner,
+          signedInEntityType: EntityType.partner,
           isActive: true,
         );
         await userRepoImpl.saveUser(partnerUser);
@@ -322,7 +322,7 @@ void main() {
         final user = User(
           id: '505',
           email: 'expired@example.com',
-          entityType: EntityType.client,
+          signedInEntityType: EntityType.client,
           isActive: true,
         );
         await userRepoImpl.saveUser(user);

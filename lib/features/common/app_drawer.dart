@@ -11,7 +11,7 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.client;
+    final entityType = user.signedInEntityType ?? EntityType.client;
     return switch (entityType) {
       EntityType.partner => const ServiceProviderAppDrawer(),
       EntityType.client => const CustomerAppDrawer(),

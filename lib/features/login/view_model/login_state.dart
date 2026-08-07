@@ -1,4 +1,5 @@
 import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/models/enums/enums.dart';
 
 enum AppAccessState { guest, user }
 
@@ -11,6 +12,7 @@ class LoginState {
     required this.changePasswordLoadState,
     required this.signInWithGoogleLoadState,
     required this.signInWithAppleLoadState,
+    required this.loginEntityType,
   });
   factory LoginState.initial() {
     return LoginState(
@@ -21,6 +23,7 @@ class LoginState {
       changePasswordLoadState: LoadState.idle,
       signInWithGoogleLoadState: LoadState.idle,
       signInWithAppleLoadState: LoadState.idle,
+      loginEntityType: EntityType.partner,
     );
   }
   final LoadState loadState;
@@ -30,6 +33,7 @@ class LoginState {
   final LoadState signInWithGoogleLoadState;
   final LoadState signInWithAppleLoadState;
   final AppAccessState appAccessState;
+  final EntityType loginEntityType;
   LoginState copyWith({
     LoadState? loadState,
     LoadState? logoutState,
@@ -38,19 +42,20 @@ class LoginState {
     LoadState? signInWithGoogleLoadState,
     LoadState? signInWithAppleLoadState,
     AppAccessState? appAccessState,
+    EntityType? loginEntityType,
   }) {
     return LoginState(
-      loadState: loadState ?? this.loadState,
-      appAccessState: appAccessState ?? this.appAccessState,
-      logoutState: logoutState ?? this.logoutState,
-      forgotPasswordLoadState:
-          forgotPasswordLoadState ?? this.forgotPasswordLoadState,
-      changePasswordLoadState:
-          changePasswordLoadState ?? this.changePasswordLoadState,
-      signInWithGoogleLoadState:
-          signInWithGoogleLoadState ?? this.signInWithGoogleLoadState,
-      signInWithAppleLoadState:
-          signInWithAppleLoadState ?? this.signInWithAppleLoadState,
-    );
+        loadState: loadState ?? this.loadState,
+        appAccessState: appAccessState ?? this.appAccessState,
+        logoutState: logoutState ?? this.logoutState,
+        forgotPasswordLoadState:
+            forgotPasswordLoadState ?? this.forgotPasswordLoadState,
+        changePasswordLoadState:
+            changePasswordLoadState ?? this.changePasswordLoadState,
+        signInWithGoogleLoadState:
+            signInWithGoogleLoadState ?? this.signInWithGoogleLoadState,
+        signInWithAppleLoadState:
+            signInWithAppleLoadState ?? this.signInWithAppleLoadState,
+        loginEntityType: loginEntityType ?? this.loginEntityType);
   }
 }

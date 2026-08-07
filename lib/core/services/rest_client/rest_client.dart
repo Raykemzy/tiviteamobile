@@ -172,7 +172,7 @@ abstract class RestClient {
     @Body() EditMarketplaceItemRequestBody data,
   );
   @DELETE('/listings/market-place/item/{item_id}')
-  Future<BaseResponse<dynamic>> deleteMarketplaceItem(
+  Future<dynamic> deleteMarketplaceItem(
     @Path('item_id') String itemId,
   );
 
@@ -247,6 +247,13 @@ abstract class RestClient {
 
   @GET('/bookings/{bookingId}')
   Future<BaseResponse<BookingHistoryModel>> getSingleBookingDetails({
+    @Path('bookingId') required String bookingId,
+  });
+
+  /// Cancels a booking. Client entities only — partners follow up on bookings
+  /// rather than cancelling them.
+  @POST('/bookings/{bookingId}')
+  Future<BaseResponse<dynamic>> cancelBooking({
     @Path('bookingId') required String bookingId,
   });
 

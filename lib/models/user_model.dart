@@ -8,8 +8,11 @@ part 'user_model.g.dart';
 @JsonSerializable()
 class User {
   final String? id;
-  @JsonKey(name: 'entity_type', defaultValue: EntityType.client)
-  final EntityType? entityType;
+  @JsonKey(name: 'entity_type')
+  final String? entityType;
+
+  @JsonKey(name: 'signed_in_entity_type')
+  final EntityType? signedInEntityType;
 
   /// Entities this user actually owns. Parsed leniently because the backend
   /// occasionally returns unrecognised strings (e.g. "multiple accounts
@@ -65,6 +68,7 @@ class User {
   User({
     this.id,
     this.entityType,
+    this.signedInEntityType,
     this.availableEntityTypes = const [],
     this.lastLogin,
     this.isSuperuser,
@@ -92,7 +96,8 @@ class User {
 
   User copyWith({
     String? id,
-    EntityType? entityType,
+    String? entityType,
+    EntityType? signedInEntityType,
     List<EntityType>? availableEntityTypes,
     DateTime? lastLogin,
     bool? isSuperuser,
@@ -116,6 +121,7 @@ class User {
     return User(
       id: id ?? this.id,
       entityType: entityType ?? this.entityType,
+      signedInEntityType: signedInEntityType ?? this.signedInEntityType,
       availableEntityTypes: availableEntityTypes ?? this.availableEntityTypes,
       lastLogin: lastLogin ?? this.lastLogin,
       isSuperuser: isSuperuser ?? this.isSuperuser,

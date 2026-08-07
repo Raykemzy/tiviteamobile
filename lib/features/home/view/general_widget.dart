@@ -16,7 +16,7 @@ class _GeneralHomeScreeenState extends ConsumerState<GeneralHomeScreeen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.client;
+    final entityType = user.signedInEntityType ?? EntityType.client;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {

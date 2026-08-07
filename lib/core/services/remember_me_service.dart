@@ -50,7 +50,10 @@ class RememberMeService {
       return false;
     }
 
-    if (user.entityType == null) {
+    // `entityType` is the raw server string and can be a non-entity marker
+    // like "multiple accounts found"; the entity actually signed in as is
+    // `signedInEntityType`.
+    if (user.signedInEntityType == null) {
       return false;
     }
 

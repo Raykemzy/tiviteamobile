@@ -94,7 +94,7 @@ void main() {
                   user: User(
                     id: '1',
                     email: 'user@example.com',
-                    entityType: EntityType.client,
+                    signedInEntityType: EntityType.client,
                     isActive: true,
                   ),
                   tokens: Tokens(

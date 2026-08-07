@@ -119,17 +119,19 @@ class _EditMarketplaceItemViewState extends ConsumerState<EditMarketplaceItemVie
                   ],
                 ),
                 SizedBox(height: 40.h),
-                Consumer(
-                  builder: (context, ref, _) {
-                    final editLoadState =
-                        ref.watch(ownerMarketplaceNotifierProvider).editLoadState;
-                    final isLoading = editLoadState == LoadState.loading;
-                    return AppButton(
-                      isLoading: isLoading,
-                      buttonText: context.l10n.save,
-                      onPressed: isLoading ? null : _save,
-                    );
-                  },
+                Center(
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      final editLoadState =
+                          ref.watch(ownerMarketplaceNotifierProvider).editLoadState;
+                      final isLoading = editLoadState == LoadState.loading;
+                      return AppButton(
+                        isLoading: isLoading,
+                        buttonText: context.l10n.save,
+                        onPressed: isLoading ? null : _save,
+                      );
+                    },
+                  ),
                 ),
                 SizedBox(height: 24.h),
               ],

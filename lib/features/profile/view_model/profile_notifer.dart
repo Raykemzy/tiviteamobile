@@ -7,7 +7,6 @@ import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/view_model/profile_notifier_state.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
-import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/dashboard/general_dashboard_repo.dart';
 import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
@@ -31,7 +30,7 @@ class ProfileNotifer extends _$ProfileNotifer {
     try {
       final result = await _repo.getUserProfile();
       if (result.isSuccess() == false) throw result.message ?? '';
-      _syncUserState(result.data?.user);
+      _syncUserState();
       state = state.copyWith(profileLoadState: LoadState.success);
     } catch (e) {
       state = state.copyWith(profileLoadState: LoadState.error);
@@ -47,12 +46,11 @@ class ProfileNotifer extends _$ProfileNotifer {
     try {
       final result = await _repo.updateUserProfile(_mergeWithCurrentUser(data));
       if (result.isSuccess() == false) throw result.message ?? '';
-      final refreshedUser = await _repo.getUserProfile();
-      if (refreshedUser.isSuccess()) {
-        _syncUserState(refreshedUser.data?.user);
-      } else {
-        _syncUserState(result.data);
-      }
+      // Refetch so the cache reflects anything the update endpoint didn't
+      // echo back. Either way the repository has already persisted a merged
+      // user, so syncing from the cache is correct even if this call fails.
+      await _repo.getUserProfile();
+      _syncUserState();
       state = state.copyWith(editProfileLoadState: LoadState.success);
       onSuccess();
     } catch (e) {
@@ -74,13 +72,15 @@ class ProfileNotifer extends _$ProfileNotifer {
     );
   }
 
-  void _syncUserState(User? user) {
-    final notifier = ref.read(userNotifierProvider.notifier);
-    if (user != null) {
-      notifier.updateUser(user);
-      return;
-    }
-    notifier.refreshUser();
+  /// Pulls the in-memory user back from storage.
+  ///
+  /// Always reads the cache rather than taking the raw response object: the
+  /// repository merges each response over the cached user so fields the
+  /// endpoint omits (address, owned entities, signed-in entity) survive.
+  /// Pushing the raw response here instead would leave the notifier holding a
+  /// less complete user than the one on disk.
+  void _syncUserState() {
+    ref.read(userNotifierProvider.notifier).refreshUser();
   }
 
   void switchAccount(
@@ -97,17 +97,17 @@ class ProfileNotifer extends _$ProfileNotifer {
             'Unable to switch account';
       }
 
-      User updatedUser;
       final refreshedUser = await _repo.getUserProfile();
-      if (refreshedUser.isSuccess() && refreshedUser.data?.user != null) {
-        updatedUser = refreshedUser.data!.user!;
-      } else {
+      if (!refreshedUser.isSuccess() || refreshedUser.data?.user == null) {
+        // Profile refetch failed, so record the switch locally — otherwise the
+        // app would keep rendering the entity the user just switched away from.
         final existingUser = ref.read(userRepositoryProvider).getUser();
-        updatedUser = existingUser.copyWith(entityType: targetEntityType);
-        await ref.read(userRepositoryProvider).saveUser(updatedUser);
+        await ref.read(userRepositoryProvider).saveUser(
+              existingUser.copyWith(signedInEntityType: targetEntityType),
+            );
       }
 
-      ref.read(userNotifierProvider.notifier).updateUser(updatedUser);
+      _syncUserState();
       state = state.copyWith(switchAccountLoadState: LoadState.success);
       onSuccess();
     } catch (e) {

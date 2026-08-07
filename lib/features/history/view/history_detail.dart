@@ -225,6 +225,25 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
                                 textColor: context.theme.primaryColor,
                                 onPressed: () => generateTicket(),
                               ),
+                            if (_canCancel) ...[
+                              20.verticalSpace,
+                              Consumer(builder: (context, ref, child) {
+                                final cancelLoadState = ref.watch(
+                                  bookingNotiferProvider.select(
+                                    (state) => state.cancelBookingLoadState,
+                                  ),
+                                );
+                                return AppButton(
+                                  buttonText: 'Cancel booking',
+                                  backgroundColor: Colors.white,
+                                  borderColor: Colors.red,
+                                  textColor: Colors.red,
+                                  isLoading:
+                                      cancelLoadState == LoadState.loading,
+                                  onPressed: _confirmCancel,
+                                );
+                              }),
+                            ],
                           ]
                         ],
                       ),
@@ -233,6 +252,60 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
           ),
         ),
       ),
+    );
+  }
+
+  /// A booking can only be cancelled while it's still live — no point offering
+  /// it on one that's already cancelled or finished.
+  bool get _canCancel {
+    final status = _booking?.status?.toLowerCase();
+    if (status == null) return false;
+    return status != 'cancelled' &&
+        status != 'canceled' &&
+        status != 'completed';
+  }
+
+  void _confirmCancel() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          'Cancel booking?',
+          style: context.theme.textTheme.titleMedium,
+        ),
+        content: Text(
+          'This cancels your booking. It cannot be undone.',
+          style: context.theme.textTheme.displaySmall,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Keep booking'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text(
+              'Cancel booking',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    ref.read(bookingNotiferProvider.notifier).cancelBooking(
+      widget.bookingId,
+      onSuccess: (message) {
+        if (!mounted) return;
+        context.showSuccess(message);
+        // Back to the history list, which the notifier has already pruned.
+        CustomAppBar.goBack(context);
+      },
+      onError: (message) {
+        if (!mounted) return;
+        context.showError(message);
+      },
     );
   }
 

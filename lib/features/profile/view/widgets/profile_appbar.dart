@@ -103,7 +103,7 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _ProfileTypeSwitchTag(
-              entityType: user.entityType ?? EntityType.client,
+              entityType: user.signedInEntityType ?? EntityType.client,
             ),
           ],
         ),
@@ -194,7 +194,7 @@ class _ProfileTypeSwitchTagState extends ConsumerState<_ProfileTypeSwitchTag> {
     );
     final isLoading = switchLoadState == LoadState.loading;
     final currentEntityType =
-        ref.watch(userNotifierProvider).entityType ?? widget.entityType;
+        ref.watch(userNotifierProvider).signedInEntityType ?? widget.entityType;
     final collapsedLabel = _getProfileLabel(currentEntityType);
     const expandedLabel = 'Switch account';
 

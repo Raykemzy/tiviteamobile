@@ -115,6 +115,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       color: context.theme.colorScheme.onPrimaryContainer,
                     ),
                     child: AppImageWidget(
+                      onTap: () => context.push(AppRoutes.profile),
                       borderRadius: BorderRadius.circular(50),
                       imagePath: user.profilePicture ?? '',
                     ),
@@ -190,8 +191,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                             : Container(
                                 width: 40.w,
                                 height: 40.h,
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 5),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -199,6 +199,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                                       .theme.colorScheme.onPrimaryContainer,
                                 ),
                                 child: AppImageWidget(
+                                  onTap: () => context.push(AppRoutes.profile),
                                   borderRadius: BorderRadius.circular(50),
                                   imagePath: user.profilePicture ?? '',
                                 ),
