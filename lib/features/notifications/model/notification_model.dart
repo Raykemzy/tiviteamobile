@@ -5,6 +5,8 @@ class NotificationModel {
     required this.description,
     required this.isRead,
     required this.createdAt,
+    this.objectModel,
+    this.objectId,
     this.raw = const {},
   });
 
@@ -13,6 +15,22 @@ class NotificationModel {
   final String description;
   final bool isRead;
   final DateTime? createdAt;
+
+  /// Domain object this notification points at, e.g. "Booking",
+  /// "Authentication", "Marketplace".
+  final String? objectModel;
+
+  /// Id of that object. For quotation notifications this is the *quotation*
+  /// id — verified live: `object_model` is "Booking" for all three quotation
+  /// notifications ("Quotation Request.", "Quotation Received.", "Your
+  /// Quotation Has A New Status.") and `object_id` is the quotation.
+  final String? objectId;
+
+  /// True when this notification is about an artisan quotation, which is only
+  /// distinguishable by its title — `object_model` is the generic "Booking".
+  bool get isQuotation =>
+      objectModel == 'Booking' && title.toLowerCase().contains('quotation');
+
   final Map<String, dynamic> raw;
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +46,8 @@ class NotificationModel {
         json,
         const ['date_created', 'created_at', 'createdAt', 'timestamp'],
       ),
+      objectModel: _readString(json, const ['object_model', 'objectModel']),
+      objectId: _readString(json, const ['object_id', 'objectId']),
       raw: json,
     );
   }
@@ -38,6 +58,8 @@ class NotificationModel {
     String? description,
     bool? isRead,
     DateTime? createdAt,
+    String? objectModel,
+    String? objectId,
     Map<String, dynamic>? raw,
   }) {
     return NotificationModel(
@@ -45,6 +67,8 @@ class NotificationModel {
       title: title ?? this.title,
       description: description ?? this.description,
       isRead: isRead ?? this.isRead,
+      objectModel: objectModel ?? this.objectModel,
+      objectId: objectId ?? this.objectId,
       createdAt: createdAt ?? this.createdAt,
       raw: raw ?? this.raw,
     );

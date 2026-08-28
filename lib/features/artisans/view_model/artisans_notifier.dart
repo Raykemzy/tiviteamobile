@@ -5,6 +5,7 @@ import 'package:tivi_tea/core/config/dio_config.dart';
 import 'package:tivi_tea/core/services/third_party_services/cloudinary_service.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/core/utils/logger.dart';
+import 'package:tivi_tea/features/artisans/model/quotation_model.dart';
 import 'package:tivi_tea/features/artisans/model/request_quotation_request_body.dart';
 import 'package:tivi_tea/features/artisans/view_model/artisans_state.dart';
 import 'package:tivi_tea/repositories/artisans/artisans_repo.dart';
@@ -74,7 +75,8 @@ class ArtisansNotifier extends _$ArtisansNotifier {
     required String clientNote,
     required DateTime clientEndDate,
     List<XFile> images = const [],
-    required void Function(String message) onSuccess,
+    required void Function(String message, QuotationModel? quotation)
+        onSuccess,
     required void Function(String message) onError,
   }) async {
     state = state.copyWith(
@@ -110,7 +112,10 @@ class ArtisansNotifier extends _$ArtisansNotifier {
       }
 
       state = state.copyWith(requestQuotationLoadState: LoadState.success);
-      onSuccess(response.message ?? 'Quotation Request Sent.');
+      onSuccess(
+        response.message ?? 'Quotation Request Sent.',
+        response.data,
+      );
     } catch (e) {
       final message = e.toString();
       state = state.copyWith(

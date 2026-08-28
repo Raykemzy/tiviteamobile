@@ -17,8 +17,8 @@ class CustomerAppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.read(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.client;
+    final user = ref.watch(userNotifierProvider);
+    final entityType = user.signedInEntityType ?? EntityType.client;
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;
     final routePath = GoRouterState.of(context).matchedLocation;
@@ -87,13 +87,12 @@ class CustomerAppDrawer extends ConsumerWidget {
                 onTap: () => context.go(AppRoutes.myListingView),
               ),
 
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.listingDrawerIcon.path,
-              label: 'All Artisans',
-              isSelected: routePath == allArtisans,
-              onTap: () => context.go(allArtisans),
-            ),
+          DrawerListTile(
+            icon: Assets.svgs.listingDrawerIcon.path,
+            label: 'All Artisans',
+            isSelected: routePath == allArtisans,
+            onTap: () => context.go(allArtisans),
+          ),
           DrawerListTile(
             icon: Assets.svgs.listingDrawerIcon.path,
             label: 'Marketplace',

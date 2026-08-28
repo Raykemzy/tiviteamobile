@@ -15,13 +15,6 @@ ListBanksResponse _$ListBanksResponseFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$ListBanksResponseToJson(ListBanksResponse instance) =>
-    <String, dynamic>{
-      'status': instance.status,
-      'message': instance.message,
-      'data': instance.data,
-    };
-
 BankModel _$BankModelFromJson(Map<String, dynamic> json) => BankModel(
       id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String?,

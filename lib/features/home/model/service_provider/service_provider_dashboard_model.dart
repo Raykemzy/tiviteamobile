@@ -10,8 +10,12 @@ class ServiceProviderDashboardModel {
   final num? totalListings;
   @JsonKey(name: 'bar_chart')
   final BarChart? barChart;
-  @JsonKey(name: 'total_revenue')
-  final double? totalRevenue;
+  /// The backend returns this pre-formatted for display — "2K", not 2000 —
+  /// so it cannot be parsed as a number. It was previously typed `double?`,
+  /// which made json_serializable emit `as num?`, throw a TypeError on every
+  /// response, and leave the whole dashboard silently blank.
+  @JsonKey(name: 'total_revenue', fromJson: readDashboardAmount)
+  final String? totalRevenue;
   @JsonKey(name: 'booking_summary')
   final BookingSummary? bookingSummary;
   @JsonKey(name: 'booking_history_data')
@@ -71,4 +75,16 @@ class BookingSummary {
       _$BookingSummaryFromJson(json);
 
   Map<String, dynamic> toJson() => _$BookingSummaryToJson(this);
+}
+/// Reads a dashboard money/count field that the backend may send either as a
+/// number or as an already-formatted string. Always yields a display string.
+String? readDashboardAmount(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  if (value is num) {
+    return value == value.roundToDouble()
+        ? value.toInt().toString()
+        : value.toString();
+  }
+  return value.toString();
 }

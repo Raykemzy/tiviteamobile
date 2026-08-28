@@ -61,7 +61,8 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   @override
   Widget build(BuildContext context) {
     final user = ref.read(userNotifierProvider);
-    final userIsServiceProvider = user.entityType == EntityType.partner;
+    final userIsServiceProvider =
+        user.signedInEntityType == EntityType.partner;
     final userIsListingOwner = listing?.partner?.user?.id == user.id;
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;

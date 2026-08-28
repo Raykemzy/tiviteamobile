@@ -282,6 +282,48 @@ class _ItemDetails extends StatelessWidget {
   }
 }
 
+/// Draft items are invisible to buyers until published, so surface the action
+/// on the seller's own listing rather than leaving them wondering why nothing
+/// shows up in the marketplace.
+class _PublishButton extends ConsumerWidget {
+  const _PublishButton({required this.item});
+
+  final OwnerMarketplaceItemModel item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final publishingId = ref.watch(
+      ownerMarketplaceNotifierProvider.select((v) => v.publishingItemId),
+    );
+    final isPublishing = publishingId == item.id;
+    final id = item.id;
+
+    return TextButton.icon(
+      onPressed: (id == null || id.isEmpty || isPublishing)
+          ? null
+          : () => ref
+                  .read(ownerMarketplaceNotifierProvider.notifier)
+                  .publishMarketplaceItem(
+                itemId: id,
+                onSuccess: (message) {
+                  if (context.mounted) context.showSuccess(message);
+                },
+                onError: (message) {
+                  if (context.mounted) context.showError(message);
+                },
+              ),
+      icon: isPublishing
+          ? SizedBox(
+              width: 16.sp,
+              height: 16.sp,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Icon(Icons.publish_outlined, size: 18.sp),
+      label: Text('Publish', style: TextStyle(fontSize: 14.sp)),
+    );
+  }
+}
+
 class _ItemActions extends ConsumerWidget {
   const _ItemActions({required this.item});
 
@@ -294,6 +336,7 @@ class _ItemActions extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          if (!item.isPublished) _PublishButton(item: item),
           TextButton.icon(
             onPressed: () async {
               await context.push<bool>(

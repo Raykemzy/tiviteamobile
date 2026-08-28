@@ -54,6 +54,17 @@ class User {
   @JsonKey(name: 'has_uploaded_kyc_documents')
   final bool? hasUploadedKycDocuments;
 
+  /// Id of the *entity record* (partner / artisan / client) the user is signed
+  /// in as — not [id], which is the user account and is shared across all of
+  /// them.
+  ///
+  /// The backend returns this at the top level of the login and profile
+  /// envelopes, beside `user`, so it is populated by the repositories rather
+  /// than parsed off the user payload. Endpoints like
+  /// `GET /listings/artisan/{id}` key on this and 404 on [id].
+  @JsonKey(name: 'entity_id')
+  final String? entityId;
+
   /// The signed-in entity's address. The backend returns this alongside the
   /// user rather than inside it, so it is populated by the login/profile
   /// repositories rather than parsed straight off the user payload. Cached so
@@ -84,6 +95,7 @@ class User {
     this.updatedAt,
     this.profilePicture,
     this.hasUploadedKycDocuments,
+    this.entityId,
     this.address,
     this.groups = const [],
     this.userPermissions = const [],
@@ -113,6 +125,7 @@ class User {
     DateTime? updatedAt,
     String? profilePicture,
     bool? hasUploadedKycDocuments,
+    String? entityId,
     Address? address,
     List<String>? groups,
     List<String>? userPermissions,
@@ -138,6 +151,7 @@ class User {
       profilePicture: profilePicture ?? this.profilePicture,
       hasUploadedKycDocuments:
           hasUploadedKycDocuments ?? this.hasUploadedKycDocuments,
+      entityId: entityId ?? this.entityId,
       address: address ?? this.address,
       groups: groups ?? this.groups,
       userPermissions: userPermissions ?? this.userPermissions,

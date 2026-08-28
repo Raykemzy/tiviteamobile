@@ -12,6 +12,7 @@ class OwnerMarketplaceState {
     this.createLoadState,
     this.editLoadState,
     this.deletingItemId,
+    this.publishingItemId,
   });
 
   factory OwnerMarketplaceState.initial() {
@@ -25,6 +26,7 @@ class OwnerMarketplaceState {
       createLoadState: LoadState.idle,
       editLoadState: LoadState.idle,
       deletingItemId: null,
+      publishingItemId: null,
     );
   }
 
@@ -38,6 +40,9 @@ class OwnerMarketplaceState {
   final LoadState? editLoadState;
   final String? deletingItemId;
 
+  /// Id of the item currently being published, so its row can show a spinner.
+  final String? publishingItemId;
+
   OwnerMarketplaceState copyWith({
     LoadState? loadState,
     List<OwnerMarketplaceItemModel>? items,
@@ -48,6 +53,7 @@ class OwnerMarketplaceState {
     LoadState? createLoadState,
     LoadState? editLoadState,
     String? deletingItemId,
+    String? publishingItemId,
   }) {
     return OwnerMarketplaceState(
       loadState: loadState ?? this.loadState,
@@ -59,6 +65,7 @@ class OwnerMarketplaceState {
       createLoadState: createLoadState ?? this.createLoadState,
       editLoadState: editLoadState ?? this.editLoadState,
       deletingItemId: deletingItemId,
+      publishingItemId: publishingItemId,
     );
   }
 }

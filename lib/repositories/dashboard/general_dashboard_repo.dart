@@ -27,12 +27,13 @@ final class GeneralDashboardRepo {
   /// Login establishes the address, the owned-entity list and the signed-in
   /// entity; the profile payloads may omit any of them. Saving the raw
   /// response would blank those fields, so fall back to what's already cached.
-  void _saveMergedUser(User? incoming, {Address? address}) {
+  void _saveMergedUser(User? incoming, {Address? address, String? entityId}) {
     if (incoming == null) return;
     final cached = userRepository.getUser();
     userRepository.saveUser(
       incoming.copyWith(
         address: address ?? incoming.address ?? cached.address,
+        entityId: entityId ?? incoming.entityId ?? cached.entityId,
         availableEntityTypes: incoming.availableEntityTypes.isEmpty
             ? cached.availableEntityTypes
             : incoming.availableEntityTypes,
@@ -45,7 +46,11 @@ final class GeneralDashboardRepo {
   Future<BaseResponse<GetUserProfileResponse>> getUserProfile() async {
     try {
       final result = await restClient.getUserProfile();
-      _saveMergedUser(result.data?.user, address: result.data?.address);
+      _saveMergedUser(
+        result.data?.user,
+        address: result.data?.address,
+        entityId: result.data?.id,
+      );
       return result;
     } on DioException catch (e) {
       return AppException.handleError(e);

@@ -11,6 +11,7 @@ import 'package:tivi_tea/features/home/view/widgets/dashboard_grid.dart';
 import 'package:tivi_tea/features/home/view/widgets/financial_summary.dart';
 import 'package:tivi_tea/features/home/view/widgets/welcome_back_text.dart';
 import 'package:tivi_tea/features/home/view_model/dashboard_notifier.dart';
+import 'package:tivi_tea/features/services/view/widgets/kyc_guard.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
 class ServiceProviderDashboard extends ConsumerStatefulWidget {
@@ -60,7 +61,11 @@ class _ServiceProviderDashboardState
                   // 10.horizontalSpace,
                   CreateListingButton(
                     text: context.l10n.createListing,
-                    onTap: () => context.push(createListingPath),
+                    onTap: () => guardWithKyc(
+                      context,
+                      ref,
+                      onAllowed: () => context.push(createListingPath),
+                    ),
                   ),
                   30.verticalSpace,
                 ],

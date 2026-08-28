@@ -2,7 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'post_worktool_model.g.dart';
 
-@JsonSerializable()
+// Hand-written toJson below; the generated one is unused.
+@JsonSerializable(createToJson: false)
 class WorkToolListing {
   @JsonKey(name: 'listing_type')
   final String? listingType;

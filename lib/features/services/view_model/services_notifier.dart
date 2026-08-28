@@ -33,6 +33,24 @@ class ServicesNotifer extends _$ServicesNotifer {
     }
   }
 
+  /// Re-queries the catalogue for [categoryId], or clears the filter when it
+  /// is null.
+  ///
+  /// The backend ignores `category`/`category_id` on `/listings/` — verified
+  /// against the live API — but its `name` query matches category names as
+  /// well as listing names, so the category's *name* is what gets sent.
+  /// Filtering client-side (the previous behaviour) only ever filtered the
+  /// page already in memory, so picking a category hid most of the catalogue
+  /// and paginating past it silently dropped the filter.
+  Future<void> filterByCategory(String? categoryId) {
+    if (categoryId == null) return getListing();
+    final name = state.categories
+        .where((category) => category.id == categoryId)
+        .map((category) => category.name)
+        .firstOrNull;
+    return getListing(name: name);
+  }
+
   Future<void> getListing({
     int page = 1,
     bool loadmore = false,

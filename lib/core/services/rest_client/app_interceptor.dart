@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:tivi_tea/core/services/auth_token_service.dart';
@@ -81,6 +82,8 @@ class DioInterceptor extends Interceptor {
     final response = err.response;
     if (response == null) return false;
     if (_hasAlreadyRetried(err.requestOptions)) {
+      // The retry carried a freshly minted token and still failed on auth —
+      // the session is genuinely unrecoverable.
       tokenExpirationService.emitTokenExpired();
       return false;
     }
@@ -94,26 +97,55 @@ class DioInterceptor extends Interceptor {
     }
 
     final data = response.data;
-    final message = _extractMessage(data)?.toLowerCase();
-    final reason = _extractReason(data)?.toLowerCase();
-    final code = _extractCode(data)?.toLowerCase();
-    final statusCode = response.statusCode;
 
     // Keep existing behavior: do not trigger auth refresh for verification flow.
-    final isUserNotVerified = message?.contains('user not verified') == true;
+    final isUserNotVerified =
+        _extractMessage(data)?.toLowerCase().contains('user not verified') ==
+            true;
     if (isUserNotVerified) return false;
 
-    final isUnauthorizedByStatus = statusCode == 401;
-    final isUnauthorizedByReason = reason == 'unauthorized';
-    final isUnauthorizedByCode = code == 'token_not_valid';
-    final isUnauthorizedByMessage =
-        message?.contains('invalid or expired token') == true ||
-            message?.contains('token is invalid or expired') == true;
+    final statusCode = response.statusCode ?? 0;
+    if (statusCode != 401 && statusCode != 403) return false;
 
-    return isUnauthorizedByStatus ||
-        isUnauthorizedByReason ||
-        isUnauthorizedByCode ||
-        isUnauthorizedByMessage;
+    // A bare 401 is unambiguous. A 403 is not — this backend uses it both for
+    // "you may not do that" and for "your token died" — so a 403 only counts
+    // when the body actually carries a token marker. Without that distinction
+    // a permission error would log the user out.
+    return statusCode == 401 || _looksLikeTokenFailure(data);
+  }
+
+  /// Whether [data] carries one of the backend's expired/invalid-token markers.
+  ///
+  /// This API reports an expired access token as **403**, with
+  /// `status: "INTERNAL_SERVER_ERROR"`, `error.reason: "Forbidden"`, and the
+  /// only dependable signal — DRF's `token_not_valid` code — buried inside
+  /// `error.message` as a *stringified Python dict*:
+  ///
+  /// ```
+  /// "{'detail': ErrorDetail(string='Given token not valid for any token
+  ///   type', code='token_not_valid'), ...}"
+  /// ```
+  ///
+  /// There is no field to read it out of, so the whole serialised body is
+  /// searched. Access tokens live 10 minutes, so this path runs constantly.
+  bool _looksLikeTokenFailure(dynamic data) {
+    final haystack = data is String ? data : jsonEncode(_safe(data));
+    final lower = haystack.toLowerCase();
+    return lower.contains('token_not_valid') ||
+        lower.contains('token not valid') ||
+        lower.contains('invalid or expired token') ||
+        lower.contains('token is invalid or expired') ||
+        lower.contains('authentication credentials were not provided');
+  }
+
+  /// jsonEncode chokes on non-encodable values; fall back to toString().
+  Object? _safe(dynamic data) {
+    try {
+      jsonEncode(data);
+      return data;
+    } catch (_) {
+      return data?.toString();
+    }
   }
 
   bool _shouldSkipRefresh(String path) {
@@ -140,31 +172,6 @@ class DioInterceptor extends Interceptor {
     return null;
   }
 
-  String? _extractReason(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      final reason = data['reason'];
-      if (reason is String) return reason;
-      final error = data['error'];
-      if (error is Map<String, dynamic>) {
-        final errorReason = error['reason'];
-        if (errorReason is String) return errorReason;
-      }
-    }
-    return null;
-  }
-
-  String? _extractCode(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      final code = data['code'];
-      if (code is String) return code;
-      final error = data['error'];
-      if (error is Map<String, dynamic>) {
-        final errorCode = error['code'];
-        if (errorCode is String) return errorCode;
-      }
-    }
-    return null;
-  }
 
   Future<void> handleError(
     ErrorInterceptorHandler handler,
@@ -193,28 +200,56 @@ class DioInterceptor extends Interceptor {
     return handler.resolve(cloneReq);
   }
 
+  /// Guards against a refresh stampede.
+  ///
+  /// The backend *rotates* refresh tokens: the first call invalidates the one
+  /// every other in-flight request is holding. Several requests failing auth
+  /// at once — the home screen fires a handful — would each POST the same
+  /// now-dead token, and every loser would report the session as expired and
+  /// log the user out. All callers share one refresh instead.
+  static Future<bool>? _inFlightRefresh;
+
+  Future<bool> _refreshOnce() {
+    return _inFlightRefresh ??= _doRefresh().whenComplete(() {
+      _inFlightRefresh = null;
+    });
+  }
+
+  Future<bool> _doRefresh() async {
+    final refreshToken = userRepository.getRefreshToken();
+    if (refreshToken.isEmpty) return false;
+    try {
+      final refreshed = await authTokenService.refreshToken(refreshToken);
+      final access = refreshed['access'] as String? ?? '';
+      if (access.isEmpty) return false;
+      await userRepository.saveToken(access);
+      await userRepository.saveRefreshToken(
+        refreshed['refresh'] as String? ?? refreshToken,
+      );
+      debugLog('Access token refreshed');
+      return true;
+    } on DioException catch (e) {
+      debugLog('refresh error===>> $e');
+      return false;
+    }
+  }
+
   Future<void> _refreshToken(
     DioException error,
     ErrorInterceptorHandler handler,
     Dio dio,
     UserRepository userRepository,
   ) async {
-    final refreshToken = userRepository.getRefreshToken();
-    try {
-      final refreshedTokens = await authTokenService.refreshToken(refreshToken);
-      await userRepository
-          .saveToken(refreshedTokens['access'] as String? ?? '');
-      await userRepository.saveRefreshToken(
-        refreshedTokens['refresh'] as String? ?? refreshToken,
-      );
-      debugLog("Access Token gotten and saved");
-      return handleError(handler, error, dio);
-    } on DioException catch (e) {
-      debugLog('refresh error===>> $e');
-      // Emit token expiration event when refresh fails
+    final refreshed = await _refreshOnce();
+    if (!refreshed) {
       tokenExpirationService.emitTokenExpired();
       handler.next(error);
       return;
+    }
+    try {
+      return await handleError(handler, error, dio);
+    } on DioException catch (e) {
+      handler.next(e);
     }
   }
 }

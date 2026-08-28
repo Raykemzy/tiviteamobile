@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
-import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/core/utils/logger.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_checkbox.dart';
@@ -145,7 +144,7 @@ class _PartnerKYCSecondViewState extends ConsumerState<PartnerKYCSecondView> {
       onSuccess: () {
         ref.read(profileNotiferProvider.notifier).getUserProfile();
         if (context.mounted) {
-          context.go(AppRoutes.homeView, extra: EntityType.partner);
+          context.go(AppRoutes.kycDocumentSubmittedView);
         }
       },
       onError: (error) => context.showError(error),

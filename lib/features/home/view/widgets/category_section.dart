@@ -10,14 +10,14 @@ import 'package:tivi_tea/features/home/view/widgets/listing_widget.dart';
 import 'package:tivi_tea/features/services/view_model/services_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
-class CategorySection extends StatefulWidget {
+class CategorySection extends ConsumerStatefulWidget {
   const CategorySection({super.key});
 
   @override
-  State<CategorySection> createState() => _CategorySectionState();
+  ConsumerState<CategorySection> createState() => _CategorySectionState();
 }
 
-class _CategorySectionState extends State<CategorySection> {
+class _CategorySectionState extends ConsumerState<CategorySection> {
   String? _selectedCategoryId;
 
   @override
@@ -28,10 +28,12 @@ class _CategorySectionState extends State<CategorySection> {
         Categories(
           selectedCategoryId: _selectedCategoryId,
           onCategorySelected: (categoryId) {
-            setState(() {
-              _selectedCategoryId =
-                  _selectedCategoryId == categoryId ? null : categoryId;
-            });
+            final next =
+                _selectedCategoryId == categoryId ? null : categoryId;
+            setState(() => _selectedCategoryId = next);
+            ref
+                .read(servicesNotiferProvider.notifier)
+                .filterByCategory(next);
           },
         ),
         ListingsView(selectedCategoryId: _selectedCategoryId),

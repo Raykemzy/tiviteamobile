@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
@@ -28,11 +30,17 @@ class ClientDashboardGrid extends ConsumerWidget {
               title: context.l10n.totalBooking,
               value: dashboardInfo?.totalBookings ?? 0,
               bookingContainerColor: const Color(0xFF2196F3),
+              onViewAll: () => context.go(
+                '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}',
+              ),
             ),
             DashboardInfoContainer(
               title: context.l10n.upcomingBookings,
               value: dashboardInfo?.upcomingBookings ?? 0,
               bookingContainerColor: const Color(0xFFFF5B5B),
+              onViewAll: () => context.go(
+                '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}',
+              ),
             ),
             DashboardInfoContainer(
               title: context.l10n.totalActivities,
@@ -52,12 +60,18 @@ class DashboardInfoContainer extends StatelessWidget {
   final num value;
   final double width;
   final Color bookingContainerColor;
+
+  /// Destination for the card's "View all" link. Omit to render the card
+  /// without one.
+  final VoidCallback? onViewAll;
+
   const DashboardInfoContainer({
     super.key,
     this.width = 170,
     required this.title,
     required this.value,
     required this.bookingContainerColor,
+    this.onViewAll,
   });
 
   @override
@@ -110,20 +124,31 @@ class DashboardInfoContainer extends StatelessWidget {
               color: const Color(0xFF3F3F3F),
             ),
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.end,
-          //   children: [
-          //     Text(
-          //       context.l10n.viewAll,
-          //       style: context.theme.textTheme.labelMedium?.copyWith(
-          //         fontSize: 9.sp,
-          //         decoration: TextDecoration.underline,
-          //         decorationColor: const Color(0xFF5041BC),
-          //         color: const Color(0xFF5041BC),
-          //       ),
-          //     ),
-          //   ],
-          // )
+          if (onViewAll != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: onViewAll,
+                  child: Padding(
+                    // Keeps the tap target usable at 9sp.
+                    padding: EdgeInsets.symmetric(
+                      vertical: 4.h,
+                      horizontal: 4.w,
+                    ),
+                    child: Text(
+                      context.l10n.viewAll,
+                      style: context.theme.textTheme.labelMedium?.copyWith(
+                        fontSize: 9.sp,
+                        decoration: TextDecoration.underline,
+                        decorationColor: const Color(0xFF5041BC),
+                        color: const Color(0xFF5041BC),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
         ],
       ),
     );

@@ -14,7 +14,7 @@ ServiceProviderDashboardModel _$ServiceProviderDashboardModelFromJson(
       barChart: json['bar_chart'] == null
           ? null
           : BarChart.fromJson(json['bar_chart'] as Map<String, dynamic>),
-      totalRevenue: (json['total_revenue'] as num?)?.toDouble(),
+      totalRevenue: readDashboardAmount(json['total_revenue']),
       bookingSummary: json['booking_summary'] == null
           ? null
           : BookingSummary.fromJson(

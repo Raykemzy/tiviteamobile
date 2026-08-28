@@ -40,7 +40,10 @@ final class GeneralAuthenticationRepo {
 
       final user = userRepository?.getUser();
       User? updatedUser;
-      updatedUser = user?.copyWith(kycIsVerified: userLoginData?.kycIsVerified);
+      updatedUser = user?.copyWith(
+        kycIsVerified: userLoginData?.kycIsVerified,
+        entityId: userLoginData?.id,
+      );
       await userRepository?.saveUser(updatedUser);
 
       if (userLoginData?.kycIsVerified == true) {
@@ -85,6 +88,8 @@ final class GeneralAuthenticationRepo {
         // Returned beside the user rather than inside it; cached so the
         // create-entity form can prefill it.
         address: userLoginData.address,
+        // Top-level `id` is the signed-in entity record, not the user.
+        entityId: userLoginData.id,
       );
 
       await userRepository?.saveUser(updatedUser);

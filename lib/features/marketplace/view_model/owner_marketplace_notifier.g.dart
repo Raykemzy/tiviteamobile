@@ -7,7 +7,7 @@ part of 'owner_marketplace_notifier.dart';
 // **************************************************************************
 
 String _$ownerMarketplaceNotifierHash() =>
-    r'b765bbe2e9fc693ca9d019dcbd8f8ee380a201b1';
+    r'd89154f2d1533b18a74c0b3acd9162b212def9be';
 
 /// See also [OwnerMarketplaceNotifier].
 @ProviderFor(OwnerMarketplaceNotifier)

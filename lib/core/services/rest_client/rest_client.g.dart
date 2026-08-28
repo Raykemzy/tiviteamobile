@@ -867,7 +867,109 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
+  Future<BaseResponse<QuotationModel>> sendQuotation(
+    String quotationId,
+    SendQuotationRequestBody data,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(data.toJson());
+    final _options = _setStreamType<BaseResponse<QuotationModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/bookings/send-quotation/${quotationId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<QuotationModel> _value;
+    try {
+      _value = BaseResponse<QuotationModel>.fromJson(
+        _result.data!,
+        (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<QuotationModel>> counterQuotationPrice(
+    String quotationId,
+    CounterQuotationRequestBody data,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(data.toJson());
+    final _options = _setStreamType<BaseResponse<QuotationModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/bookings/counter-quotation-price/${quotationId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<QuotationModel> _value;
+    try {
+      _value = BaseResponse<QuotationModel>.fromJson(
+        _result.data!,
+        (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<QuotationModel>> acceptOrDeclineQuotation(
+    String quotationId,
+    Map<String, dynamic> body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options = _setStreamType<BaseResponse<QuotationModel>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/bookings/accept-or-decline-quotation/${quotationId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<QuotationModel> _value;
+    try {
+      _value = BaseResponse<QuotationModel>.fromJson(
+        _result.data!,
+        (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<QuotationModel>> requestQuotation(
     String artisanId,
     RequestQuotationRequestBody data,
   ) async {
@@ -876,8 +978,7 @@ class _RestClient implements RestClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(data.toJson());
-    final _options =
-        _setStreamType<BaseResponse<RequestQuotationResponseModel>>(
+    final _options = _setStreamType<BaseResponse<QuotationModel>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -885,18 +986,14 @@ class _RestClient implements RestClient {
             queryParameters: queryParameters,
             data: _data,
           )
-          .copyWith(
-            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
-          ),
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<RequestQuotationResponseModel> _value;
+    late BaseResponse<QuotationModel> _value;
     try {
-      _value = BaseResponse<RequestQuotationResponseModel>.fromJson(
+      _value = BaseResponse<QuotationModel>.fromJson(
         _result.data!,
-        (json) => RequestQuotationResponseModel.fromJson(
-          json as Map<String, dynamic>,
-        ),
+        (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
@@ -1071,6 +1168,40 @@ class _RestClient implements RestClient {
           .compose(
             _dio.options,
             '/listings/market-place/item/${itemId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<dynamic> _value;
+    try {
+      _value = BaseResponse<dynamic>.fromJson(
+        _result.data!,
+        (json) => json as dynamic,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<dynamic>> publishMarketplaceItem(
+    String itemId,
+    Map<String, dynamic> body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options = _setStreamType<BaseResponse<dynamic>>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/listings/market-place/item/publish/${itemId}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -1716,6 +1847,36 @@ class _RestClient implements RestClient {
       _value = BaseResponse<ClientDashboardModel>.fromJson(
         _result.data!,
         (json) => ClientDashboardModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<ArtisanDashboardModel>> getArtisanDashboard() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<ArtisanDashboardModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/dashboard/artisan',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<ArtisanDashboardModel> _value;
+    try {
+      _value = BaseResponse<ArtisanDashboardModel>.fromJson(
+        _result.data!,
+        (json) => ArtisanDashboardModel.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);

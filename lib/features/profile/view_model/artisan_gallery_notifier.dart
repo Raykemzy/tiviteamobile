@@ -31,7 +31,8 @@ class ArtisanGalleryNotifier extends _$ArtisanGalleryNotifier {
   /// Fetches the logged-in artisan's existing gallery via the view-artisan
   /// endpoint, keyed by the user's id.
   Future<void> fetchGallery() async {
-    final userId = ref.read(userNotifierProvider).id;
+    // Must be the artisan entity id: /listings/artisan/{id} 404s on user.id.
+    final userId = ref.read(userNotifierProvider).entityId;
     if (userId == null || userId.isEmpty) {
       state = state.copyWith(fetchState: LoadState.error);
       return;

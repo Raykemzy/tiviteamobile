@@ -10,7 +10,15 @@ class Validators {
     r'[a-zA-Z0-9])?)+\s*$',
   );
 
-  static final phonePattern = RegExp("^(\\08|09|07|[7-9])\\d{9}\$");
+  /// Nigerian mobile numbers, in the forms users actually type:
+  /// `08012345678`, `8012345678`, `+2348012345678`, `2348012345678`.
+  ///
+  /// The previous pattern was `^(\08|09|07|[7-9])\d{9}$`, where `\0` is the
+  /// NUL escape — so the `08…` branch matched a NUL byte followed by "8" and
+  /// every 080x/081x number (MTN, Airtel, Glo — most of the country) was
+  /// rejected, as was any `+234` form.
+  static final phonePattern =
+      RegExp(r'^(?:\+?234|0)?[789]\d{9}$');
 
   static Validator notEmpty() {
     return (String? value) {
@@ -68,7 +76,9 @@ class Validators {
       if (value == null) {
         return null;
       }
-      return !phonePattern.hasMatch(value)
+      // Users paste numbers with spaces, dashes and brackets.
+      final normalised = value.replaceAll(RegExp(r'[\s()\-]'), '');
+      return !phonePattern.hasMatch(normalised)
           ? (text ?? 'Invalid phone number')
           : null;
     };

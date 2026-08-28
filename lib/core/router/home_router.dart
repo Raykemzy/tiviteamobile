@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/features/history/view/history_detail.dart';
 import 'package:tivi_tea/features/history/view/history_view.dart';
+import 'package:tivi_tea/features/home/view/artisan/artisan_dashboard.dart';
 import 'package:tivi_tea/features/home/view/client/client_dashboard.dart';
 import 'package:tivi_tea/features/home/view/service_provider/service_provider_dashboard.dart';
 import 'package:tivi_tea/features/services/view/pages/scan_qr_code_view.dart';
@@ -18,6 +19,12 @@ class HomeRouter {
     path: AppRoutes.clientDashboard,
     builder: (BuildContext context, GoRouterState state) {
       return const ClientDashboard();
+    },
+  );
+  static final artisanDashboard = GoRoute(
+    path: AppRoutes.artisanDashboard,
+    builder: (BuildContext context, GoRouterState state) {
+      return const ArtisanDashboard();
     },
   );
   static final bookingHistoryView = GoRoute(

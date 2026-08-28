@@ -172,7 +172,7 @@ class _ClientKYCViewState extends ConsumerState<ClientKYCView> {
       data,
       onSuccess: () {
         ref.read(profileNotiferProvider.notifier).getUserProfile();
-        context.go(AppRoutes.servicesView);
+        context.go(AppRoutes.kycDocumentSubmittedView);
       },
       onError: (error) => context.showError(error),
     );

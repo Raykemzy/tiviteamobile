@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/config/extensions/date_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
@@ -15,6 +16,7 @@ import 'package:tivi_tea/features/home/model/general/listing_response_model.dart
 import 'package:tivi_tea/features/home/view/service_provider/service_provider_dashboard.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/features/services/model/enums.dart';
+import 'package:tivi_tea/features/services/view/widgets/kyc_guard.dart';
 import 'package:tivi_tea/features/services/view_model/service_provider/partner_services_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
@@ -35,7 +37,7 @@ class _MyListingViewState extends ConsumerState<MyListingView> {
     // if (user.kycIsVerified == false) {
     //   return const StartKYCProcessView();
     // }
-    if (user.entityType == EntityType.client) {
+    if (user.signedInEntityType == EntityType.client) {
       return const FavoritesListingView();
     }
     final notifier = ref.read(partnerServicesNotiferProvider.notifier);
@@ -56,7 +58,11 @@ class _MyListingViewState extends ConsumerState<MyListingView> {
                   children: [
                     CreateListingButton(
                       text: context.l10n.addnew,
-                      onTap: () => context.push(createListingPath),
+                      onTap: () => guardWithKyc(
+                        context,
+                        ref,
+                        onAllowed: () => context.push(createListingPath),
+                      ),
                     ),
                   ],
                 ),

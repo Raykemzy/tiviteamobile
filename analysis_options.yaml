@@ -28,6 +28,12 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
+    # Role checks in this app compare `User.signedInEntityType` (an EntityType)
+    # against EntityType values. `User.entityType` is a raw server String that
+    # can hold non-role markers like "multiple accounts found", so comparing it
+    # to an EntityType silently evaluates to false forever. Promote that lint to
+    # an error so the mistake cannot ship again.
+    unrelated_type_equality_checks: error
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
 

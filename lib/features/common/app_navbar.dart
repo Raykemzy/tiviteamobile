@@ -66,8 +66,10 @@ class Navbar extends StatelessWidget {
         child: Consumer(
           builder: (context, ref, _) {
             final user = ref.watch(userNotifierProvider);
-            final isClient = user.entityType == EntityType.client;
-            final isArtisan = user.entityType == EntityType.artisan;
+            final signedInEntity =
+                user.signedInEntityType ?? EntityType.client;
+            final isClient = signedInEntity == EntityType.client;
+            final isArtisan = signedInEntity == EntityType.artisan;
             final appAccessState =
                 ref.watch(loginNotifierProvider).appAccessState;
             final destinations = <_NavbarDestinationItem>[

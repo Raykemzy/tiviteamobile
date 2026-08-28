@@ -26,11 +26,8 @@ class ListingsView extends ConsumerWidget {
     final listings = ref.watch(
       servicesNotiferProvider.select((value) => value.listing),
     );
-    final filteredListings = selectedCategoryId == null
-        ? listings
-        : listings
-            .where((listing) => listing.category?.id == selectedCategoryId)
-            .toList();
+    // Filtering happens server-side via ServicesNotifer.filterByCategory.
+    final filteredListings = listings;
     return Column(
       children: [
         SizedBox(

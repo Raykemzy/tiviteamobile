@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tivi_tea/core/services/auth_token_service.dart';
 import 'package:tivi_tea/core/services/local_storage/local_storage.dart';
 import 'package:tivi_tea/core/services/rest_client/app_interceptor.dart';
 import 'package:tivi_tea/core/services/token_expiration_service.dart';
@@ -42,6 +43,18 @@ class MockLocalStorage implements LocalStorage {
   Future<void> putAll(Map<String, dynamic> entries) async {
     _storage.addAll(entries);
   }
+}
+
+/// Stands in for the real service so a refresh never leaves the test process.
+/// `implements` rather than `extends` keeps the live `Dio()` call out of reach.
+class FakeAuthTokenService implements AuthTokenService {
+  FakeAuthTokenService(this.onRefresh);
+
+  final Future<Map<String, dynamic>> Function(String refreshToken) onRefresh;
+
+  @override
+  Future<Map<String, dynamic>> refreshToken(String refreshToken) =>
+      onRefresh(refreshToken);
 }
 
 class TestErrorInterceptorHandler extends ErrorInterceptorHandler {
@@ -105,10 +118,12 @@ void main() {
         dio: dio,
         userRepository: userRepo,
         tokenExpirationService: tokenExpirationService,
-        refreshTokenRequest: (_) async => {
-          'access': 'new-access',
-          'refresh': 'new-refresh',
-        },
+        authTokenService: FakeAuthTokenService(
+          (_) async => {
+            'access': 'new-access',
+            'refresh': 'new-refresh',
+          },
+        ),
       );
       final handler = TestErrorInterceptorHandler();
       final error = DioException(
@@ -132,8 +147,10 @@ void main() {
         dio: dio,
         userRepository: userRepo,
         tokenExpirationService: tokenExpirationService,
-        refreshTokenRequest: (_) async => throw DioException(
-          requestOptions: RequestOptions(path: '/user/token/refresh'),
+        authTokenService: FakeAuthTokenService(
+          (_) async => throw DioException(
+            requestOptions: RequestOptions(path: '/user/token/refresh'),
+          ),
         ),
       );
       final handler = TestErrorInterceptorHandler();
@@ -166,10 +183,10 @@ void main() {
         dio: dio,
         userRepository: userRepo,
         tokenExpirationService: tokenExpirationService,
-        refreshTokenRequest: (_) async {
+        authTokenService: FakeAuthTokenService((_) async {
           refreshCalled = true;
           return {'access': 'unused', 'refresh': 'unused'};
-        },
+        }),
       );
       final handler = TestErrorInterceptorHandler();
       final error = DioException(
@@ -185,6 +202,125 @@ void main() {
 
       expect(refreshCalled, isFalse);
       expect(handler.forwardedError, same(error));
+    });
+
+    /// Captured verbatim from api.tivitea.africa on an expired access token.
+    /// Note the status is 403 (not 401), reason is "Forbidden", and the only
+    /// usable marker is inside a stringified Python dict.
+    Map<String, dynamic> expiredTokenBody() => {
+          'code': 403,
+          'status': 'INTERNAL_SERVER_ERROR',
+          'error': {
+            'reason': 'Forbidden',
+            'message':
+                "{'detail': ErrorDetail(string='Given token not valid for any "
+                    "token type', code='token_not_valid'), 'code': "
+                    "ErrorDetail(string='token_not_valid', "
+                    "code='token_not_valid')}",
+          },
+        };
+
+    test('refreshes on the real 403 token_not_valid body', () async {
+      final interceptor = DioInterceptor(
+        dio: dio,
+        userRepository: userRepo,
+        tokenExpirationService: tokenExpirationService,
+        authTokenService: FakeAuthTokenService(
+          (_) async => {'access': 'new-access', 'refresh': 'new-refresh'},
+        ),
+      );
+      final handler = TestErrorInterceptorHandler();
+      final error = DioException(
+        requestOptions: RequestOptions(path: '/protected'),
+        response: Response(
+          requestOptions: RequestOptions(path: '/protected'),
+          statusCode: 403,
+          data: expiredTokenBody(),
+        ),
+      );
+
+      await interceptor.onError(error, handler);
+
+      expect(userRepo.getToken(), equals('new-access'));
+      expect(handler.resolvedResponse?.statusCode, equals(200));
+    });
+
+    test('leaves a genuine permission 403 alone', () async {
+      var refreshCalled = false;
+      final interceptor = DioInterceptor(
+        dio: dio,
+        userRepository: userRepo,
+        tokenExpirationService: tokenExpirationService,
+        authTokenService: FakeAuthTokenService((_) async {
+          refreshCalled = true;
+          return {'access': 'unused', 'refresh': 'unused'};
+        }),
+      );
+      final handler = TestErrorInterceptorHandler();
+      final emitted = <bool>[];
+      final subscription =
+          tokenExpirationService.tokenExpiredStream.listen(emitted.add);
+      final error = DioException(
+        requestOptions: RequestOptions(path: '/listings'),
+        response: Response(
+          requestOptions: RequestOptions(path: '/listings'),
+          statusCode: 403,
+          data: {
+            'code': 403,
+            'status': 'FAILED',
+            'error': {'reason': 'Forbidden', 'message': 'unauthorized user'},
+          },
+        ),
+      );
+
+      await interceptor.onError(error, handler);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(refreshCalled, isFalse, reason: 'permission error is not expiry');
+      expect(emitted, isEmpty, reason: 'must not log the user out');
+      expect(handler.forwardedError, same(error));
+      await subscription.cancel();
+    });
+
+    test('concurrent auth failures share a single refresh', () async {
+      var refreshCalls = 0;
+      final interceptor = DioInterceptor(
+        dio: dio,
+        userRepository: userRepo,
+        tokenExpirationService: tokenExpirationService,
+        authTokenService: FakeAuthTokenService((_) async {
+          refreshCalls++;
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+          return {'access': 'new-access', 'refresh': 'new-refresh'};
+        }),
+      );
+
+      DioException failing(String path) => DioException(
+            requestOptions: RequestOptions(path: path),
+            response: Response(
+              requestOptions: RequestOptions(path: path),
+              statusCode: 403,
+              data: expiredTokenBody(),
+            ),
+          );
+
+      await Future.wait<void>([
+        Future<void>.value(
+          interceptor.onError(failing('/a'), TestErrorInterceptorHandler()),
+        ),
+        Future<void>.value(
+          interceptor.onError(failing('/b'), TestErrorInterceptorHandler()),
+        ),
+        Future<void>.value(
+          interceptor.onError(failing('/c'), TestErrorInterceptorHandler()),
+        ),
+      ]);
+
+      expect(
+        refreshCalls,
+        equals(1),
+        reason: 'the backend rotates refresh tokens; a stampede kills them all',
+      );
     });
   });
 }

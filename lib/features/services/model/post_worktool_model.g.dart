@@ -18,15 +18,3 @@ WorkToolListing _$WorkToolListingFromJson(Map<String, dynamic> json) =>
       amount: json['amount'] as num?,
       footSoldier: json['foot_soldier'] as String?,
     );
-
-Map<String, dynamic> _$WorkToolListingToJson(WorkToolListing instance) =>
-    <String, dynamic>{
-      'listing_type': instance.listingType,
-      'name': instance.name,
-      'description': instance.description,
-      'address': instance.address,
-      'category_id': instance.categoryId,
-      'images': instance.images,
-      'amount': instance.amount,
-      'foot_soldier': instance.footSoldier,
-    };

@@ -17,25 +17,27 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.read(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.partner;
+    final user = ref.watch(userNotifierProvider);
+    final entityType = user.signedInEntityType ?? EntityType.partner;
     final appAccessState = ref.watch(loginNotifierProvider).appAccessState;
     final isGuest = appAccessState == AppAccessState.guest;
     final routePath = GoRouterState.of(context).matchedLocation;
-    const dashboard =
-        '${AppRoutes.homeView}${AppRoutes.serviceProviderDashboard}';
+    final dashboard = entityType == EntityType.artisan
+        ? '${AppRoutes.homeView}${AppRoutes.artisanDashboard}'
+        : '${AppRoutes.homeView}${AppRoutes.serviceProviderDashboard}';
     const settings = '${AppRoutes.profile}/${AppRoutes.settingsView}';
     const bookingHistory =
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
+    const jobHistory = '${AppRoutes.profile}/${AppRoutes.jobHistoryView}';
     const payment = '${AppRoutes.profile}/${AppRoutes.paymentView}';
     const withdrawals = '${AppRoutes.profile}/${AppRoutes.withdrawalView}';
     const artisanGallery =
         '${AppRoutes.profile}/${AppRoutes.artisanGalleryView}';
-    // const marketPlace =
-    //     '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
+    const marketPlace =
+        '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
     const myMarketplace = '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}';
-    // const allArtisans =
-    //     "${AppRoutes.servicesView}/${AppRoutes.allArtisansView}";
+    const allArtisans =
+        '${AppRoutes.servicesView}/${AppRoutes.allArtisansView}';
     return Drawer(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -85,27 +87,25 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                 onTap: () => context.go(AppRoutes.myListingView),
               ),
           if (appAccessState != AppAccessState.guest)
-            if (user.entityType == EntityType.artisan)
+            if (entityType == EntityType.artisan)
               DrawerListTile(
                 icon: Assets.svgs.listingDrawerIcon.path,
                 label: 'My Gallery',
                 isSelected: routePath == artisanGallery,
                 onTap: () => context.go(artisanGallery),
               ),
-          // if (appAccessState != AppAccessState.guest)
-          //   DrawerListTile(
-          //     icon: Assets.svgs.listingDrawerIcon.path,
-          //     label: 'All Artisans',
-          //     isSelected: routePath == allArtisans,
-          //     onTap: () => context.go(allArtisans),
-          //   ),
-          // if (appAccessState != AppAccessState.guest)
-          // DrawerListTile(
-          //   icon: Assets.svgs.listingDrawerIcon.path,
-          //   label: 'Marketplace',
-          //   isSelected: routePath == marketPlace,
-          //   onTap: () => context.go(marketPlace),
-          // ),
+          DrawerListTile(
+            icon: Assets.svgs.listingDrawerIcon.path,
+            label: 'All Artisans',
+            isSelected: routePath == allArtisans,
+            onTap: () => context.go(allArtisans),
+          ),
+          DrawerListTile(
+            icon: Assets.svgs.listingDrawerIcon.path,
+            label: 'Marketplace',
+            isSelected: routePath == marketPlace,
+            onTap: () => context.go(marketPlace),
+          ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
               icon: Assets.svgs.listingDrawerIcon.path,
@@ -114,12 +114,20 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
               onTap: () => context.go(myMarketplace),
             ),
           if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.historyDrawerIcon.path,
-              label: context.l10n.bookingHistory,
-              isSelected: routePath == bookingHistory,
-              onTap: () => context.go(bookingHistory),
-            ),
+            if (entityType == EntityType.artisan)
+              DrawerListTile(
+                icon: Assets.svgs.historyDrawerIcon.path,
+                label: 'Job History',
+                isSelected: routePath == jobHistory,
+                onTap: () => context.go(jobHistory),
+              )
+            else
+              DrawerListTile(
+                icon: Assets.svgs.historyDrawerIcon.path,
+                label: context.l10n.bookingHistory,
+                isSelected: routePath == bookingHistory,
+                onTap: () => context.go(bookingHistory),
+              ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(
               icon: Assets.svgs.paymentDrawerIcon.path,
@@ -172,6 +180,9 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                   DrawerListTile(
                     icon: Assets.svgs.report.path,
                     label: context.l10n.report,
+                    onTap: () => context.go(
+                      '${AppRoutes.profile}/${AppRoutes.contactUsView}',
+                    ),
                   ),
                 20.verticalSpace,
                 Consumer(

@@ -6,7 +6,7 @@ part of 'artisans_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$artisansNotifierHash() => r'b859a8aa7d44472d5c7afd28ab0e6cd23f0a743d';
+String _$artisansNotifierHash() => r'42afb7031d0c8eede91a08c7d86fde424fa4b1f5';
 
 /// See also [ArtisansNotifier].
 @ProviderFor(ArtisansNotifier)

@@ -5,12 +5,14 @@ import 'package:retrofit/retrofit.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/response/generic_paginated_response.dart';
 import 'package:tivi_tea/features/artisans/model/artisan_response_model.dart';
+import 'package:tivi_tea/features/artisans/model/quotation_model.dart';
+import 'package:tivi_tea/features/artisans/model/quotation_request_bodies.dart';
 import 'package:tivi_tea/features/artisans/model/request_quotation_request_body.dart';
-import 'package:tivi_tea/features/artisans/model/request_quotation_response_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_model.dart';
 import 'package:tivi_tea/features/favorites/model/favorite_listing_request_body.dart';
 import 'package:tivi_tea/features/history/model/booking_history_model.dart';
 import 'package:tivi_tea/features/home/model/client/category_response_model.dart';
+import 'package:tivi_tea/features/home/model/artisan/artisan_dashboard_model.dart';
 import 'package:tivi_tea/features/home/model/client/client_dashboard_model.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/home/model/service_provider/service_provider_dashboard_model.dart';
@@ -148,8 +150,29 @@ abstract class RestClient {
   Future<BaseResponse<ArtisanResponseModel>> getArtisan(
     @Path('artisanId') String artisanId,
   );
+  /// Artisan replies to a quotation request with a price.
+  @POST('/bookings/send-quotation/{quotationId}')
+  Future<BaseResponse<QuotationModel>> sendQuotation(
+    @Path('quotationId') String quotationId,
+    @Body() SendQuotationRequestBody data,
+  );
+
+  /// Either side counters. Capped at two counters each by the backend.
+  @POST('/bookings/counter-quotation-price/{quotationId}')
+  Future<BaseResponse<QuotationModel>> counterQuotationPrice(
+    @Path('quotationId') String quotationId,
+    @Body() CounterQuotationRequestBody data,
+  );
+
+  /// `action` is "accept" or "decline".
+  @POST('/bookings/accept-or-decline-quotation/{quotationId}')
+  Future<BaseResponse<QuotationModel>> acceptOrDeclineQuotation(
+    @Path('quotationId') String quotationId,
+    @Body() Map<String, dynamic> body,
+  );
+
   @POST('/bookings/request-quotation/{artisanId}')
-  Future<BaseResponse<RequestQuotationResponseModel>> requestQuotation(
+  Future<BaseResponse<QuotationModel>> requestQuotation(
     @Path('artisanId') String artisanId,
     @Body() RequestQuotationRequestBody data,
   );
@@ -171,6 +194,12 @@ abstract class RestClient {
     @Path('item_id') String itemId,
     @Body() EditMarketplaceItemRequestBody data,
   );
+  @POST('/listings/market-place/item/publish/{item_id}')
+  Future<BaseResponse<dynamic>> publishMarketplaceItem(
+    @Path('item_id') String itemId,
+    @Body() Map<String, dynamic> body,
+  );
+
   @DELETE('/listings/market-place/item/{item_id}')
   Future<dynamic> deleteMarketplaceItem(
     @Path('item_id') String itemId,
@@ -263,6 +292,8 @@ abstract class RestClient {
       getServiceProviderDashboard();
   @GET('/dashboard/client')
   Future<BaseResponse<ClientDashboardModel>> getClientDashboard();
+  @GET('/dashboard/artisan')
+  Future<BaseResponse<ArtisanDashboardModel>> getArtisanDashboard();
   @GET('/dashboard/user/profile')
   Future<BaseResponse<GetUserProfileResponse>> getUserProfile();
   @POST('/dashboard/edit-profile')

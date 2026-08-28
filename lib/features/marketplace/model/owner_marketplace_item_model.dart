@@ -14,6 +14,7 @@ class OwnerMarketplaceItemModel {
     this.inStock,
     this.quantity,
     this.category,
+    this.status,
   });
 
   final String? id;
@@ -26,6 +27,13 @@ class OwnerMarketplaceItemModel {
   final bool? inStock;
   final int? quantity;
   final String? category;
+
+  /// "Published" or "Draft". Items are created as drafts and stay invisible in
+  /// the marketplace until published, which is why sellers reported adding an
+  /// item and never seeing it listed.
+  final String? status;
+
+  bool get isPublished => status?.toLowerCase() == 'published';
 
   factory OwnerMarketplaceItemModel.fromJson(Map<String, dynamic> json) =>
       _$OwnerMarketplaceItemModelFromJson(json);

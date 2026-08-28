@@ -12,6 +12,7 @@ import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/common/app_paginator_widget.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:tivi_tea/features/common/models/paginator_selector_model.dart';
+import 'package:tivi_tea/features/services/view/widgets/kyc_guard.dart';
 import 'package:tivi_tea/features/history/model/booking_history_model.dart';
 import 'package:tivi_tea/features/home/view/service_provider/service_provider_dashboard.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
@@ -41,7 +42,7 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.client;
+    final entityType = user.signedInEntityType ?? EntityType.client;
 
     final state = ref.watch(bookingNotiferProvider);
     final bookingHistoryList = state.bookingHistoryList;
@@ -66,12 +67,12 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
                 children: [
                   if (entityType == EntityType.partner)
                     CreateListingButton(
-                      text: entityType == EntityType.client
-                          ? context.l10n.createBooking
-                          : context.l10n.createListing,
-                      onTap: () => entityType == EntityType.client
-                          ? context.push(AppRoutes.servicesView)
-                          : context.push(createListingPath),
+                      text: context.l10n.createListing,
+                      onTap: () => guardWithKyc(
+                        context,
+                        ref,
+                        onAllowed: () => context.push(createListingPath),
+                      ),
                     ),
                   if (entityType == EntityType.partner) 30.verticalSpace,
                 ],
@@ -160,11 +161,23 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
   List<Widget> _buildRow(BookingHistoryModel booking) {
     const bookingHistoryDetail =
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}';
+
+    /// Every cell opens the same booking — tapping the status or the price
+    /// should work just as well as tapping the customer. `opaque` so the
+    /// empty space around a short label stays tappable too.
+    Widget cell(Widget child) => TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () =>
+                context.push(bookingHistoryDetail, extra: booking.id ?? ''),
+            child: child,
+          ),
+        );
+
     return [
-      GestureDetector(
-        onTap: () =>
-            context.push(bookingHistoryDetail, extra: booking.id ?? ''),
-        child: Padding(
+      cell(
+        Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
@@ -190,14 +203,8 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
           ),
         ),
       ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: Text(booking.status ?? ''),
-      ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: booking.amount.getCurrencyText(),
-      ),
+      cell(Text(booking.status ?? '')),
+      cell(booking.amount.getCurrencyText()),
     ];
   }
 }

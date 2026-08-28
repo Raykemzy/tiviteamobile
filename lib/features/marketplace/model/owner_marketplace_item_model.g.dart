@@ -22,6 +22,7 @@ OwnerMarketplaceItemModel _$OwnerMarketplaceItemModelFromJson(
       inStock: json['in_stock'] as bool?,
       quantity: (json['quantity'] as num?)?.toInt(),
       category: json['category'] as String?,
+      status: json['status'] as String?,
     );
 
 Map<String, dynamic> _$OwnerMarketplaceItemModelToJson(
@@ -36,6 +37,7 @@ Map<String, dynamic> _$OwnerMarketplaceItemModelToJson(
       'in_stock': instance.inStock,
       'quantity': instance.quantity,
       'category': instance.category,
+      'status': instance.status,
     };
 
 OwnerMarketplaceItemUser _$OwnerMarketplaceItemUserFromJson(

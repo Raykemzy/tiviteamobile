@@ -2,7 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'bank_model.g.dart';
 
-@JsonSerializable()
+// Response-only: nothing serialises this back out.
+@JsonSerializable(createToJson: false)
 class ListBanksResponse {
   final bool? status;
   final String? message;

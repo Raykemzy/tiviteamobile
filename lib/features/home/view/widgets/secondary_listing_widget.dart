@@ -71,12 +71,10 @@ class _SecondaryListingViewState extends ConsumerState<SecondaryListingView> {
     final state = ref.watch(servicesNotiferProvider);
     final listings = state.listing;
     final listingLoadState = state.listingLoadState;
-    final filteredListings = widget.selectedCategoryId == null
-        ? listings
-        : listings
-            .where(
-                (listing) => listing.category?.id == widget.selectedCategoryId)
-            .toList();
+    // The category filter is applied by the backend (see
+    // ServicesNotifer.filterByCategory); filtering here as well would hide
+    // results the server already narrowed.
+    final filteredListings = listings;
     final notifier = ref.read(servicesNotiferProvider.notifier);
     final isInitialLoading =
         listingLoadState == LoadState.loading && listings.isEmpty;

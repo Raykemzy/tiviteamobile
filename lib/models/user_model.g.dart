@@ -34,6 +34,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
           : DateTime.parse(json['updated_at'] as String),
       profilePicture: json['profile_picture'] as String?,
       hasUploadedKycDocuments: json['has_uploaded_kyc_documents'] as bool?,
+      entityId: json['entity_id'] as String?,
       address: json['address'] == null
           ? null
           : Address.fromJson(json['address'] as Map<String, dynamic>),
@@ -61,6 +62,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'updated_at': instance.updatedAt?.toIso8601String(),
       'profile_picture': instance.profilePicture,
       'has_uploaded_kyc_documents': instance.hasUploadedKycDocuments,
+      'entity_id': instance.entityId,
       'address': instance.address,
       'groups': instance.groups,
       'user_permissions': instance.userPermissions,

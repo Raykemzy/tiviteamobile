@@ -164,7 +164,7 @@ void main() {
         expect(validatedUser!.id, equals('456'));
         expect(validatedUser.email, equals('complete@example.com'));
         expect(validatedUser.firstName, equals('Alice'));
-        expect(validatedUser.entityType, equals(EntityType.client));
+        expect(validatedUser.signedInEntityType, equals(EntityType.client));
       });
 
       test('should reject incomplete user data', () async {
@@ -282,7 +282,7 @@ void main() {
         // Assert
         expect(isValid, equals(true));
         expect(validatedUser, isNotNull);
-        expect(validatedUser!.entityType, equals(EntityType.partner));
+        expect(validatedUser!.signedInEntityType, equals(EntityType.partner));
       });
     });
 

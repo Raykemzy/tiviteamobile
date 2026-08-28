@@ -9,12 +9,15 @@ class AppRoutes {
   static const String createCustomerAccount = '/createCustomerAccount';
   static const String createArtisanAccount = '/createArtisanAccount';
   static const String artisanKYCView = '/artisanKYCView';
+  static const String kycDocumentSubmittedView =
+      '/kycDocumentSubmittedView';
   static const String createServiceProviderAccount =
       '/createServiceProviderAccount';
   static const String createServiceProviderAccountSecondView =
       '/createServiceProviderAccountSecondView';
   static const String serviceProviderDashboard = 'serviceProviderDashboard';
   static const String clientDashboard = 'clientDashboard';
+  static const String artisanDashboard = 'artisanDashboard';
   static const String servicesView = '/servicesView';
   static const String historyView = '/historyView';
   static const String profile = '/profile';
@@ -49,6 +52,7 @@ class AppRoutes {
   static const String artisanGalleryView = 'artisanGalleryView';
   static const String jobHistoryView = 'jobHistoryView';
   static const String allArtisansView = 'allArtisansView';
+  static const String bargainQuotationView = 'bargainQuotationView';
   static const String artisanDetailsView = 'artisanDetailsView';
   static const String artisanGalleryFullView = 'artisanGalleryFullView';
   static const String marketPlaceView = 'marketPlaceView';

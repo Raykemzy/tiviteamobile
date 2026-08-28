@@ -190,6 +190,31 @@ class OwnerMarketplaceNotifier extends _$OwnerMarketplaceNotifier {
     }
   }
 
+  /// Publishes a draft item so it becomes visible in the marketplace.
+  ///
+  /// Items are created as drafts; without this the seller sees them under
+  /// "My Marketplace" but no buyer ever sees them listed.
+  Future<void> publishMarketplaceItem({
+    required String itemId,
+    required void Function(String message) onSuccess,
+    required void Function(String message) onError,
+  }) async {
+    state = state.copyWith(publishingItemId: itemId, errorMessage: null);
+    try {
+      final response = await _repo.publishMarketplaceItem(itemId);
+      if (!response.isSuccess()) {
+        throw response.error?.message ?? response.message ?? 'An error occurred';
+      }
+      state = state.copyWith(publishingItemId: null);
+      onSuccess(response.message ?? 'Item published.');
+      await getOwnersMarketPlaceItems(page: 1);
+    } catch (e) {
+      final message = e.toString();
+      state = state.copyWith(publishingItemId: null, errorMessage: message);
+      onError(message);
+    }
+  }
+
   Future<void> deleteMarketplaceItem({
     required String itemId,
     required void Function(String message) onSuccess,

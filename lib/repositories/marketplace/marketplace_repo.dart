@@ -56,6 +56,17 @@ final class MarketplaceRepo {
     }
   }
 
+  Future<BaseResponse<dynamic>> publishMarketplaceItem(String itemId) async {
+    try {
+      return await restClient.publishMarketplaceItem(
+        itemId,
+        const {'action': 'publish'},
+      );
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
   Future<BaseResponse<dynamic>> deleteMarketplaceItem(String itemId) async {
     try {
       await restClient.deleteMarketplaceItem(itemId);

@@ -17,6 +17,7 @@ import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/profile/model/edit_profile_model.dart';
 import 'package:tivi_tea/features/profile/view_model/profile_notifer.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
+import 'package:tivi_tea/features/services/view/widgets/kyc_guard.dart';
 import 'package:tivi_tea/features/services/view_model/service_provider/partner_services_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
@@ -27,8 +28,8 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.read(userNotifierProvider);
-    final entityType = user.entityType ?? EntityType.client;
+    final user = ref.watch(userNotifierProvider);
+    final entityType = user.signedInEntityType ?? EntityType.client;
 
     const createListingPath =
         '${AppRoutes.myListingView}/${AppRoutes.createListingView}';
@@ -53,7 +54,11 @@ class SettingsPage extends ConsumerWidget {
                 if (entityType == EntityType.partner)
                   CreateListingButton(
                     text: context.l10n.createWorkspace,
-                    onTap: () => context.push(createListingPath),
+                    onTap: () => guardWithKyc(
+                      context,
+                      ref,
+                      onAllowed: () => context.push(createListingPath),
+                    ),
                   ),
               ],
             ),

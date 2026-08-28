@@ -171,6 +171,9 @@ class LoginNotifier extends _$LoginNotifier {
     state = state.copyWith(logoutState: LoadState.loading);
     try {
       _repo.logout(onDataCleared: onDataCleared);
+      // Session data is gone from storage; drop the in-memory copy as well so
+      // no screen renders the signed-out user.
+      ref.read(userNotifierProvider.notifier).refreshUser();
       state = state.copyWith(
         logoutState: LoadState.success,
         appAccessState: AppAccessState.guest,

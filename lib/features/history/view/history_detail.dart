@@ -43,7 +43,8 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final entityType = ref.read(userNotifierProvider).entityType;
+      final entityType = ref.read(userNotifierProvider).signedInEntityType ??
+          EntityType.client;
       getBookingDetails();
 
       if (entityType == EntityType.client) {
@@ -85,7 +86,8 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    final entityType = ref.read(userNotifierProvider).entityType;
+    final entityType = ref.watch(userNotifierProvider).signedInEntityType ??
+        EntityType.client;
     return AppScaffold(
       appbar: CustomAppBar(
         title: context.l10n.bookingHistoryView,

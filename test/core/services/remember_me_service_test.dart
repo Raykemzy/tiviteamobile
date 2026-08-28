@@ -333,7 +333,7 @@ void main() {
         expect(result, isNotNull);
         expect(result!.id, equals('123'));
         expect(result.email, equals('test@example.com'));
-        expect(result.entityType, equals(EntityType.client));
+        expect(result.signedInEntityType, equals(EntityType.client));
       });
     });
 
@@ -416,10 +416,10 @@ void main() {
         final result = rememberMeService.validateRememberMeData();
 
         // Assert
-        // Note: Due to User model's defaultValue: EntityType.client,
-        // null entityType gets converted to EntityType.client during serialization
-        // So this test actually passes validation
-        expect(result, equals(true));
+        // `signedInEntityType` is the entity the session is actually signed in
+        // as. Without it there is no dashboard to restore, so remember-me has
+        // to fail validation and send the user back to login.
+        expect(result, equals(false));
       });
 
       test('should handle user with empty id', () async {
@@ -496,7 +496,7 @@ void main() {
         expect(validatedUser.firstName, equals('Alice'));
         expect(validatedUser.lastName, equals('Johnson'));
         expect(validatedUser.phoneNumber, equals('+1234567890'));
-        expect(validatedUser.entityType, equals(EntityType.client));
+        expect(validatedUser.signedInEntityType, equals(EntityType.client));
         expect(validatedUser.isActive, equals(true));
         expect(validatedUser.isVerified, equals(true));
       });

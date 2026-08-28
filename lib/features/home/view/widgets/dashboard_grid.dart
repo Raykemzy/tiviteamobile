@@ -25,7 +25,7 @@ class DashboardGrid extends ConsumerWidget {
         children: [
           DashboardInfoContainer(
             title: context.l10n.totalBooking,
-            value: dashboardInfo?.totalBookings ?? 0,
+            value: '${dashboardInfo?.totalBookings ?? 0}',
             bookingContainerColor: const Color(0xFF2196F3),
             onViewAll: () => context.go(
               '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}',
@@ -33,13 +33,13 @@ class DashboardGrid extends ConsumerWidget {
           ),
           DashboardInfoContainer(
             title: context.l10n.totalListing,
-            value: dashboardInfo?.totalListings ?? 0,
+            value: '${dashboardInfo?.totalListings ?? 0}',
             bookingContainerColor: const Color(0xFFFF5B5B),
             onViewAll: () => context.go(AppRoutes.myListingView),
           ),
           DashboardInfoContainer(
             title: context.l10n.totalEarning,
-            value: dashboardInfo?.totalRevenue ?? 0,
+            value: dashboardInfo?.totalRevenue ?? '0',
             bookingContainerColor: const Color(0xFF02952B),
             onViewAll: () => context.go(
               '${AppRoutes.profile}/${AppRoutes.paymentView}',
@@ -53,7 +53,10 @@ class DashboardGrid extends ConsumerWidget {
 
 class DashboardInfoContainer extends StatelessWidget {
   final String title;
-  final num value;
+
+  /// Pre-rendered display text. The backend formats some of these itself
+  /// ("2K"), so this is a String rather than a num.
+  final String value;
   final Color bookingContainerColor;
 
   /// Destination for the card's "View all" link. Omit to render it as plain
@@ -111,7 +114,7 @@ class DashboardInfoContainer extends StatelessWidget {
             ],
           ),
           Text(
-            value.toString(),
+            value,
             style: context.theme.textTheme.titleMedium?.copyWith(
               color: const Color(0xFF3F3F3F),
             ),

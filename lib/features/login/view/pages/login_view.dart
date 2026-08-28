@@ -351,14 +351,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
     // Start real-time notification WebSocket
     ref.read(notificationWebSocketServiceProvider.notifier).connect();
 
-    if (user?.entityType == EntityType.artisan &&
+    if (user?.signedInEntityType == EntityType.artisan &&
         user?.hasUploadedKycDocuments == false) {
       context.go(AppRoutes.artisanKYCView);
       return;
     }
     context.go(
       AppRoutes.homeView,
-      extra: user?.entityType ?? EntityType.client,
+      extra: user?.signedInEntityType ?? EntityType.client,
     );
   }
 

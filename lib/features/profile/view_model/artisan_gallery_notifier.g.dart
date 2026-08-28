@@ -7,7 +7,7 @@ part of 'artisan_gallery_notifier.dart';
 // **************************************************************************
 
 String _$artisanGalleryNotifierHash() =>
-    r'd42a7bc58b7b34531f92b68984b6908f3487ae3a';
+    r'4def5546e25852672aa325b7cfcc7882d786542e';
 
 /// See also [ArtisanGalleryNotifier].
 @ProviderFor(ArtisanGalleryNotifier)

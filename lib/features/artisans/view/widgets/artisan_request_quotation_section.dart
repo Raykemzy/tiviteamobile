@@ -155,10 +155,20 @@ class _ArtisanRequestQuotationSectionState
       clientNote: note,
       clientEndDate: _selectedDate!,
       images: images,
-      onSuccess: (message) {
+      onSuccess: (message, quotation) {
         if (!mounted) return;
         context.showSuccess(message);
-        context.go(AppRoutes.homeView);
+        if (quotation == null) {
+          context.go(AppRoutes.homeView);
+          return;
+        }
+        // Drop straight into the negotiation — the request response is the
+        // only chance to load the quotation, since the backend exposes no GET
+        // for one.
+        context.pushReplacement(
+          '${AppRoutes.servicesView}/${AppRoutes.bargainQuotationView}',
+          extra: quotation,
+        );
       },
       onError: (message) {
         if (!mounted) return;

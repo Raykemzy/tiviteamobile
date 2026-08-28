@@ -9,6 +9,7 @@ import 'package:tivi_tea/core/router/services_router.dart';
 import 'package:tivi_tea/features/common/app_navbar.dart';
 import 'package:tivi_tea/features/home/view/general_widget.dart';
 import 'package:tivi_tea/features/login/view/pages/forgot_password.dart';
+import 'package:tivi_tea/features/kyc/view/pages/document_submitted_view.dart';
 import 'package:tivi_tea/features/login/view/pages/login_view.dart';
 import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/notifications/view/pages/notification_detail_view.dart';
@@ -66,6 +67,7 @@ final GoRouter router = GoRouter(
               routes: [
                 HomeRouter.serviceProviderDashboard,
                 HomeRouter.clientDashboard,
+                HomeRouter.artisanDashboard,
                 HomeRouter.bookingHistoryView,
                 HomeRouter.bookingHistoryDetailsView,
                 HomeRouter.scanQRCodeView,
@@ -96,6 +98,7 @@ final GoRouter router = GoRouter(
                 ServicesRouter.createFootSoldierView,
                 ServicesRouter.createTransferRecepientView,
                 ServicesRouter.allArtisansView,
+                ServicesRouter.bargainQuotationView,
                 ServicesRouter.artisanDetailsView,
                 ServicesRouter.marketPlaceView,
                 ServicesRouter.myCartView,
@@ -168,6 +171,12 @@ final GoRouter router = GoRouter(
       path: AppRoutes.loginView,
       builder: (BuildContext context, GoRouterState state) {
         return const LoginView();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.kycDocumentSubmittedView,
+      builder: (BuildContext context, GoRouterState state) {
+        return const DocumentSubmitted();
       },
     ),
     GoRoute(
