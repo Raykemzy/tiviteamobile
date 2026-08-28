@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/marketplace_dashboard_view.dart';
+import 'package:tivi_tea/features/marketplace/view/pages/marketplace_order_detail_view.dart';
 import 'package:tivi_tea/features/reviews/view/partner_reviews_view.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/features/contact_us/view/pages/contact_us_view.dart';
@@ -46,6 +48,12 @@ class ProfileRouter {
       return const WithdrawalView();
     },
   );
+  static final marketplaceDashboardView = GoRoute(
+    path: AppRoutes.marketplaceDashboardView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const MarketplaceDashboardView();
+    },
+  );
   static final partnerReviewsView = GoRoute(
     path: AppRoutes.partnerReviewsView,
     builder: (BuildContext context, GoRouterState state) {
@@ -77,6 +85,12 @@ class ProfileRouter {
       return const MyMarketplaceView();
     },
     routes: [
+      GoRoute(
+        path: AppRoutes.marketplaceOrderDetailView,
+        builder: (BuildContext context, GoRouterState state) {
+          return MarketplaceOrderDetailView(orderId: state.extra as String);
+        },
+      ),
       GoRoute(
         path: AppRoutes.addMarketplaceItemView,
         builder: (BuildContext context, GoRouterState state) {

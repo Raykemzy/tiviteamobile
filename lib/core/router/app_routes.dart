@@ -63,6 +63,8 @@ class AppRoutes {
   static const String marketplaceDeliveryView = 'marketplaceDeliveryView';
   static const String marketplaceOrderSummaryView = 'marketplaceOrderSummaryView';
   static const String myMarketplaceView = 'myMarketplaceView';
+  static const String marketplaceOrderDetailView = 'marketplaceOrderDetailView';
+  static const String marketplaceDashboardView = 'marketplaceDashboardView';
   static const String addMarketplaceItemView = 'addMarketplaceItemView';
   static const String editMarketplaceItemView = 'editMarketplaceItemView';
   static const String notificationsView = '/notificationsView';

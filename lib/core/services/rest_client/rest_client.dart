@@ -31,6 +31,7 @@ import 'package:tivi_tea/features/login/model/general/login_request_object.dart'
 import 'package:tivi_tea/features/login/model/general/login_response_object.dart';
 import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_order_models.dart';
 import 'package:tivi_tea/features/payment/model/payout_models.dart';
 import 'package:tivi_tea/features/reviews/model/review_models.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
@@ -232,6 +233,17 @@ abstract class RestClient {
   Future<BaseResponse<MarketplaceOrderCreateResponse>> createMarketPlaceOrder(
     @Body() MarketplaceCreateOrderRequestBody body,
   );
+
+  /// Full detail for a placed order, including a payment link while unpaid.
+  @GET('/listings/market-place/view-order/{order_id}')
+  Future<BaseResponse<MarketplaceOrderModel>> viewMarketplaceOrder(
+    @Path('order_id') String orderId,
+  );
+
+  /// Seller-side marketplace figures.
+  @GET('/dashboard/marketplace')
+  Future<BaseResponse<MarketplaceSellerDashboardModel>>
+      getMarketplaceSellerDashboard();
 
   @POST('/listings/market-place/order/item/cancel/{order_id}')
   Future<BaseResponse<dynamic>> cancelMarketPlaceOrderItem(

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:tivi_tea/features/marketplace/model/marketplace_order_models.dart';
 import 'package:tivi_tea/core/config/exceptions/app_exception.dart';
 import 'package:tivi_tea/core/response/base_response.dart';
 import 'package:tivi_tea/core/response/generic_paginated_response.dart';
@@ -51,6 +52,23 @@ final class MarketplaceRepo {
   ) async {
     try {
       return await restClient.editMarketplaceItem(itemId, data);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
+  Future<BaseResponse<MarketplaceOrderModel>> viewOrder(String orderId) async {
+    try {
+      return await restClient.viewMarketplaceOrder(orderId);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
+  Future<BaseResponse<MarketplaceSellerDashboardModel>>
+      getSellerDashboard() async {
+    try {
+      return await restClient.getMarketplaceSellerDashboard();
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

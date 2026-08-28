@@ -33,6 +33,9 @@ class MarketplaceOrderSummaryView extends ConsumerStatefulWidget {
 
 class _MarketplaceOrderSummaryViewState
     extends ConsumerState<MarketplaceOrderSummaryView> {
+  /// Set once an order exists, so the failure paths can offer it.
+  VoidCallback? _openOrderDetail;
+
   @override
   void initState() {
     super.initState();
@@ -250,6 +253,14 @@ class _MarketplaceOrderSummaryViewState
         return;
       }
       ref.read(marketplacePendingOrderIdProvider.notifier).state = orderId;
+      // Every failure below now sends the buyer to the order, which can resume
+      // payment — these messages previously pointed at a screen that did not
+      // exist.
+      _openOrderDetail = () => context.push(
+            '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}/'
+            '${AppRoutes.marketplaceOrderDetailView}',
+            extra: orderId,
+          );
       _startPayment(orderId);
     } catch (e) {
       if (!mounted) return;
@@ -269,6 +280,7 @@ class _MarketplaceOrderSummaryViewState
               context.showError(
                 'Could not start payment. Please try again from your orders.',
               );
+              _openOrderDetail?.call();
               return;
             }
             _openPaymentWebview(url, response.reference ?? '');
@@ -290,6 +302,7 @@ class _MarketplaceOrderSummaryViewState
         context.showError(
           'Payment status is unknown. Please check your orders.',
         );
+        _openOrderDetail?.call();
         return;
       }
       await ref.read(clientPaymentNotifierProvider.notifier).getPaymentStatus(

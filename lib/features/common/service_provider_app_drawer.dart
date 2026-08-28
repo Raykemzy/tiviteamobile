@@ -37,6 +37,8 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
     const marketPlace =
         '${AppRoutes.servicesView}/${AppRoutes.marketPlaceView}';
     const myMarketplace = '${AppRoutes.profile}/${AppRoutes.myMarketplaceView}';
+    const marketplaceDashboard =
+        '${AppRoutes.profile}/${AppRoutes.marketplaceDashboardView}';
     const allArtisans =
         '${AppRoutes.servicesView}/${AppRoutes.allArtisansView}';
     return Drawer(
@@ -113,6 +115,13 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
               label: 'My Marketplace',
               isSelected: routePath == myMarketplace,
               onTap: () => context.go(myMarketplace),
+            ),
+          if (appAccessState != AppAccessState.guest)
+            DrawerListTile(
+              icon: Assets.svgs.dashboardDrawerIcon.path,
+              label: 'Marketplace Sales',
+              isSelected: routePath == marketplaceDashboard,
+              onTap: () => context.go(marketplaceDashboard),
             ),
           if (appAccessState != AppAccessState.guest)
             if (entityType == EntityType.artisan)

@@ -141,6 +141,7 @@ final GoRouter router = GoRouter(
                 ProfileRouter.settings,
                 ProfileRouter.paymentView,
                 ProfileRouter.withdrawalView,
+                ProfileRouter.marketplaceDashboardView,
                 ProfileRouter.partnerReviewsView,
                 ProfileRouter.artisanGalleryView,
                 ProfileRouter.jobHistoryView,

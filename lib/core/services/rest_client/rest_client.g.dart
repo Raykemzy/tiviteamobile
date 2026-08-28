@@ -1388,6 +1388,74 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<BaseResponse<MarketplaceOrderModel>> viewMarketplaceOrder(
+    String orderId,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<MarketplaceOrderModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/listings/market-place/view-order/${orderId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<MarketplaceOrderModel> _value;
+    try {
+      _value = BaseResponse<MarketplaceOrderModel>.fromJson(
+        _result.data!,
+        (json) => MarketplaceOrderModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<MarketplaceSellerDashboardModel>>
+      getMarketplaceSellerDashboard() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<BaseResponse<MarketplaceSellerDashboardModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/dashboard/marketplace',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<MarketplaceSellerDashboardModel> _value;
+    try {
+      _value = BaseResponse<MarketplaceSellerDashboardModel>.fromJson(
+        _result.data!,
+        (json) => MarketplaceSellerDashboardModel.fromJson(
+          json as Map<String, dynamic>,
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<BaseResponse<dynamic>> cancelMarketPlaceOrderItem(
     String orderId,
   ) async {
