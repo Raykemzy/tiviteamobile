@@ -29,6 +29,7 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
     const bookingHistory =
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
     const jobHistory = '${AppRoutes.profile}/${AppRoutes.jobHistoryView}';
+    const reviews = '${AppRoutes.profile}/${AppRoutes.partnerReviewsView}';
     const payment = '${AppRoutes.profile}/${AppRoutes.paymentView}';
     const withdrawals = '${AppRoutes.profile}/${AppRoutes.withdrawalView}';
     const artisanGallery =
@@ -127,6 +128,14 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                 label: context.l10n.bookingHistory,
                 isSelected: routePath == bookingHistory,
                 onTap: () => context.go(bookingHistory),
+              ),
+          if (appAccessState != AppAccessState.guest)
+            if (entityType != EntityType.artisan)
+              DrawerListTile(
+                icon: Assets.svgs.historyDrawerIcon.path,
+                label: context.l10n.customerReview,
+                isSelected: routePath == reviews,
+                onTap: () => context.go(reviews),
               ),
           if (appAccessState != AppAccessState.guest)
             DrawerListTile(

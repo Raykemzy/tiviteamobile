@@ -19,6 +19,8 @@ import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
 import 'package:tivi_tea/features/history/model/booking_history_model.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
+import 'package:tivi_tea/features/reviews/view/service_completion_view.dart';
+import 'package:tivi_tea/features/reviews/view/write_review_view.dart';
 import 'package:tivi_tea/features/services/view_model/booking_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
@@ -83,6 +85,10 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
       context.showError('An error occurred while e-Ticket');
     });
   }
+
+  /// Completed bookings are the only ones that can be confirmed or reviewed.
+  bool get _isCompleted =>
+      (_booking?.status ?? '').toLowerCase() == 'completed';
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +162,61 @@ class _HistoryDetailViewState extends ConsumerState<HistoryDetailView> {
                             ),
                           ] else ...[
                             50.verticalSpace,
+                            // Once the job is done the client confirms it,
+                            // which is also what unlocks leaving a review.
+                            if (_isCompleted) ...[
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                child: AppButton(
+                                  buttonText: 'Confirm service completion',
+                                  onPressed: () => context.push(
+                                    AppRoutes.serviceCompletionView,
+                                    extra: ServiceCompletionArgs(
+                                      bookingId: widget.bookingId,
+                                      name:
+                                          _booking?.listing?.name ?? 'Booking',
+                                      serviceType:
+                                          _booking?.listing?.listingType,
+                                      date: _booking?.pickUpDate == null
+                                          ? null
+                                          : '${_booking!.pickUpDate!.day}/'
+                                              '${_booking!.pickUpDate!.month}/'
+                                              '${_booking!.pickUpDate!.year}',
+                                      totalPayment:
+                                          (_booking?.amount ?? 0).formatAmount,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              12.verticalSpace,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                child: AppButton(
+                                  buttonText: 'Leave a review',
+                                  backgroundColor: Colors.white,
+                                  borderColor: context.theme.primaryColor,
+                                  textColor: context.theme.primaryColor,
+                                  onPressed: () => context.push(
+                                    AppRoutes.writeReviewView,
+                                    extra: WriteReviewArgs(
+                                      subject: ReviewSubject.booking,
+                                      targetId: widget.bookingId,
+                                      title:
+                                          _booking?.listing?.name ?? 'Booking',
+                                      subtitle: _booking?.listing?.address,
+                                      trailingLabel:
+                                          _booking?.listing?.listingType,
+                                      imageUrl:
+                                          (_booking?.listing?.images ?? [])
+                                                  .isEmpty
+                                              ? null
+                                              : _booking!.listing!.images!.first,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              20.verticalSpace,
+                            ],
                             if (isCurrentTimeWithinCheckInPeriod)
                               Consumer(builder: (context, ref, child) {
                                 final checkInCheckOutLoadState = ref.watch(

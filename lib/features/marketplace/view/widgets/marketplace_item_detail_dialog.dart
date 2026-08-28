@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/reviews/view/write_review_view.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_image_widget.dart';
@@ -340,6 +341,32 @@ class _MarketplaceItemDetailDialogState
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
+              ),
+            ),
+            10.verticalSpace,
+            TextButton(
+              onPressed: () {
+                final itemId = widget.item.id;
+                if (itemId == null || itemId.isEmpty) return;
+                Navigator.of(context).pop();
+                context.push(
+                  AppRoutes.writeReviewView,
+                  extra: WriteReviewArgs(
+                    subject: ReviewSubject.marketplaceItem,
+                    targetId: itemId,
+                    title: widget.item.name ?? 'Item',
+                    imageUrl: (widget.item.images ?? const <String>[]).isEmpty
+                        ? null
+                        : widget.item.images!.first,
+                  ),
+                );
+              },
+              child: Text(
+                'Rate this item',
+                style: dialogTheme.textTheme.labelSmall?.copyWith(
+                  fontSize: 12.sp,
+                  color: primary,
+                ),
               ),
             ),
           ],

@@ -32,6 +32,7 @@ import 'package:tivi_tea/features/login/model/general/login_response_object.dart
 import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
 import 'package:tivi_tea/features/payment/model/payout_models.dart';
+import 'package:tivi_tea/features/reviews/model/review_models.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
@@ -342,6 +343,55 @@ abstract class RestClient {
   Future<BaseResponse> createTransactionPin(@Body() UpdatePinModel data);
   @POST('/payment/withdraw-from-wallet')
   Future<BaseResponse> withdrawFromWallet(@Body() WithdrawFromWalletModel data);
+
+  //<====================> Reviews <====================>
+  /// Client reviews a completed booking.
+  @POST('/bookings/{bookingId}/reviews')
+  Future<BaseResponse<BookingReviewModel>> reviewBooking(
+    @Path('bookingId') String bookingId,
+    @Body() SubmitReviewRequestBody data,
+  );
+
+  @DELETE('/bookings/{bookingId}/reviews/{reviewId}')
+  Future<dynamic> deleteBookingReview(
+    @Path('bookingId') String bookingId,
+    @Path('reviewId') String reviewId,
+  );
+
+  /// Reviews left on the signed-in partner's listings.
+  @GET('/bookings/partner/booking-reviews')
+  Future<BaseResponse<GenericPaginatedResponse<BookingReviewModel>>>
+      getPartnerBookingReviews(@Query('page') int page);
+
+  /// Client reviews the artisan who did the job.
+  @POST('/bookings/{bookingId}/artisan-reviews')
+  Future<BaseResponse<ArtisanReviewModel>> reviewArtisan(
+    @Path('bookingId') String bookingId,
+    @Body() SubmitReviewRequestBody data,
+  );
+
+  @GET('/bookings/artisan-reviews/{artisanId}')
+  Future<BaseResponse<GenericPaginatedResponse<ArtisanReviewModel>>>
+      getArtisanReviews(
+    @Path('artisanId') String artisanId,
+    @Query('page') int page,
+  );
+
+  @DELETE('/bookings/artisan-reviews/{reviewId}/delete')
+  Future<dynamic> deleteArtisanReview(@Path('reviewId') String reviewId);
+
+  @POST('/listings/market-place/item/review/{itemId}')
+  Future<BaseResponse<dynamic>> reviewMarketplaceItem(
+    @Path('itemId') String itemId,
+    @Body() SubmitReviewRequestBody data,
+  );
+
+  /// Client confirms the service was delivered, releasing the booking.
+  /// Takes no body.
+  @POST('/bookings/service-confirmation/{bookingId}')
+  Future<BaseResponse<dynamic>> confirmServiceCompletion(
+    @Path('bookingId') String bookingId,
+  );
 
   //<====================> Wallet & payouts <====================>
   /// Money moved out of the wallet to a bank account.

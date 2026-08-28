@@ -11,6 +11,8 @@ import 'package:tivi_tea/features/home/view/general_widget.dart';
 import 'package:tivi_tea/features/login/view/pages/forgot_password.dart';
 import 'package:tivi_tea/features/kyc/view/pages/document_submitted_view.dart';
 import 'package:tivi_tea/features/login/view/pages/login_view.dart';
+import 'package:tivi_tea/features/reviews/view/service_completion_view.dart';
+import 'package:tivi_tea/features/reviews/view/write_review_view.dart';
 import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/notifications/view/pages/notification_detail_view.dart';
 import 'package:tivi_tea/features/notifications/view/pages/notifications_view.dart';
@@ -139,6 +141,7 @@ final GoRouter router = GoRouter(
                 ProfileRouter.settings,
                 ProfileRouter.paymentView,
                 ProfileRouter.withdrawalView,
+                ProfileRouter.partnerReviewsView,
                 ProfileRouter.artisanGalleryView,
                 ProfileRouter.jobHistoryView,
                 ProfileRouter.myMarketplaceView,
@@ -165,6 +168,20 @@ final GoRouter router = GoRouter(
       path: AppRoutes.selectUserTypeView,
       builder: (BuildContext context, GoRouterState state) {
         return const SelectUserTypeView();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.writeReviewView,
+      builder: (BuildContext context, GoRouterState state) {
+        return WriteReviewView(args: state.extra as WriteReviewArgs);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.serviceCompletionView,
+      builder: (BuildContext context, GoRouterState state) {
+        return ServiceCompletionView(
+          args: state.extra as ServiceCompletionArgs,
+        );
       },
     ),
     GoRoute(
