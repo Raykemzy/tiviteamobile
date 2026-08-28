@@ -163,7 +163,7 @@ void main() {
         response: Response(
           requestOptions: RequestOptions(path: '/protected'),
           statusCode: 401,
-          data: {'reason': 'unauthorized'},
+          data: {'message': 'Invalid or expired token'},
         ),
       );
 
@@ -321,6 +321,47 @@ void main() {
         equals(1),
         reason: 'the backend rotates refresh tokens; a stampede kills them all',
       );
+    });
+
+    test('leaves a permission 401 alone', () async {
+      // /payment/wallet answers "Unauthorized User" with a 401 even on a token
+      // issued seconds earlier. Refreshing on status alone would retry, fail
+      // again, and force a logout off the withdrawal screen.
+      var refreshCalled = false;
+      final interceptor = DioInterceptor(
+        dio: dio,
+        userRepository: userRepo,
+        tokenExpirationService: tokenExpirationService,
+        authTokenService: FakeAuthTokenService((_) async {
+          refreshCalled = true;
+          return {'access': 'unused', 'refresh': 'unused'};
+        }),
+      );
+      final handler = TestErrorInterceptorHandler();
+      final emitted = <bool>[];
+      final subscription =
+          tokenExpirationService.tokenExpiredStream.listen(emitted.add);
+      final error = DioException(
+        requestOptions: RequestOptions(path: '/payment/wallet'),
+        response: Response(
+          requestOptions: RequestOptions(path: '/payment/wallet'),
+          statusCode: 401,
+          data: {
+            'code': 401,
+            'status': 'Failed',
+            'message': 'Unauthorized User',
+            'data': <dynamic>[],
+          },
+        ),
+      );
+
+      await interceptor.onError(error, handler);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(refreshCalled, isFalse);
+      expect(emitted, isEmpty, reason: 'must not log the user out');
+      expect(handler.forwardedError, same(error));
+      await subscription.cancel();
     });
   });
 }

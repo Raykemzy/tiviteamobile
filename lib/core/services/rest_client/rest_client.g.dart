@@ -663,7 +663,7 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     _data.addAll(data.toJson());
     final _options = _setStreamType<BaseResponse<GetAccountDetailsResponse>>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/payment/resolve_bank_info',
@@ -2279,6 +2279,223 @@ class _RestClient implements RestClient {
       _value = BaseResponse<dynamic>.fromJson(
         _result.data!,
         (json) => json as dynamic,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<GenericPaginatedResponse<TransferModel>>> getTransfers(
+    int page,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<BaseResponse<GenericPaginatedResponse<TransferModel>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/transfers',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<TransferModel>> _value;
+    try {
+      _value = BaseResponse<GenericPaginatedResponse<TransferModel>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<TransferModel>.fromJson(
+          json as Map<String, dynamic>,
+          (json) => TransferModel.fromJson(json as Map<String, dynamic>),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<TransferModel>> getTransfer(String transferId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<TransferModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/transfer/${transferId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<TransferModel> _value;
+    try {
+      _value = BaseResponse<TransferModel>.fromJson(
+        _result.data!,
+        (json) => TransferModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<GenericPaginatedResponse<dynamic>>> getTransferBookings(
+    String transferId,
+    int page,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<BaseResponse<GenericPaginatedResponse<dynamic>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/transfer/${transferId}/bookings',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<dynamic>> _value;
+    try {
+      _value = BaseResponse<GenericPaginatedResponse<dynamic>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (json) => json as dynamic,
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<GenericPaginatedResponse<WalletTransactionModel>>>
+      getWalletTransactions(int page) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<
+        BaseResponse<GenericPaginatedResponse<WalletTransactionModel>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/wallet-transactions',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<WalletTransactionModel>> _value;
+    try {
+      _value = BaseResponse<
+          GenericPaginatedResponse<WalletTransactionModel>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<WalletTransactionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (json) =>
+              WalletTransactionModel.fromJson(json as Map<String, dynamic>),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<WalletTransactionModel>> getWalletTransaction(
+    String transactionId,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<WalletTransactionModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/wallet-transaction/${transactionId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<WalletTransactionModel> _value;
+    try {
+      _value = BaseResponse<WalletTransactionModel>.fromJson(
+        _result.data!,
+        (json) => WalletTransactionModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<GenericPaginatedResponse<PaymentInstrumentModel>>>
+      getPaymentInstruments(int page) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<
+        BaseResponse<GenericPaginatedResponse<PaymentInstrumentModel>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/payment/instruments',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<PaymentInstrumentModel>> _value;
+    try {
+      _value = BaseResponse<
+          GenericPaginatedResponse<PaymentInstrumentModel>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<PaymentInstrumentModel>.fromJson(
+          json as Map<String, dynamic>,
+          (json) =>
+              PaymentInstrumentModel.fromJson(json as Map<String, dynamic>),
+        ),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);

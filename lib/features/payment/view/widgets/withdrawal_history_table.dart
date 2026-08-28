@@ -1,120 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/config/extensions/data_type_extensions.dart';
-import 'package:tivi_tea/features/common/app_paginator_widget.dart';
-import 'package:tivi_tea/features/common/models/paginator_selector_model.dart';
-import 'package:tivi_tea/features/payment/model/withdrawal_history_model.dart';
+import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
+import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/features/payment/model/payout_models.dart';
+import 'package:tivi_tea/features/payment/view_model/partner/wallet_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
-class WithdrawalHistoryTable extends StatefulWidget {
+/// Payouts already sent to the bank, from `GET /payment/transfers`.
+///
+/// This was previously a stub: a hardcoded empty list, a refresh handler that
+/// did nothing, a paginator pinned to zero, and row cells that did not line up
+/// with their own headers — so the withdrawal screen showed an empty table no
+/// matter how many payouts existed.
+class WithdrawalHistoryTable extends ConsumerWidget {
   const WithdrawalHistoryTable({super.key});
 
   @override
-  State<WithdrawalHistoryTable> createState() => _WithdrawalHistoryTableState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final transfers = ref.watch(
+      walletNotifierProvider.select((value) => value.transfers),
+    );
+    final loadState = ref.watch(
+      walletNotifierProvider.select((value) => value.transfersState),
+    );
+    final notifier = ref.read(walletNotifierProvider.notifier);
 
-class _WithdrawalHistoryTableState extends State<WithdrawalHistoryTable> {
-  final List<WithdrawalHistoryModel> withdrawalHistoryList = [];
-  int _currentPage = 1;
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color(0xFFD8D8DD),
-            ),
+            border: Border.all(color: const Color(0xFFD8D8DD)),
           ),
           child: RefreshIndicator(
-            onRefresh: () async {
-              // TODO: Implement refresh
-            },
+            onRefresh: () => notifier.getTransfers(),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Table(
                 columnWidths: const {0: FlexColumnWidth(2)},
                 children: [
                   TableRow(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE1E1E6),
-                    ),
+                    decoration: const BoxDecoration(color: Color(0xFFE1E1E6)),
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5,
-                        ),
-                        child: Text('Amount'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                        ),
-                        child: Text(context.l10n.status),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                        ),
-                        child: Text(context.l10n.date),
-                      ),
+                      _header('Amount'),
+                      _header(context.l10n.status),
+                      _header(context.l10n.date),
                     ],
                   ),
-                  for (var i = 0; i < withdrawalHistoryList.length; i++)
-                    TableRow(
-                      children: _buildRow(withdrawalHistoryList[i]),
-                    ),
+                  for (final transfer in transfers) _row(transfer),
                 ],
               ),
             ),
           ),
         ),
-        10.verticalSpace,
-        AppPaginatorWidget(
-          paginatorSelectorModel: PaginatorSelectorModel(
-            currentPage: _currentPage,
-            totalPages: 1,
-            totalItems: 0,
-            itemsPerPage: 0,
+        if (loadState == LoadState.loading)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: const CircularProgressIndicator(),
+          )
+        else if (transfers.isEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: Text(
+              loadState == LoadState.error
+                  ? 'Could not load your payouts.'
+                  : 'No payouts yet.',
+              style: context.theme.textTheme.bodySmall,
+            ),
           ),
-          onPageChanged: _onPageChanged,
-        ),
+        10.verticalSpace,
       ],
     );
   }
 
-  void _onPageChanged(int page) {
-    _currentPage = page;
-    setState(() {});
-  }
+  static Widget _header(String text) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        child: Text(text),
+      );
 
-  List<Widget> _buildRow(WithdrawalHistoryModel withdrawalHistory) {
-    // const bookingHistoryDetail =
-    //     '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}';
-    return [
-      GestureDetector(
-        child: const Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            children: [
-              TableCell(
-                verticalAlignment: TableCellVerticalAlignment.middle,
-                child: Text(''),
-              ),
-            ],
+  TableRow _row(TransferModel transfer) {
+    final created = transfer.dateCreated;
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: (transfer.amount ?? 0).getCurrencyText(),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Text(transfer.status ?? '—'),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Text(
+            created == null
+                ? (transfer.dateIdentifier ?? '—')
+                : '${created.day}/${created.month}/${created.year}',
           ),
         ),
-      ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: Text(withdrawalHistory.status),
-      ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: withdrawalHistory.amount.getCurrencyText(),
-      ),
-    ];
+      ],
+    );
   }
 }

@@ -107,11 +107,13 @@ class DioInterceptor extends Interceptor {
     final statusCode = response.statusCode ?? 0;
     if (statusCode != 401 && statusCode != 403) return false;
 
-    // A bare 401 is unambiguous. A 403 is not — this backend uses it both for
-    // "you may not do that" and for "your token died" — so a 403 only counts
-    // when the body actually carries a token marker. Without that distinction
-    // a permission error would log the user out.
-    return statusCode == 401 || _looksLikeTokenFailure(data);
+    // Neither status is decisive on this backend: it answers a permission
+    // denial with 401 "Unauthorized User" (verified against /payment/wallet
+    // using a token issued seconds earlier) and an expired token with 403
+    // token_not_valid. Refreshing on status alone therefore logs people out
+    // of screens they simply lack access to — which is what happened on the
+    // withdrawal screen. Only an explicit token marker counts.
+    return _looksLikeTokenFailure(data);
   }
 
   /// Whether [data] carries one of the backend's expired/invalid-token markers.

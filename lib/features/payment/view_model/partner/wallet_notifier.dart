@@ -80,4 +80,41 @@ class WalletNotifier extends _$WalletNotifier {
       onError(e.toString());
     }
   }
+
+  /// Wallet ledger. Loaded alongside the balance so the withdrawal screen can
+  /// show where the money came from instead of a bare figure.
+  Future<void> getWalletTransactions({int page = 1}) async {
+    state = state.copyWith(transactionsState: LoadState.loading);
+    try {
+      final response = await walletRepo.getWalletTransactions(page);
+      if (response.isSuccess() == false) {
+        throw response.error?.message ?? response.message ?? '';
+      }
+      state = state.copyWith(
+        transactionsState: LoadState.success,
+        transactions: response.data?.results ?? const [],
+      );
+    } catch (e) {
+      debugLog(e.toString());
+      state = state.copyWith(transactionsState: LoadState.error);
+    }
+  }
+
+  /// Payouts already sent to the bank.
+  Future<void> getTransfers({int page = 1}) async {
+    state = state.copyWith(transfersState: LoadState.loading);
+    try {
+      final response = await walletRepo.getTransfers(page);
+      if (response.isSuccess() == false) {
+        throw response.error?.message ?? response.message ?? '';
+      }
+      state = state.copyWith(
+        transfersState: LoadState.success,
+        transfers: response.data?.results ?? const [],
+      );
+    } catch (e) {
+      debugLog(e.toString());
+      state = state.copyWith(transfersState: LoadState.error);
+    }
+  }
 }

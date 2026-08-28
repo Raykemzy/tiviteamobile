@@ -31,6 +31,7 @@ import 'package:tivi_tea/features/login/model/general/login_request_object.dart'
 import 'package:tivi_tea/features/login/model/general/login_response_object.dart';
 import 'package:tivi_tea/features/notifications/model/notification_model.dart';
 import 'package:tivi_tea/features/payment/model/create_payment_response.dart';
+import 'package:tivi_tea/features/payment/model/payout_models.dart';
 import 'package:tivi_tea/features/payment/model/wallet_details_model.dart';
 import 'package:tivi_tea/features/profile/model/change_password_model.dart';
 import 'package:tivi_tea/features/profile/model/create_other_entity_account_request_body.dart';
@@ -126,7 +127,12 @@ abstract class RestClient {
       @Body() CreateFootSoldierModel data);
   @GET('/payment/banks/list')
   Future<BaseResponse<ListBanksResponse>> getBanks();
-  @GET('/payment/resolve_bank_info')
+  /// Verifies a bank account before it can receive payouts.
+  ///
+  /// Must be POST: the endpoint answers GET with 405 Method Not Allowed, so
+  /// while this was declared `@GET` account verification always failed and the
+  /// "Add account details" step could never complete.
+  @POST('/payment/resolve_bank_info')
   Future<BaseResponse<GetAccountDetailsResponse>> getAccountDetails(
     @Body() GetAccountDetailsRequestBody data,
   );
@@ -336,6 +342,40 @@ abstract class RestClient {
   Future<BaseResponse> createTransactionPin(@Body() UpdatePinModel data);
   @POST('/payment/withdraw-from-wallet')
   Future<BaseResponse> withdrawFromWallet(@Body() WithdrawFromWalletModel data);
+
+  //<====================> Wallet & payouts <====================>
+  /// Money moved out of the wallet to a bank account.
+  @GET('/payment/transfers')
+  Future<BaseResponse<GenericPaginatedResponse<TransferModel>>> getTransfers(
+    @Query('page') int page,
+  );
+
+  @GET('/payment/transfer/{transferId}')
+  Future<BaseResponse<TransferModel>> getTransfer(
+    @Path('transferId') String transferId,
+  );
+
+  /// Bookings settled by a given transfer.
+  @GET('/payment/transfer/{transferId}/bookings')
+  Future<BaseResponse<GenericPaginatedResponse<dynamic>>> getTransferBookings(
+    @Path('transferId') String transferId,
+    @Query('page') int page,
+  );
+
+  /// Every credit and debit against the wallet.
+  @GET('/payment/wallet-transactions')
+  Future<BaseResponse<GenericPaginatedResponse<WalletTransactionModel>>>
+      getWalletTransactions(@Query('page') int page);
+
+  @GET('/payment/wallet-transaction/{transactionId}')
+  Future<BaseResponse<WalletTransactionModel>> getWalletTransaction(
+    @Path('transactionId') String transactionId,
+  );
+
+  /// Saved payout destinations.
+  @GET('/payment/instruments')
+  Future<BaseResponse<GenericPaginatedResponse<PaymentInstrumentModel>>>
+      getPaymentInstruments(@Query('page') int page);
 
   //<====================> Contact Us <====================>
   @POST('/contact_us/')

@@ -1,135 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tivi_tea/features/common/app_paginator_widget.dart';
-import 'package:tivi_tea/features/common/models/paginator_selector_model.dart';
-import 'package:tivi_tea/features/payment/model/payment_history_model.dart';
+import 'package:tivi_tea/core/config/extensions/data_type_extensions.dart';
+import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
+import 'package:tivi_tea/core/utils/enums.dart';
+import 'package:tivi_tea/features/payment/model/payout_models.dart';
+import 'package:tivi_tea/features/payment/view_model/partner/wallet_notifier.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
-class PaymentHistoryTable extends StatefulWidget {
+/// The wallet ledger — every credit and debit, from
+/// `GET /payment/wallet-transactions`.
+///
+/// Replaces a stub that rendered a hardcoded empty list behind a "Customer"
+/// column it had no data for.
+///
+/// Note: that endpoint currently answers 401 "Unauthorized User" for client,
+/// partner *and* artisan tokens issued seconds earlier, so this renders its
+/// empty state until the backend grants access. The request itself is correct.
+class PaymentHistoryTable extends ConsumerWidget {
   const PaymentHistoryTable({super.key});
 
   @override
-  State<PaymentHistoryTable> createState() => _PaymentHistoryTableState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final transactions = ref.watch(
+      walletNotifierProvider.select((value) => value.transactions),
+    );
+    final loadState = ref.watch(
+      walletNotifierProvider.select((value) => value.transactionsState),
+    );
+    final notifier = ref.read(walletNotifierProvider.notifier);
 
-class _PaymentHistoryTableState extends State<PaymentHistoryTable> {
-  final List<PaymentHistoryModel> paymentHistoryList = [];
-  int _currentPage = 1;
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color(0xFFD8D8DD),
-            ),
+            border: Border.all(color: const Color(0xFFD8D8DD)),
           ),
           child: RefreshIndicator(
-            onRefresh: () async {},
+            onRefresh: () => notifier.getWalletTransactions(),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Table(
                 columnWidths: const {0: FlexColumnWidth(2)},
                 children: [
                   TableRow(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE1E1E6),
-                    ),
+                    decoration: const BoxDecoration(color: Color(0xFFE1E1E6)),
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5,
-                        ),
-                        child: Text('Customer'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                        ),
-                        child: Text(context.l10n.status),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
-                        ),
-                        child: Text('Service'),
-                      ),
+                      _header('Type'),
+                      _header('Amount'),
+                      _header(context.l10n.date),
                     ],
                   ),
-                  for (var i = 0; i < paymentHistoryList.length; i++)
-                    TableRow(
-                      children: _buildRow(paymentHistoryList[i]),
-                    ),
+                  for (final transaction in transactions) _row(transaction),
                 ],
               ),
             ),
           ),
         ),
-        10.verticalSpace,
-        AppPaginatorWidget(
-          paginatorSelectorModel: PaginatorSelectorModel(
-            currentPage: _currentPage,
-            totalPages: 1,
-            totalItems: 0,
-            itemsPerPage: 0,
+        if (loadState == LoadState.loading)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: const CircularProgressIndicator(),
+          )
+        else if (transactions.isEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: Text(
+              'No transactions yet.',
+              style: context.theme.textTheme.bodySmall,
+            ),
           ),
-          onPageChanged: _onPageChanged,
-        ),
+        10.verticalSpace,
       ],
     );
   }
 
-  void _onPageChanged(int page) {
-    _currentPage = page;
-    setState(() {});
-  }
+  static Widget _header(String text) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        child: Text(text),
+      );
 
-  List<Widget> _buildRow(PaymentHistoryModel paymentHistory) {
-    // const bookingHistoryDetail =
-    //     '${AppRoutes.homeView}${AppRoutes.bookingHistoryDetails}';
-    return [
-      GestureDetector(
-        child: const Padding(
-          padding: EdgeInsets.all(10),
-          child: Row(
-            children: [
-              //Container(
-              //   width: 20.w,
-              //   height: 20.h,
-              //   margin: const EdgeInsets.symmetric(vertical: 5),
-              //   padding: const EdgeInsets.all(5),
-              //   decoration: BoxDecoration(
-              //     shape: BoxShape.circle,
-              //     color: context.theme.colorScheme.onPrimaryContainer,
-              //   ),
-              //   child: AppImageWidget(
-              //     borderRadius: BorderRadius.circular(50),
-              //     imagePath: booking.client?.user?.profilePicture ?? '',
-              //   ),
-              // ),
-              // 5.horizontalSpace,
-              // Text(
-              //   '${booking.client?.user?.firstName ?? ''} ${booking.client?.user?.lastName ?? ''}',
-              // ),
-              TableCell(
-                verticalAlignment: TableCellVerticalAlignment.middle,
-                child: Text(''),
-              ),
-            ],
+  TableRow _row(WalletTransactionModel transaction) {
+    final created = transaction.dateCreated;
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Text(
+            transaction.type ?? '—',
+            style: TextStyle(
+              color: transaction.isCredit
+                  ? const Color(0xFF02952B)
+                  : const Color(0xFFFF5B5B),
+            ),
           ),
         ),
-      ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: Text(paymentHistory.status),
-      ),
-      TableCell(
-        verticalAlignment: TableCellVerticalAlignment.middle,
-        child: Text(paymentHistory.service),
-      ),
-    ];
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: (transaction.amount ?? 0).getCurrencyText(),
+        ),
+        TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Text(
+            created == null
+                ? '—'
+                : '${created.day}/${created.month}/${created.year}',
+          ),
+        ),
+      ],
+    );
   }
 }

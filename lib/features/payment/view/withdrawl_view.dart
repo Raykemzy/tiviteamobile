@@ -27,6 +27,7 @@ class _WithdrawalViewState extends ConsumerState<WithdrawalView> {
   void initState() {
     super.initState();
     final notifier = ref.read(walletNotifierProvider.notifier);
+    notifier.getTransfers();
     notifier.getWalletDetails(
       onError: (wallet) {
         if (mounted) {
