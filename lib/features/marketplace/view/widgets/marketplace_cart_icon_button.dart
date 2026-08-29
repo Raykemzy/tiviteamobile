@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_buyer_access.dart';
+
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/marketplace/model/marketplace_cart_line.dart';
 import 'package:tivi_tea/features/marketplace/view_model/marketplace_cart_notifier.dart';
@@ -23,12 +25,16 @@ class _MarketplaceCartIconButtonState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Loading the cart as a partner or artisan just 401s.
+      if (!canBuyInMarketplace(ref)) return;
       ref.read(marketplaceCartProvider.notifier).loadCart();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!canBuyInMarketplace(ref)) return const SizedBox.shrink();
     final count = ref.watch(marketplaceCartProvider).lines.totalQuantity;
     return InkWell(
       borderRadius: BorderRadius.circular(24.r),

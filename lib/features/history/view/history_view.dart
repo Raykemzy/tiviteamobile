@@ -21,7 +21,11 @@ import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
 
 class HistoryView extends ConsumerStatefulWidget {
-  const HistoryView({super.key});
+  const HistoryView({super.key, this.title});
+
+  /// Overrides the screen title. Artisans see these same records as their
+  /// "Job History"; the underlying endpoint is the same for every role.
+  final String? title;
 
   @override
   ConsumerState<HistoryView> createState() => _HistoryViewState();
@@ -53,7 +57,7 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
 
     return AppScaffold(
       appbar: CustomAppBar(
-        title: context.l10n.bookingHistory,
+        title: widget.title ?? context.l10n.bookingHistory,
         showHamburgerMenu: true,
       ),
       body: Padding(

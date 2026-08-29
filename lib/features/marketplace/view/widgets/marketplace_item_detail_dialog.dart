@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_buyer_access.dart';
+
 import 'package:tivi_tea/features/reviews/view/write_review_view.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
@@ -43,6 +45,11 @@ class _MarketplaceItemDetailDialogState
   /// Adds the item to the cart, returning true on success.
   /// [busy] toggles the matching button's loading spinner.
   Future<bool> _addToCart(void Function(bool) setBusy) async {
+    if (marketplaceNeedsLogin(ref)) {
+      context.showError('Please log in to add items to your cart.');
+      context.push(AppRoutes.loginView);
+      return false;
+    }
     setBusy(true);
     final ok = await ref.read(marketplaceCartProvider.notifier).addItem(
           widget.item,
@@ -300,6 +307,7 @@ class _MarketplaceItemDetailDialogState
               ],
             ),
             20.verticalSpace,
+            if (canBuyInMarketplace(ref)) ...[
             AppButton(
               expandWidth: true,
               backgroundColor: Colors.white,
@@ -343,6 +351,7 @@ class _MarketplaceItemDetailDialogState
                 color: Colors.white,
               ),
             ),
+            ],
             10.verticalSpace,
             TextButton(
               onPressed: () {

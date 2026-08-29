@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
+import 'package:tivi_tea/features/marketplace/view/widgets/marketplace_buyer_access.dart';
+
 import 'package:tivi_tea/features/common/app_image_widget.dart';
 import 'package:tivi_tea/features/home/model/general/listing_response_model.dart';
 import 'package:tivi_tea/features/marketplace/model/marketplace_cart_line.dart';
@@ -33,6 +37,10 @@ class _MarketplaceListingCardState
 
   Future<void> _addToCart() async {
     if (_isAdding) return;
+    if (marketplaceNeedsLogin(ref)) {
+      _promptLogin();
+      return;
+    }
     setState(() => _isAdding = true);
     await ref.read(marketplaceCartProvider.notifier).addItem(
           widget.item,
@@ -41,6 +49,13 @@ class _MarketplaceListingCardState
           },
         );
     if (mounted) setState(() => _isAdding = false);
+  }
+
+  /// Adding to a cart needs an account; sign-in is meant to be asked for at
+  /// exactly this point rather than at the door.
+  void _promptLogin() {
+    context.showError('Please log in to add items to your cart.');
+    context.push(AppRoutes.loginView);
   }
 
   void _increment(MarketplaceCartLine line) {
@@ -230,7 +245,9 @@ class _MarketplaceListingCardState
                             ),
                             6.horizontalSpace,
                           ],
-                          if (cartLine != null)
+                          if (!canBuyInMarketplace(ref))
+                            const SizedBox.shrink()
+                          else if (cartLine != null)
                             MarketplaceQuantityStepper(
                               quantity: cartLine.quantity,
                               primary: context.theme.primaryColor,

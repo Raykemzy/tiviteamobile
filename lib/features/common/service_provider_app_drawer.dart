@@ -49,186 +49,188 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
           bottomRight: Radius.zero,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          50.verticalSpace,
-          Center(
-            child: Assets.images.appLogoBlue.image(
-              fit: BoxFit.scaleDown,
-              width: 63.w,
-              height: 43.h,
-            ),
-          ),
-          20.verticalSpace,
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.dashboardDrawerIcon.path,
-              label: context.l10n.dashboard,
-              isSelected: routePath == dashboard,
-              onTap: () {
-                if (routePath == dashboard) {
-                  context.go(AppRoutes.homeView);
-                  return;
-                }
-                context.go(dashboard);
-              },
-            ),
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.profileDrawerIcon.path,
-              label: context.l10n.profile,
-              isSelected: routePath == AppRoutes.profile,
-              onTap: () => context.go(AppRoutes.profile),
-            ),
-          if (appAccessState != AppAccessState.guest)
-            if (entityType != EntityType.artisan)
-              DrawerListTile(
-                icon: Assets.svgs.listingDrawerIcon.path,
-                label: context.l10n.myListing,
-                isSelected: routePath == AppRoutes.myListingView,
-                onTap: () => context.go(AppRoutes.myListingView),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            50.verticalSpace,
+            Center(
+              child: Assets.images.appLogoBlue.image(
+                fit: BoxFit.scaleDown,
+                width: 63.w,
+                height: 43.h,
               ),
-          if (appAccessState != AppAccessState.guest)
-            if (entityType == EntityType.artisan)
+            ),
+            20.verticalSpace,
+            if (appAccessState != AppAccessState.guest)
               DrawerListTile(
-                icon: Assets.svgs.listingDrawerIcon.path,
-                label: 'My Gallery',
-                isSelected: routePath == artisanGallery,
-                onTap: () => context.go(artisanGallery),
+                icon: Assets.svgs.dashboardDrawerIcon.path,
+                label: context.l10n.dashboard,
+                isSelected: routePath == dashboard,
+                onTap: () {
+                  if (routePath == dashboard) {
+                    context.go(AppRoutes.homeView);
+                    return;
+                  }
+                  context.go(dashboard);
+                },
               ),
-          DrawerListTile(
-            icon: Assets.svgs.listingDrawerIcon.path,
-            label: 'All Artisans',
-            isSelected: routePath == allArtisans,
-            onTap: () => context.go(allArtisans),
-          ),
-          DrawerListTile(
-            icon: Assets.svgs.listingDrawerIcon.path,
-            label: 'Marketplace',
-            isSelected: routePath == marketPlace,
-            onTap: () => context.go(marketPlace),
-          ),
-          if (appAccessState != AppAccessState.guest)
+            if (appAccessState != AppAccessState.guest)
+              DrawerListTile(
+                icon: Assets.svgs.profileDrawerIcon.path,
+                label: context.l10n.profile,
+                isSelected: routePath == AppRoutes.profile,
+                onTap: () => context.go(AppRoutes.profile),
+              ),
+            if (appAccessState != AppAccessState.guest)
+              if (entityType != EntityType.artisan)
+                DrawerListTile(
+                  icon: Assets.svgs.listingDrawerIcon.path,
+                  label: context.l10n.myListing,
+                  isSelected: routePath == AppRoutes.myListingView,
+                  onTap: () => context.go(AppRoutes.myListingView),
+                ),
+            if (appAccessState != AppAccessState.guest)
+              if (entityType == EntityType.artisan)
+                DrawerListTile(
+                  icon: Assets.svgs.listingDrawerIcon.path,
+                  label: 'My Gallery',
+                  isSelected: routePath == artisanGallery,
+                  onTap: () => context.go(artisanGallery),
+                ),
             DrawerListTile(
               icon: Assets.svgs.listingDrawerIcon.path,
-              label: 'My Marketplace',
-              isSelected: routePath == myMarketplace,
-              onTap: () => context.go(myMarketplace),
+              label: 'All Artisans',
+              isSelected: routePath == allArtisans,
+              onTap: () => context.go(allArtisans),
             ),
-          if (appAccessState != AppAccessState.guest)
             DrawerListTile(
-              icon: Assets.svgs.dashboardDrawerIcon.path,
-              label: 'Marketplace Sales',
-              isSelected: routePath == marketplaceDashboard,
-              onTap: () => context.go(marketplaceDashboard),
+              icon: Assets.svgs.listingDrawerIcon.path,
+              label: 'Marketplace',
+              isSelected: routePath == marketPlace,
+              onTap: () => context.go(marketPlace),
             ),
-          if (appAccessState != AppAccessState.guest)
-            if (entityType == EntityType.artisan)
+            if (appAccessState != AppAccessState.guest)
               DrawerListTile(
-                icon: Assets.svgs.historyDrawerIcon.path,
-                label: 'Job History',
-                isSelected: routePath == jobHistory,
-                onTap: () => context.go(jobHistory),
-              )
-            else
-              DrawerListTile(
-                icon: Assets.svgs.historyDrawerIcon.path,
-                label: context.l10n.bookingHistory,
-                isSelected: routePath == bookingHistory,
-                onTap: () => context.go(bookingHistory),
+                icon: Assets.svgs.listingDrawerIcon.path,
+                label: 'My Marketplace',
+                isSelected: routePath == myMarketplace,
+                onTap: () => context.go(myMarketplace),
               ),
-          if (appAccessState != AppAccessState.guest)
-            if (entityType != EntityType.artisan)
+            if (appAccessState != AppAccessState.guest)
               DrawerListTile(
-                icon: Assets.svgs.historyDrawerIcon.path,
-                label: context.l10n.customerReview,
-                isSelected: routePath == reviews,
-                onTap: () => context.go(reviews),
+                icon: Assets.svgs.dashboardDrawerIcon.path,
+                label: 'Marketplace Sales',
+                isSelected: routePath == marketplaceDashboard,
+                onTap: () => context.go(marketplaceDashboard),
               ),
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.paymentDrawerIcon.path,
-              label: context.l10n.payments,
-              isSelected: routePath == payment,
-              onTap: () => context.go(payment),
-            ),
-          if (appAccessState != AppAccessState.guest)
-            DrawerListTile(
-              icon: Assets.svgs.paymentDrawerIcon.path,
-              label: 'Withdrawals',
-              isSelected: routePath == withdrawals,
-              onTap: () => context.go(withdrawals),
-            ),
-          // DrawerListTile(
-          //   icon: Assets.svgs.activitiesDrawerIcon,
-          //   label: context.l10n.activities,
-          // ),
-          // DrawerListTile(
-          //   icon: Assets.svgs.messagesDrawerIcon,
-          //   label: context.l10n.messages,
-          // ),
-          // DrawerListTile(
-          //   icon: Assets.svgs.soldiersDrawerIcon,
-          //   label: context.l10n.addFootSoldiers,
-          // ),
-          // DrawerListTile(
-          //   icon: Assets.svgs.settingsDrawerIcon,
-          //   label: context.l10n.customerReview,
-          // ),
-          Padding(
-            padding: EdgeInsets.only(left: isGuest ? 0 : 10.w),
-            child: Column(
-              children: [
+            if (appAccessState != AppAccessState.guest)
+              if (entityType == EntityType.artisan)
                 DrawerListTile(
-                  icon: Assets.svgs.headphonesDrawerIcon.path,
-                  label: context.l10n.customerSupport,
-                  onTap: () => context.go(
-                    '${AppRoutes.profile}/${AppRoutes.contactUsView}',
-                  ),
+                  icon: Assets.svgs.historyDrawerIcon.path,
+                  label: 'Job History',
+                  isSelected: routePath == jobHistory,
+                  onTap: () => context.go(jobHistory),
+                )
+              else
+                DrawerListTile(
+                  icon: Assets.svgs.historyDrawerIcon.path,
+                  label: context.l10n.bookingHistory,
+                  isSelected: routePath == bookingHistory,
+                  onTap: () => context.go(bookingHistory),
                 ),
-                if (appAccessState != AppAccessState.guest)
+            if (appAccessState != AppAccessState.guest)
+              if (entityType != EntityType.artisan)
+                DrawerListTile(
+                  icon: Assets.svgs.historyDrawerIcon.path,
+                  label: context.l10n.customerReview,
+                  isSelected: routePath == reviews,
+                  onTap: () => context.go(reviews),
+                ),
+            if (appAccessState != AppAccessState.guest)
+              DrawerListTile(
+                icon: Assets.svgs.paymentDrawerIcon.path,
+                label: context.l10n.payments,
+                isSelected: routePath == payment,
+                onTap: () => context.go(payment),
+              ),
+            if (appAccessState != AppAccessState.guest)
+              DrawerListTile(
+                icon: Assets.svgs.paymentDrawerIcon.path,
+                label: 'Withdrawals',
+                isSelected: routePath == withdrawals,
+                onTap: () => context.go(withdrawals),
+              ),
+            // DrawerListTile(
+            //   icon: Assets.svgs.activitiesDrawerIcon,
+            //   label: context.l10n.activities,
+            // ),
+            // DrawerListTile(
+            //   icon: Assets.svgs.messagesDrawerIcon,
+            //   label: context.l10n.messages,
+            // ),
+            // DrawerListTile(
+            //   icon: Assets.svgs.soldiersDrawerIcon,
+            //   label: context.l10n.addFootSoldiers,
+            // ),
+            // DrawerListTile(
+            //   icon: Assets.svgs.settingsDrawerIcon,
+            //   label: context.l10n.customerReview,
+            // ),
+            Padding(
+              padding: EdgeInsets.only(left: isGuest ? 0 : 10.w),
+              child: Column(
+                children: [
                   DrawerListTile(
-                    icon: Assets.svgs.settingsDrawerIcon.path,
-                    label: context.l10n.settings,
-                    isSelected: routePath == settings,
-                    onTap: () => context.go(settings),
-                  ),
-                if (appAccessState != AppAccessState.guest)
-                  DrawerListTile(
-                    icon: Assets.svgs.report.path,
-                    label: context.l10n.report,
+                    icon: Assets.svgs.headphonesDrawerIcon.path,
+                    label: context.l10n.customerSupport,
                     onTap: () => context.go(
                       '${AppRoutes.profile}/${AppRoutes.contactUsView}',
                     ),
                   ),
-                20.verticalSpace,
-                Consumer(
-                  builder: (context, ref, _) {
-                    final notifier = ref.read(loginNotifierProvider.notifier);
-                    return DrawerListTile(
-                      icon: Assets.svgs.logout.path,
-                      label: isGuest ? 'Login' : context.l10n.logOut,
-                      logOutButton: isGuest ? false : true,
-                      onTap: () {
-                        if (isGuest) {
-                          _navigateToLogin(context);
-                          return;
-                        }
-                        ref
-                            .read(notificationWebSocketServiceProvider.notifier)
-                            .disconnect();
-                        notifier.logout(
-                          onDataCleared: () => _navigateToLogin(context),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          )
-        ],
+                  if (appAccessState != AppAccessState.guest)
+                    DrawerListTile(
+                      icon: Assets.svgs.settingsDrawerIcon.path,
+                      label: context.l10n.settings,
+                      isSelected: routePath == settings,
+                      onTap: () => context.go(settings),
+                    ),
+                  if (appAccessState != AppAccessState.guest)
+                    DrawerListTile(
+                      icon: Assets.svgs.report.path,
+                      label: context.l10n.report,
+                      onTap: () => context.go(
+                        '${AppRoutes.profile}/${AppRoutes.contactUsView}',
+                      ),
+                    ),
+                  20.verticalSpace,
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final notifier = ref.read(loginNotifierProvider.notifier);
+                      return DrawerListTile(
+                        icon: Assets.svgs.logout.path,
+                        label: isGuest ? 'Login' : context.l10n.logOut,
+                        logOutButton: isGuest ? false : true,
+                        onTap: () {
+                          if (isGuest) {
+                            _navigateToLogin(context);
+                            return;
+                          }
+                          ref
+                              .read(notificationWebSocketServiceProvider.notifier)
+                              .disconnect();
+                          notifier.logout(
+                            onDataCleared: () => _navigateToLogin(context),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
