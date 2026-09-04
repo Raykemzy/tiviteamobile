@@ -63,6 +63,11 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
     final countersLeft = quotation.countersLeftFor(artisan: _isArtisan);
     final currentQuote =
         quotation.currentCounterPrice ?? quotation.artisanPrice ?? 0;
+    // Until the artisan names a price there is nothing to accept or counter.
+    // The backend answers a 500 to an accept in that state, which reached the
+    // tester as "A server error occurred."
+    final hasQuote =
+        quotation.artisanPrice != null || currentQuote > 0;
 
     return AppScaffold(
       appbar: const CustomAppBar(
@@ -79,8 +84,10 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
             20.verticalSpace,
             if (closed)
               _ClosedBanner(status: quotation.status ?? '')
+            else if (!hasQuote && !_isArtisan)
+              _AwaitingQuoteBanner()
             else ...[
-              if (countersLeft > 0) ...[
+              if (!hasQuote || countersLeft > 0) ...[
                 AppTextField(
                   controller: _priceController,
                   label: 'New Cost',
@@ -108,9 +115,11 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
                 ),
                 8.verticalSpace,
                 Text(
-                  countersLeft == 1
-                      ? 'You have 1 counter left.'
-                      : 'You have $countersLeft counters left.',
+                  !hasQuote
+                      ? 'Send your price to start the negotiation.'
+                      : countersLeft == 1
+                          ? 'You have 1 counter left.'
+                          : 'You have $countersLeft counters left.',
                   textAlign: TextAlign.center,
                   style: context.theme.textTheme.bodySmall,
                 ),
@@ -120,6 +129,7 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
                   textAlign: TextAlign.center,
                   style: context.theme.textTheme.bodySmall,
                 ),
+              if (hasQuote) ...[
               20.verticalSpace,
               Text(
                 'Current quote (${currentQuote.toString()})',
@@ -144,6 +154,7 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
                   style: TextStyle(color: Colors.red, fontSize: 14.sp),
                 ),
               ),
+              ],
             ],
             20.verticalSpace,
           ],
@@ -426,6 +437,28 @@ class _DateField extends StatelessWidget {
         ),
         16.verticalSpace,
       ],
+    );
+  }
+}
+
+/// Shown to a client whose request the artisan has not priced yet.
+class _AwaitingQuoteBanner extends StatelessWidget {
+  const _AwaitingQuoteBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F1F4),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        'Waiting for the artisan to send their quote. '
+        'You can bargain or accept once they do.',
+        textAlign: TextAlign.center,
+        style: context.theme.textTheme.bodyMedium,
+      ),
     );
   }
 }

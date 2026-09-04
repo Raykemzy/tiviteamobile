@@ -18,7 +18,17 @@ void guardWithKyc(
   required VoidCallback onAllowed,
 }) {
   final user = ref.read(userNotifierProvider);
-  if (user.kycIsVerified == true) {
+
+  // Both flags matter. This backend can report kyc_is_verified true while
+  // has_uploaded_kyc_documents is false — the partner entity on the test
+  // account is exactly that — and publishing then fails at the very end with
+  // "Your KYC documents needs to be verified first", after the whole listing
+  // form has been filled in. Checking only the verified flag let people all
+  // the way to that wall. A null documents flag means the entity does not
+  // track them (clients), so it is not treated as a failure.
+  final isVerified = user.kycIsVerified == true;
+  final documentsMissing = user.hasUploadedKycDocuments == false;
+  if (isVerified && !documentsMissing) {
     onAllowed();
     return;
   }

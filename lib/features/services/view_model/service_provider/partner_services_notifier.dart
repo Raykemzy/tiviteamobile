@@ -226,6 +226,10 @@ class PartnerServicesNotifer extends _$PartnerServicesNotifer {
         throw response.error?.message ?? response.message ?? '';
       }
       state = state.copyWith(deleteListingLoadState: LoadState.success);
+      // Without this the caller pops back to a list still holding the deleted
+      // listing; tapping it again deletes an id the server no longer has and
+      // reports "Listing Not Found".
+      getPartnerListing();
       onSuccess();
     } catch (e) {
       state = state.copyWith(deleteListingLoadState: LoadState.error);

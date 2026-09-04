@@ -34,8 +34,6 @@ class _ClientDashboardState extends ConsumerState<ClientDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    const createListingPath =
-        '${AppRoutes.myListingView}/${AppRoutes.createListingView}';
     return AppScaffold(
       appbar: const CustomAppBar(showHamburgerMenu: true),
       body: SingleChildScrollView(
@@ -49,9 +47,12 @@ class _ClientDashboardState extends ConsumerState<ClientDashboard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Clients cannot create listings — this used to push them
+                  // into the partner create-listing flow and end in
+                  // "unauthorized user". Booking starts from Services.
                   CreateListingButton(
-                    text: context.l10n.addCard,
-                    onTap: () => context.push(createListingPath),
+                    text: context.l10n.createBooking,
+                    onTap: () => context.go(AppRoutes.servicesView),
                   ),
                   30.verticalSpace,
                 ],
