@@ -20,7 +20,11 @@ import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
 
 part 'login_notifier.g.dart';
 
-@riverpod
+/// Kept alive: [LoginState.appAccessState] is session-wide. While this was
+/// auto-disposed the provider was rebuilt whenever no widget watched it, and
+/// [LoginState.initial] resets the state to `guest` — so a signed-in user
+/// silently became a guest mid-session and after a restart.
+@Riverpod(keepAlive: true)
 class LoginNotifier extends _$LoginNotifier {
   late final GeneralAuthenticationRepo _repo;
   late final UserRepository _userRepo;
@@ -36,7 +40,13 @@ class LoginNotifier extends _$LoginNotifier {
       googleSignIn: GoogleSignIn(),
       localStorage: ref.read(localDB),
     );
-    return LoginState.initial();
+    // A rebuild must not downgrade a signed-in user to a guest, so start
+    // from what is actually in storage rather than a fixed default.
+    final hasSession = _userRepo.getToken().isNotEmpty &&
+        (_userRepo.getUser().id?.isNotEmpty ?? false);
+    return LoginState.initial().copyWith(
+      appAccessState: hasSession ? AppAccessState.user : AppAccessState.guest,
+    );
   }
 
   void login(
@@ -93,6 +103,7 @@ class LoginNotifier extends _$LoginNotifier {
 
   void signUpWithSocialAuth(
     SocialAuthModel data, {
+    bool rememberMe = true,
     ///Pass [EntityType] to determine what dashboard would be loaded
     void Function(User?)? onSuccess,
     void Function(String)? onError,
@@ -101,6 +112,10 @@ class LoginNotifier extends _$LoginNotifier {
     try {
       final response =
           await _repo.signUpWithSocialAuth(data, saveUserState: (user) async {
+        // Without this a Google/Apple session was never remembered: the
+        // splash screen found rememberMe false and sent the user back to
+        // the login screen on the next launch.
+        await _userRepo.saveRememberMe(rememberMe);
         final userStateNotifier = ref.read(userNotifierProvider.notifier);
         userStateNotifier.updateUser(user);
       });
@@ -184,6 +199,7 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   void signInWithGoogle({
+    bool rememberMe = true,
     void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
@@ -193,6 +209,7 @@ class LoginNotifier extends _$LoginNotifier {
       if (response.data != null) {
         signUpWithSocialAuth(
           response.data!,
+          rememberMe: rememberMe,
           onSuccess: onSuccess,
           onError: onError,
         );
@@ -205,6 +222,7 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   void signInWithApple({
+    bool rememberMe = true,
     void Function(User?)? onSuccess,
     void Function(String)? onError,
   }) async {
@@ -214,6 +232,7 @@ class LoginNotifier extends _$LoginNotifier {
       if (response.data != null) {
         signUpWithSocialAuth(
           response.data!,
+          rememberMe: rememberMe,
           onSuccess: onSuccess,
           onError: onError,
         );

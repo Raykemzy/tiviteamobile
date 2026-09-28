@@ -9,7 +9,6 @@ import 'package:tivi_tea/core/services/remember_me_service.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/login/view_model/login_state.dart';
-import 'package:tivi_tea/features/onboarding/view_model/onboarding_notifier.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 
@@ -58,10 +57,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           }
         }
 
-        // If remember me validation fails, clear the data
-        if (ref.read(getRememberUserStatusProvider)) {
-          await rememberMeService.clearRememberMeData();
-        }
+        // Not restoring: drop whatever session is left in storage so nothing
+        // downstream (the drawer, the navbar) reads a stale token as a
+        // signed-in user, and make sure the in-memory state says guest.
+        await rememberMeService.clearRememberMeData();
+        ref
+            .read(loginNotifierProvider.notifier)
+            .setAppAccessState(AppAccessState.guest);
 
         if (mounted) {
           context.push(AppRoutes.selectUserTypeView);

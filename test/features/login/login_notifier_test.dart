@@ -9,6 +9,7 @@ import 'package:tivi_tea/core/services/local_storage/local_storage_impl.dart';
 import 'package:tivi_tea/features/login/model/general/login_request_object.dart';
 import 'package:tivi_tea/features/login/model/general/login_response_object.dart';
 import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
+import 'package:tivi_tea/features/login/view_model/login_state.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
 import 'package:tivi_tea/models/user_model.dart';
 import 'package:tivi_tea/repositories/user/user_repo_impl.dart';
@@ -143,6 +144,74 @@ void main() {
       await completer.future;
 
       expect(userRepo.getRememberMe(), isFalse);
+    });
+  });
+
+  group('LoginNotifier access state survives the widget tree', () {
+    late MockLocalStorage storage;
+    late UserRepoImpl userRepo;
+    late ProviderContainer container;
+
+    setUp(() {
+      storage = MockLocalStorage();
+      userRepo = UserRepoImpl(storage);
+      container = ProviderContainer(
+        overrides: [
+          localDB.overrideWithValue(storage),
+          userRepositoryProvider.overrideWithValue(userRepo),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('a signed-in user is not downgraded to guest when nothing watches it',
+        () async {
+      container.read(loginNotifierProvider.notifier).setAppAccessState(
+            AppAccessState.user,
+          );
+
+      // Drop every listener: while the provider was auto-disposed this
+      // rebuilt the state back to guest, so a restored session showed the
+      // guest UI and asked the user to log in again.
+      final subscription = container.listen(
+        loginNotifierProvider,
+        (_, __) {},
+        fireImmediately: true,
+      );
+      subscription.close();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        container.read(loginNotifierProvider).appAccessState,
+        AppAccessState.user,
+      );
+    });
+
+    test('a stored session starts as a user, not a guest', () async {
+      await userRepo.saveToken('access-token');
+      await userRepo.saveUser(
+        User(
+          id: '1',
+          email: 'user@example.com',
+          signedInEntityType: EntityType.client,
+          isActive: true,
+        ),
+      );
+
+      expect(
+        container.read(loginNotifierProvider).appAccessState,
+        AppAccessState.user,
+      );
+    });
+
+    test('no stored session starts as a guest', () {
+      expect(
+        container.read(loginNotifierProvider).appAccessState,
+        AppAccessState.guest,
+      );
     });
   });
 }
