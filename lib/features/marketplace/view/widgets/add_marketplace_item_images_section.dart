@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/image_picker_notifier.dart';
 import 'package:tivi_tea/core/widget/reusable_add_text_button.dart';
+import 'package:tivi_tea/features/common/media_source_sheet.dart';
 import 'package:tivi_tea/features/common/media_tile.dart';
 
 class AddMarketplaceItemImagesSection extends ConsumerWidget {
@@ -65,42 +66,27 @@ class AddMarketplaceItemImagesSection extends ConsumerWidget {
 
   void _showMediaSourceSheet(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(imagePickerNotifierProvider.notifier);
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose photos & videos'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectMedia();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Take a photo'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectImages(source: ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.videocam_outlined),
-              title: const Text('Record a video'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectVideo(source: ImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
+    showMediaSourceSheet(
+      context,
+      title: 'Add item media',
+      // Products are shown visually, so no document option here.
+      sources: const [
+        MediaSource.gallery,
+        MediaSource.camera,
+        MediaSource.video,
+      ],
+      onSelected: (source) {
+        switch (source) {
+          case MediaSource.gallery:
+            notifier.selectMedia();
+          case MediaSource.camera:
+            notifier.selectImages(source: ImageSource.camera);
+          case MediaSource.video:
+            notifier.selectVideo(source: ImageSource.camera);
+          case MediaSource.document:
+            break;
+        }
+      },
     );
   }
 }

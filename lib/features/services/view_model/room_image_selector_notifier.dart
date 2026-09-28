@@ -33,6 +33,13 @@ class RoomImageSelectorNotifier extends _$RoomImageSelectorNotifier {
     state = [...state, result];
   }
 
+  /// Picks documents (PDF, Word, spreadsheets, text) from the device.
+  void selectDocuments() async {
+    final results = await ImagePickerUtil.pickDocuments();
+    if (results.isEmpty) return;
+    state = [...state, ...results];
+  }
+
   void deleteImage(String imagePath) {
     state = state.where((path) => path.path != imagePath).toList();
   }

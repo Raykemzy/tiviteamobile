@@ -27,12 +27,17 @@ class MediaTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isVideo = MediaUtils.isVideo(path);
+    final isDocument = MediaUtils.isDocument(path);
     return Stack(
       fit: StackFit.expand,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(borderRadius),
-          child: isVideo ? _buildVideo(context) : _buildImage(),
+          child: isDocument
+              ? _buildDocument(context)
+              : isVideo
+                  ? _buildVideo(context)
+                  : _buildImage(),
         ),
         if (onDelete != null)
           Positioned(
@@ -55,6 +60,42 @@ class MediaTile extends StatelessWidget {
       );
     }
     return Image.file(File(path), fit: BoxFit.cover);
+  }
+
+  /// Documents have no visual preview, so show the file's type and name.
+  Widget _buildDocument(BuildContext context) {
+    return Container(
+      color: const Color(0xFFCCCCDC).withValues(alpha: 0.25),
+      padding: const EdgeInsets.all(12),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.description_outlined,
+            size: 40,
+            color: Color(0xFF000050),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            MediaUtils.extensionLabel(path),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF000050),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MediaUtils.fileName(path),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 10, color: Color(0xFF5C5C66)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildVideo(BuildContext context) {

@@ -60,8 +60,39 @@ class MediaUtils {
     return fileName.substring(lastDot + 1).toLowerCase();
   }
 
+  static const Set<String> _documentExtensions = {
+    'pdf',
+    'doc',
+    'docx',
+    'txt',
+    'rtf',
+    'odt',
+    'xls',
+    'xlsx',
+    'csv',
+    'ppt',
+    'pptx',
+  };
+
   /// Whether the given local path or remote URL points to a video.
   static bool isVideo(String path) => _videoExtensions.contains(_extension(path));
+
+  /// Whether the given local path or remote URL points to a document
+  /// (anything that has no visual preview and opens in a viewer instead).
+  static bool isDocument(String path) =>
+      _documentExtensions.contains(_extension(path));
+
+  /// Extensions the document picker accepts, for `FilePicker`.
+  static List<String> get documentExtensions => _documentExtensions.toList();
+
+  /// The file's name, for labelling a document that cannot be previewed.
+  static String fileName(String path) => _fileName(path);
+
+  /// The file's extension in caps ("PDF"), or "FILE" when it has none.
+  static String extensionLabel(String path) {
+    final ext = _extension(path);
+    return ext.isEmpty ? 'FILE' : ext.toUpperCase();
+  }
 
   /// Derives a still-image thumbnail URL for a Cloudinary video by swapping
   /// the video extension for `.jpg`. Cloudinary generates a poster frame on

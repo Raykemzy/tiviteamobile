@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tivi_tea/core/utils/logger.dart';
+import 'package:tivi_tea/core/utils/media_utils.dart';
 
 class ImagePickerUtil {
   //This permission function should be extracted into it's own service class in the future.
@@ -108,6 +110,26 @@ class ImagePickerUtil {
     } catch (e) {
       debugLog("Pick Video error => ${e.toString()}");
       return null;
+    }
+  }
+
+  /// Picks one or more documents (PDF, Word, spreadsheets, text). Uses
+  /// `FilePicker` rather than `ImagePicker`, which only handles media.
+  static Future<List<XFile>> pickDocuments() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: MediaUtils.documentExtensions,
+      );
+      if (result == null) return [];
+      return result.files
+          .where((file) => file.path != null)
+          .map((file) => XFile(file.path!))
+          .toList();
+    } catch (e) {
+      debugLog("Pick Document error => ${e.toString()}");
+      return [];
     }
   }
 }

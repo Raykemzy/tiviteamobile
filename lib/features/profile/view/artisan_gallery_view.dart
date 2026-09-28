@@ -8,6 +8,7 @@ import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/common/app_appbar.dart';
 import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
+import 'package:tivi_tea/features/common/media_source_sheet.dart';
 import 'package:tivi_tea/features/common/media_tile.dart';
 import 'package:tivi_tea/features/home/view/service_provider/service_provider_dashboard.dart';
 import 'package:tivi_tea/features/profile/view_model/artisan_gallery_notifier.dart';
@@ -156,42 +157,22 @@ class _ArtisanGalleryViewState extends ConsumerState<ArtisanGalleryView> {
 
   void _showPickerSheet(BuildContext context) {
     final notifier = ref.read(roomImageSelectorNotifierProvider.notifier);
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose photos & videos'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectMedia();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Take a photo'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectImages(source: ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.videocam_outlined),
-              title: const Text('Record a video'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.selectVideo(source: ImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
+    showMediaSourceSheet(
+      context,
+      title: 'Add to gallery',
+      sources: MediaSource.values,
+      onSelected: (source) {
+        switch (source) {
+          case MediaSource.gallery:
+            notifier.selectMedia();
+          case MediaSource.camera:
+            notifier.selectImages(source: ImageSource.camera);
+          case MediaSource.video:
+            notifier.selectVideo(source: ImageSource.camera);
+          case MediaSource.document:
+            notifier.selectDocuments();
+        }
+      },
     );
   }
 }
