@@ -178,6 +178,11 @@ class _CreateTransferRecipientViewState
   }
 
   void _getAccountDetails() {
+    if (bankCode.isEmpty) {
+      context.showError('Select a bank first.');
+      return;
+    }
+    accountNameController.clear();
     final notifier = ref.read(bankOperationNotifierProvider.notifier);
     final data = GetAccountDetailsRequestBody(
       accountNumber: accountNumberController.text,
@@ -186,6 +191,11 @@ class _CreateTransferRecipientViewState
     notifier.getAccountDetails(
       data: data,
       onSuccess: (data) => accountNameController.text = data.accountName ?? '',
+      // Previously swallowed, so a failed lookup looked like the field had
+      // simply not populated.
+      onError: (message) {
+        if (mounted) context.showError(message);
+      },
     );
   }
 

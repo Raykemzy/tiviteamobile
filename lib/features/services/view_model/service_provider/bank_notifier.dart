@@ -74,12 +74,15 @@ class BankOperationNotifier extends _$BankOperationNotifier {
   void getAccountDetails({
     required GetAccountDetailsRequestBody data,
     required void Function(GetAccountDetailsResponse) onSuccess,
+    void Function(String message)? onError,
   }) async {
     state = state.copyWith(getAccountLoadState: LoadState.loading);
     try {
       final response = await _repo.getAccountDetails(data);
       if (!response.isSuccess()) {
-        throw response.error?.message ?? response.message ?? '';
+        throw response.error?.message ??
+            response.message ??
+            'Could not verify this account number.';
       }
       state = state.copyWith(getAccountLoadState: LoadState.success);
       if (response.data != null) {
@@ -87,6 +90,7 @@ class BankOperationNotifier extends _$BankOperationNotifier {
       }
     } catch (e) {
       state = state.copyWith(getAccountLoadState: LoadState.error);
+      onError?.call(e.toString());
     }
   }
 
