@@ -59,7 +59,7 @@ class ProfileView extends ConsumerWidget with ProfileItemMixin {
                         profileItems[i].label,
                         style: context.theme.textTheme.displayLarge?.copyWith(
                           fontSize: 16.sp,
-                          color: profileItems[i].isDeleteAccount
+                          color: profileItems[i].isDestructive
                               ? AppColors.danger
                               : const Color(0xFF5C5C66),
                         ),

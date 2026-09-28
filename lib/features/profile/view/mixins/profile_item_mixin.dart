@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/core/services/websocket/notification_websocket_service.dart';
+import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/profile/model/profile_item_model.dart';
 import 'package:tivi_tea/features/profile/view/widgets/switch_account_sheet.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
@@ -48,6 +50,23 @@ mixin ProfileItemMixin {
           child: SwitchAccountSheet(hostContext: context),
         ),
       ),
+      ProfileItemModel(
+        label: context.l10n.logOut,
+        icon: Assets.svgs.logout.path,
+        isDestructive: true,
+        onTap: () => _logout(context, ref),
+      ),
     ];
+  }
+
+  /// Same teardown as the drawer's log out: drop the socket, clear the
+  /// session, then land on the login screen.
+  void _logout(BuildContext context, WidgetRef ref) {
+    ref.read(notificationWebSocketServiceProvider.notifier).disconnect();
+    ref.read(loginNotifierProvider.notifier).logout(
+          onDataCleared: () {
+            if (context.mounted) context.pushReplacement(AppRoutes.loginView);
+          },
+        );
   }
 }
