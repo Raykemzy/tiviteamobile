@@ -29,6 +29,8 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
     const bookingHistory =
         '${AppRoutes.homeView}${AppRoutes.bookingHistoryView}';
     const jobHistory = '${AppRoutes.profile}/${AppRoutes.jobHistoryView}';
+    const quotations =
+        '${AppRoutes.servicesView}/${AppRoutes.quotationsView}';
     const reviews = '${AppRoutes.profile}/${AppRoutes.partnerReviewsView}';
     const payment = '${AppRoutes.profile}/${AppRoutes.paymentView}';
     const withdrawals = '${AppRoutes.profile}/${AppRoutes.withdrawalView}';
@@ -139,6 +141,14 @@ class ServiceProviderAppDrawer extends ConsumerWidget {
                   isSelected: routePath == bookingHistory,
                   onTap: () => context.go(bookingHistory),
                 ),
+            if (appAccessState != AppAccessState.guest &&
+                entityType == EntityType.artisan)
+              DrawerListTile(
+                icon: Assets.svgs.activitiesDrawerIcon.path,
+                label: 'Quotations',
+                isSelected: routePath == quotations,
+                onTap: () => context.go(quotations),
+              ),
             if (appAccessState != AppAccessState.guest)
               if (entityType != EntityType.artisan)
                 DrawerListTile(

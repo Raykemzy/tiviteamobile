@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
-import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/artisans/model/quotation_model.dart';
+import 'package:tivi_tea/features/artisans/view/widgets/quotation_bubble.dart';
 import 'package:tivi_tea/features/artisans/view_model/quotation_notifier.dart';
 import 'package:tivi_tea/features/common/app_appbar.dart';
-import 'package:tivi_tea/features/common/app_button.dart';
 import 'package:tivi_tea/features/common/app_scaffold.dart';
-import 'package:tivi_tea/features/common/app_text_field.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
 import 'package:tivi_tea/models/enums/enums.dart';
 
-/// The "Bargain Quotation" screen.
+/// "Bargain Quotation" — built to the Figma frame 6730:20202.
 ///
-/// Both sides of a negotiation share this screen; which fields get sent is
-/// decided by the signed-in entity. The backend caps each side at two
-/// counters, after which it refuses and the only moves left are accept or
-/// decline — so the counter form hides itself once they are spent.
+/// One outlined card holds the whole negotiation: the message thread in its
+/// own scrolling panel, then the two inputs, then SEND MESSAGE. The current
+/// quote and the accept action sit below it.
+///
+/// Both sides share this screen; the signed-in entity decides which fields are
+/// sent. The backend caps each side at two counters and then refuses, so the
+/// send control retires itself rather than letting someone hit that wall.
 class BargainQuotationView extends ConsumerStatefulWidget {
   const BargainQuotationView({super.key, required this.quotation});
 
@@ -38,9 +41,13 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(quotationNotifierProvider.notifier).seed(widget.quotation);
-      }
+      if (!mounted) return;
+      final notifier = ref.read(quotationNotifierProvider.notifier);
+      // Seed so the screen renders immediately, then pull the full record —
+      // a notification only hands us the id.
+      notifier.seed(widget.quotation);
+      final id = widget.quotation.id;
+      if (id != null && id.isNotEmpty) notifier.load(id);
     });
   }
 
@@ -58,16 +65,15 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
   Widget build(BuildContext context) {
     final state = ref.watch(quotationNotifierProvider);
     final quotation = state.quotation ?? widget.quotation;
-    final isBusy = state.actionState == LoadState.loading;
+    final isBusy = state.actionState == LoadState.loading ||
+        state.loadState == LoadState.loading;
     final closed = quotation.isAccepted || quotation.isDeclined;
     final countersLeft = quotation.countersLeftFor(artisan: _isArtisan);
-    final currentQuote =
-        quotation.currentCounterPrice ?? quotation.artisanPrice ?? 0;
+    final currentQuote = quotation.currentQuote;
     // Until the artisan names a price there is nothing to accept or counter.
-    // The backend answers a 500 to an accept in that state, which reached the
-    // tester as "A server error occurred."
-    final hasQuote =
-        quotation.artisanPrice != null || currentQuote > 0;
+    final hasQuote = quotation.hasArtisanQuote;
+    // The artisan's first move is an opening quote, not a counter.
+    final canSend = !closed && (!hasQuote ? _isArtisan : countersLeft > 0);
 
     return AppScaffold(
       appbar: const CustomAppBar(
@@ -76,94 +82,175 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
         showBackButtonForHomeScreenAppBar: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+        padding: EdgeInsets.fromLTRB(18.w, 10.h, 18.w, 28.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _QuotationThread(quotation: quotation, viewerIsArtisan: _isArtisan),
-            20.verticalSpace,
-            if (closed)
-              _ClosedBanner(status: quotation.status ?? '')
-            else if (!hasQuote && !_isArtisan)
-              _AwaitingQuoteBanner()
-            else ...[
-              if (!hasQuote || countersLeft > 0) ...[
-                AppTextField(
-                  controller: _priceController,
-                  label: 'New Cost',
-                  hintText: 'Enter cost you are proposing',
-                  keyboardType: TextInputType.number,
-                ),
-                AppTextField(
-                  controller: _noteController,
-                  label: 'Note',
-                  hintText: 'Add a message',
-                ),
-                _DateField(
-                  label: 'New completion date',
-                  value: _endDate,
-                  onPick: (date) => setState(() => _endDate = date),
-                ),
-                10.verticalSpace,
-                AppButton(
-                  buttonText: 'SEND MESSAGE',
-                  isLoading: isBusy,
-                  backgroundColor: Colors.white,
-                  textColor: context.theme.primaryColor,
-                  borderColor: context.theme.primaryColor,
-                  onPressed: isBusy ? null : () => _submitCounter(quotation),
-                ),
-                8.verticalSpace,
-                Text(
-                  !hasQuote
-                      ? 'Send your price to start the negotiation.'
-                      : countersLeft == 1
-                          ? 'You have 1 counter left.'
-                          : 'You have $countersLeft counters left.',
-                  textAlign: TextAlign.center,
-                  style: context.theme.textTheme.bodySmall,
-                ),
-              ] else
-                Text(
-                  'No counters left — accept or decline the current quote.',
-                  textAlign: TextAlign.center,
-                  style: context.theme.textTheme.bodySmall,
-                ),
-              if (hasQuote) ...[
+            Container(
+              padding: EdgeInsets.all(14.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: QuotationColors.cardBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _Thread(quotation: quotation, viewerIsArtisan: _isArtisan),
+                  if (canSend) ...[
+                    18.verticalSpace,
+                    _Field(
+                      label: 'New Cost',
+                      child: TextField(
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: _inputStyle(),
+                        decoration: _inputDecoration(
+                          'Enter cost you are proposing',
+                        ),
+                      ),
+                    ),
+                    _Field(
+                      label: 'Note',
+                      child: TextField(
+                        controller: _noteController,
+                        maxLines: 2,
+                        style: _inputStyle(),
+                        decoration: _inputDecoration('Add a message'),
+                      ),
+                    ),
+                    _Field(
+                      label: 'New completion date',
+                      child: InkWell(
+                        onTap: _pickDate,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14.w,
+                            vertical: 16.h,
+                          ),
+                          child: Text(
+                            _endDate == null
+                                ? '--/--/----'
+                                : QuotationBubble.dateOf(_endDate!),
+                            style: _endDate == null
+                                ? _hintStyle()
+                                : _inputStyle(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    10.verticalSpace,
+                    _PillButton(
+                      label: 'SEND MESSAGE',
+                      filled: false,
+                      isLoading: isBusy,
+                      onPressed: isBusy ? null : () => _submit(quotation),
+                    ),
+                  ] else if (!closed && hasQuote) ...[
+                    14.verticalSpace,
+                    Text(
+                      'No counters left — accept or decline the current quote.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12.sp,
+                        color: QuotationColors.muted,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (closed) ...[
+              20.verticalSpace,
+              _ClosedBanner(status: quotation.status ?? ''),
+            ] else if (!hasQuote) ...[
               20.verticalSpace,
               Text(
-                'Current quote (${currentQuote.toString()})',
+                _isArtisan
+                    ? 'Send your price to start the negotiation.'
+                    : 'Waiting for the artisan to send their quote.',
                 textAlign: TextAlign.center,
-                style: context.theme.textTheme.titleMedium?.copyWith(
-                  decoration: TextDecoration.underline,
+                style: GoogleFonts.poppins(
+                  fontSize: 13.sp,
+                  color: QuotationColors.muted,
                 ),
               ),
-              15.verticalSpace,
-              AppButton(
-                buttonText: _isArtisan
+            ] else ...[
+              22.verticalSpace,
+              Center(
+                child: Text(
+                  'Current quote (${QuotationBubble.money(currentQuote)})',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                    color: QuotationColors.bubbleText,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              18.verticalSpace,
+              _PillButton(
+                label: _isArtisan
                     ? 'ACCEPT CURRENT QUOTE'
                     : 'ACCEPT CURRENT QUOTE - HIRE NOW',
+                filled: true,
                 isLoading: isBusy,
                 onPressed: isBusy ? null : () => _respond(quotation, true),
               ),
-              10.verticalSpace,
-              TextButton(
-                onPressed: isBusy ? null : () => _respond(quotation, false),
-                child: Text(
-                  'Decline',
-                  style: TextStyle(color: Colors.red, fontSize: 14.sp),
+              6.verticalSpace,
+              Center(
+                child: TextButton(
+                  onPressed: isBusy ? null : () => _respond(quotation, false),
+                  child: Text(
+                    'Decline',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.sp,
+                      color: const Color(0xFFE53935),
+                    ),
+                  ),
                 ),
               ),
-              ],
             ],
-            20.verticalSpace,
           ],
         ),
       ),
     );
   }
 
-  void _submitCounter(QuotationModel quotation) {
+  TextStyle _inputStyle() => GoogleFonts.poppins(
+        fontSize: 12.sp,
+        color: QuotationColors.bubbleText,
+      );
+
+  TextStyle _hintStyle() => GoogleFonts.poppins(
+        fontSize: 12.sp,
+        color: QuotationColors.muted,
+      );
+
+  InputDecoration _inputDecoration(String hint) => InputDecoration(
+        hintText: hint,
+        hintStyle: _hintStyle(),
+        isDense: true,
+        border: InputBorder.none,
+        contentPadding:
+            EdgeInsets.symmetric(horizontal: 14.w, vertical: 16.h),
+      );
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _endDate ?? now.add(const Duration(days: 1)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365 * 2)),
+    );
+    if (picked != null) setState(() => _endDate = picked);
+  }
+
+  void _submit(QuotationModel quotation) {
     final price = num.tryParse(_priceController.text.trim());
     final id = quotation.id;
     if (id == null || price == null || price <= 0) {
@@ -176,9 +263,7 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
     }
 
     final notifier = ref.read(quotationNotifierProvider.notifier);
-    // The artisan's first reply to a request is `send-quotation`; every reply
-    // after that — and every client reply — is a counter.
-    final isOpeningQuote = _isArtisan && quotation.artisanPrice == null;
+    final isOpeningQuote = _isArtisan && !quotation.hasArtisanQuote;
 
     void onSuccess(String message) {
       if (!mounted) return;
@@ -221,243 +306,215 @@ class _BargainQuotationViewState extends ConsumerState<BargainQuotationView> {
     ref.read(quotationNotifierProvider.notifier).respond(
           quotationId: id,
           accept: accept,
-          onSuccess: (message) {
-            if (mounted) context.showSuccess(message);
+          onSuccess: (m) {
+            if (mounted) context.showSuccess(m);
           },
-          onError: (message) {
-            if (mounted) context.showError(message);
+          onError: (m) {
+            if (mounted) context.showError(m);
           },
         );
   }
 }
 
-/// The negotiation so far, newest last, as the alternating bubbles in the
-/// design. The backend keeps the counter history in `meta`, keyed
-/// `client_counter_price_1`, `artisan_counter_price_1`, and so on.
-class _QuotationThread extends StatelessWidget {
-  const _QuotationThread({
-    required this.quotation,
-    required this.viewerIsArtisan,
-  });
+/// The scrolling message panel at the top of the card.
+class _Thread extends StatelessWidget {
+  const _Thread({required this.quotation, required this.viewerIsArtisan});
 
   final QuotationModel quotation;
   final bool viewerIsArtisan;
 
+  /// The design labels the reader's own messages "Name (Me)".
+  static String _name(QuotationParty? party, String fallback,
+      {required bool isMe}) {
+    final name = party?.displayName ?? '';
+    if (name.isEmpty) return fallback;
+    return isMe ? '$name (Me)' : name;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final entries = <Widget>[];
+    final messages = <Widget>[];
 
     if ((quotation.clientNote ?? '').isNotEmpty ||
         quotation.clientEndDate != null) {
-      entries.add(
-        _Bubble(
-          author: viewerIsArtisan ? 'Client' : 'You',
+      messages.add(
+        QuotationBubble(
+          author: _name(quotation.client, viewerIsArtisan ? 'Client' : 'You',
+              isMe: !viewerIsArtisan),
           alignRight: !viewerIsArtisan,
+          avatarUrl: quotation.client?.user?.profilePicture,
+          postedOn: quotation.dateCreated,
           note: quotation.clientNote,
           endDate: quotation.clientEndDate,
         ),
       );
     }
 
-    if (quotation.artisanPrice != null || (quotation.artisanNote ?? '').isNotEmpty) {
-      entries.add(
-        _Bubble(
-          author: viewerIsArtisan ? 'You' : 'Artisan',
+    if ((quotation.artisanPrice ?? 0) > 0 ||
+        (quotation.artisanNote ?? '').isNotEmpty) {
+      messages.add(
+        QuotationBubble(
+          author: _name(quotation.artisan, viewerIsArtisan ? 'You' : 'Artisan',
+              isMe: viewerIsArtisan),
           alignRight: viewerIsArtisan,
+          role: quotation.artisan?.serviceType,
+          avatarUrl: quotation.artisan?.user?.profilePicture,
           note: quotation.artisanNote,
-          price: quotation.artisanPrice,
           priceLabel: 'Artisan Quote',
+          price: quotation.artisanPrice,
           endDate: quotation.artisanEndDate,
         ),
       );
     }
 
-    for (final counter in _counterHistory()) {
-      entries.add(counter);
-    }
-
-    if (entries.isEmpty) {
-      entries.add(
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h),
-          child: Text(
-            'No messages yet.',
-            textAlign: TextAlign.center,
-            style: context.theme.textTheme.bodySmall,
-          ),
-        ),
-      );
+    final meta = quotation.meta;
+    if (meta != null) {
+      for (var round = 1; round <= 2; round++) {
+        for (final side in const ['client', 'artisan']) {
+          final raw = meta['${side}_counter_price_$round'];
+          if (raw == null) continue;
+          final isArtisanSide = side == 'artisan';
+          messages.add(
+            QuotationBubble(
+              author: isArtisanSide == viewerIsArtisan
+                  ? 'You'
+                  : (isArtisanSide ? 'Artisan' : 'Client'),
+              alignRight: isArtisanSide == viewerIsArtisan,
+              priceLabel: 'Counter offer',
+              price: raw is num ? raw : num.tryParse('$raw'),
+            ),
+          );
+        }
+      }
     }
 
     return Container(
-      padding: EdgeInsets.all(12.w),
+      height: 300.h,
+      padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD8D8DD)),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: QuotationColors.border),
       ),
-      child: Column(children: entries),
+      child: messages.isEmpty
+          ? Center(
+              child: Text(
+                // An artisan arriving from a notification holds only the
+                // quotation id; the request itself appears once they reply.
+                viewerIsArtisan
+                    ? 'Send your price below to see the full request.'
+                    : 'No messages yet.',
+                style: GoogleFonts.poppins(
+                  fontSize: 12.sp,
+                  color: QuotationColors.muted,
+                ),
+              ),
+            )
+          : Scrollbar(
+              child: SingleChildScrollView(
+                child: Column(children: messages),
+              ),
+            ),
     );
-  }
-
-  List<Widget> _counterHistory() {
-    final meta = quotation.meta;
-    if (meta == null) return const [];
-    final out = <Widget>[];
-    for (var round = 1; round <= 2; round++) {
-      for (final side in const ['client', 'artisan']) {
-        final price = meta['${side}_counter_price_$round'];
-        if (price == null) continue;
-        final isArtisanSide = side == 'artisan';
-        out.add(
-          _Bubble(
-            author: (isArtisanSide == viewerIsArtisan)
-                ? 'You'
-                : (isArtisanSide ? 'Artisan' : 'Client'),
-            alignRight: isArtisanSide == viewerIsArtisan,
-            price: price is num ? price : num.tryParse('$price'),
-            priceLabel: 'Counter offer',
-          ),
-        );
-      }
-    }
-    return out;
   }
 }
 
-class _Bubble extends StatelessWidget {
-  const _Bubble({
-    required this.author,
-    required this.alignRight,
-    this.note,
-    this.price,
-    this.priceLabel,
-    this.endDate,
-  });
+/// Label above an outlined input, per the design.
+class _Field extends StatelessWidget {
+  const _Field({required this.label, required this.child});
 
-  final String author;
-  final bool alignRight;
-  final String? note;
-  final num? price;
-  final String? priceLabel;
-  final DateTime? endDate;
+  final String label;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 10.h),
-        padding: EdgeInsets.all(10.w),
-        constraints: BoxConstraints(maxWidth: 260.w),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF1F1F4),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              author,
-              style: context.theme.textTheme.titleLarge?.copyWith(
-                fontSize: 13.sp,
-                color: context.theme.primaryColor,
-              ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 14.h),
+      child: Column(
+        // stretch, or the date row shrinks to its placeholder width while the
+        // text fields fill the card.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w500,
+              color: QuotationColors.label,
             ),
-            if ((note ?? '').isNotEmpty) ...[
-              6.verticalSpace,
-              Text(note!, style: context.theme.textTheme.bodySmall),
-            ],
-            if (price != null) ...[
-              6.verticalSpace,
-              Text(
-                '${priceLabel ?? 'Quote'}: $price',
-                style: context.theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: 13.sp,
-                ),
-              ),
-            ],
-            if (endDate != null) ...[
-              4.verticalSpace,
-              Text(
-                'Expected conclusion date: '
-                '${endDate!.day}/${endDate!.month}/${endDate!.year}',
-                style: context.theme.textTheme.bodySmall,
-              ),
-            ],
-          ],
-        ),
+          ),
+          8.verticalSpace,
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(color: QuotationColors.border),
+            ),
+            child: child,
+          ),
+        ],
       ),
     );
   }
 }
 
-class _DateField extends StatelessWidget {
-  const _DateField({
+/// The design's pill button: 56 high, fully rounded, arrow on the right.
+class _PillButton extends StatelessWidget {
+  const _PillButton({
     required this.label,
-    required this.value,
-    required this.onPick,
+    required this.filled,
+    required this.onPressed,
+    this.isLoading = false,
   });
 
   final String label;
-  final DateTime? value;
-  final ValueChanged<DateTime> onPick;
+  final bool filled;
+  final VoidCallback? onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: context.theme.textTheme.bodyMedium),
-        8.verticalSpace,
-        InkWell(
-          onTap: () async {
-            final now = DateTime.now();
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: value ?? now.add(const Duration(days: 1)),
-              firstDate: now,
-              lastDate: now.add(const Duration(days: 365 * 2)),
-            );
-            if (picked != null) onPick(picked);
-          },
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFD8D8DD)),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              value == null
-                  ? '--/--/----'
-                  : '${value!.day}/${value!.month}/${value!.year}',
-              style: context.theme.textTheme.bodySmall,
-            ),
+    final foreground = filled ? Colors.white : QuotationColors.primary;
+    return SizedBox(
+      height: 52.h,
+      child: Material(
+        color: filled ? QuotationColors.primary : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.r),
+          side: const BorderSide(color: QuotationColors.primary),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    height: 18.sp,
+                    width: 18.sp,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(foreground),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          label,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                            color: foreground,
+                          ),
+                        ),
+                      ),
+                      8.horizontalSpace,
+                      Icon(Icons.arrow_forward,
+                          size: 17.sp, color: foreground),
+                    ],
+                  ),
           ),
         ),
-        16.verticalSpace,
-      ],
-    );
-  }
-}
-
-/// Shown to a client whose request the artisan has not priced yet.
-class _AwaitingQuoteBanner extends StatelessWidget {
-  const _AwaitingQuoteBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F1F4),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        'Waiting for the artisan to send their quote. '
-        'You can bargain or accept once they do.',
-        textAlign: TextAlign.center,
-        style: context.theme.textTheme.bodyMedium,
       ),
     );
   }
@@ -475,15 +532,16 @@ class _ClosedBanner extends StatelessWidget {
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: accepted ? const Color(0xFFE7F5EC) : const Color(0xFFFDECEC),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: Text(
         accepted
             ? 'This quotation was accepted.'
             : 'This quotation was declined.',
         textAlign: TextAlign.center,
-        style: context.theme.textTheme.bodyMedium?.copyWith(
-          color: accepted ? const Color(0xFF02952B) : Colors.red,
+        style: GoogleFonts.poppins(
+          fontSize: 13.sp,
+          color: accepted ? const Color(0xFF02952B) : const Color(0xFFE53935),
         ),
       ),
     );

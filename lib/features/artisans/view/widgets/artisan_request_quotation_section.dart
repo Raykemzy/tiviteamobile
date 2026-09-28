@@ -162,9 +162,7 @@ class _ArtisanRequestQuotationSectionState
           context.go(AppRoutes.homeView);
           return;
         }
-        // Drop straight into the negotiation — the request response is the
-        // only chance to load the quotation, since the backend exposes no GET
-        // for one.
+        // Drop straight into the negotiation.
         context.pushReplacement(
           '${AppRoutes.servicesView}/${AppRoutes.bargainQuotationView}',
           extra: quotation,

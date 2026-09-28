@@ -6,13 +6,14 @@ part of 'quotation_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$quotationNotifierHash() => r'ead68b1240c7b9480d0fee65bf81b2b0966d8323';
+String _$quotationNotifierHash() => r'277a0ba2c864799bd94f12332cf450a5b8321889';
 
 /// Drives the artisan/client quotation negotiation.
 ///
-/// Every action returns the updated quotation, which is the only way to read
-/// one — the backend exposes no GET for quotations, so this notifier is seeded
-/// with the quotation the caller already holds.
+/// Callers seed it with whatever they already hold (possibly just an id from
+/// a notification) and then [load] the full record from
+/// `/bookings/quote/{id}`; every action afterwards returns the updated
+/// quotation.
 ///
 /// Copied from [QuotationNotifier].
 @ProviderFor(QuotationNotifier)

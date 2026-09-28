@@ -10,24 +10,33 @@ part 'quotation_notifier.g.dart';
 class QuotationState {
   const QuotationState({
     required this.actionState,
+    required this.loadState,
     this.quotation,
     this.errorMessage,
   });
 
-  factory QuotationState.initial() =>
-      const QuotationState(actionState: LoadState.idle);
+  factory QuotationState.initial() => const QuotationState(
+        actionState: LoadState.idle,
+        loadState: LoadState.idle,
+      );
 
+  /// Send / counter / accept / decline.
   final LoadState actionState;
+
+  /// Fetching the quotation itself via [QuotationNotifier.load].
+  final LoadState loadState;
   final QuotationModel? quotation;
   final String? errorMessage;
 
   QuotationState copyWith({
     LoadState? actionState,
+    LoadState? loadState,
     QuotationModel? quotation,
     String? errorMessage,
   }) {
     return QuotationState(
       actionState: actionState ?? this.actionState,
+      loadState: loadState ?? this.loadState,
       quotation: quotation ?? this.quotation,
       errorMessage: errorMessage,
     );
@@ -36,9 +45,10 @@ class QuotationState {
 
 /// Drives the artisan/client quotation negotiation.
 ///
-/// Every action returns the updated quotation, which is the only way to read
-/// one — the backend exposes no GET for quotations, so this notifier is seeded
-/// with the quotation the caller already holds.
+/// Callers seed it with whatever they already hold (possibly just an id from
+/// a notification) and then [load] the full record from
+/// `/bookings/quote/{id}`; every action afterwards returns the updated
+/// quotation.
 @riverpod
 class QuotationNotifier extends _$QuotationNotifier {
   late final ArtisansRepo _repo;
@@ -51,6 +61,27 @@ class QuotationNotifier extends _$QuotationNotifier {
 
   void seed(QuotationModel quotation) {
     state = state.copyWith(quotation: quotation);
+  }
+
+  /// Replaces the seeded quotation with the backend's full copy. Keeps the
+  /// seed on failure so the screen still has something to render.
+  Future<void> load(String quotationId) async {
+    state = state.copyWith(loadState: LoadState.loading, errorMessage: null);
+    try {
+      final response = await _repo.getQuotation(quotationId);
+      if (!response.isSuccess()) {
+        throw response.error?.message ?? response.message ?? 'An error occurred';
+      }
+      state = state.copyWith(
+        loadState: LoadState.success,
+        quotation: response.data,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        loadState: LoadState.error,
+        errorMessage: e.toString(),
+      );
+    }
   }
 
   Future<void> sendQuotation({

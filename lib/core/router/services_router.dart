@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tivi_tea/features/artisans/model/quotation_model.dart';
 import 'package:tivi_tea/features/artisans/view/bargain_quotation_view.dart';
+import 'package:tivi_tea/features/artisans/view/quotations_view.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
 import 'package:tivi_tea/features/artisans/model/artisan_response_model.dart';
 import 'package:tivi_tea/features/artisans/view/all_artisans_view.dart';
@@ -115,6 +116,12 @@ class ServicesRouter {
     builder: (BuildContext context, GoRouterState state) {
       final quotation = state.extra as QuotationModel;
       return BargainQuotationView(quotation: quotation);
+    },
+  );
+  static final quotationsView = GoRoute(
+    path: AppRoutes.quotationsView,
+    builder: (BuildContext context, GoRouterState state) {
+      return const QuotationsView();
     },
   );
   static final createFootSoldierView = GoRoute(

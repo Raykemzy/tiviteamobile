@@ -184,6 +184,20 @@ abstract class RestClient {
     @Path('artisanId') String artisanId,
     @Body() RequestQuotationRequestBody data,
   );
+
+  /// Every quotation the signed-in entity is party to (client or artisan),
+  /// newest first. `page_size` defaults to 10 on the backend.
+  @GET('/bookings/quotation/list')
+  Future<BaseResponse<GenericPaginatedResponse<QuotationModel>>> getQuotations(
+    @Query('page') int page,
+  );
+
+  /// Full quotation by id. 404 "Quote Not Found" for an id the caller is not
+  /// party to.
+  @GET('/bookings/quote/{quotationId}')
+  Future<BaseResponse<QuotationModel>> getQuotation(
+    @Path('quotationId') String quotationId,
+  );
   @GET('/listings/categories')
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories();

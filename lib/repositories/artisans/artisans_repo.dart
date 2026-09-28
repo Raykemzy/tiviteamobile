@@ -79,4 +79,22 @@ final class ArtisansRepo {
       return AppException.handleError(e);
     }
   }
+
+  Future<BaseResponse<GenericPaginatedResponse<QuotationModel>>> getQuotations(
+    int page,
+  ) async {
+    try {
+      return await restClient.getQuotations(page);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
+
+  Future<BaseResponse<QuotationModel>> getQuotation(String quotationId) async {
+    try {
+      return await restClient.getQuotation(quotationId);
+    } on DioException catch (e) {
+      return AppException.handleError(e);
+    }
+  }
 }

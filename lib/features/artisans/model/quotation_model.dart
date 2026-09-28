@@ -10,9 +10,9 @@ part 'quotation_model.g.dart';
 /// counter price because the limit is 2 times. Accept or decline offer.") →
 /// either side accepts or declines.
 ///
-/// Note there is **no GET endpoint** for a quotation: it can only be read from
-/// the response of an action you just performed. Listing/detail screens are
-/// blocked on the backend exposing one.
+/// Read via `GET /bookings/quotation/list` (paginated, scoped to the caller)
+/// and `GET /bookings/quote/{id}`; every action also returns the updated
+/// record.
 @JsonSerializable()
 class QuotationModel {
   final String? id;
@@ -37,6 +37,14 @@ class QuotationModel {
   /// counter history the backend keeps.
   final Map<String, dynamic>? meta;
 
+  /// The two sides. Parsed so the thread can show real names and the artisan's
+  /// trade, as the design does, rather than generic role labels. Read-only —
+  /// a quotation is never serialised back out.
+  @JsonKey(includeToJson: false)
+  final QuotationParty? artisan;
+  @JsonKey(includeToJson: false)
+  final QuotationParty? client;
+
   @JsonKey(name: 'date_created')
   final DateTime? dateCreated;
 
@@ -52,11 +60,25 @@ class QuotationModel {
     this.artisanEndDate,
     this.images,
     this.meta,
+    this.artisan,
+    this.client,
     this.dateCreated,
   });
 
   bool get isAccepted => status?.toLowerCase() == 'accepted';
   bool get isDeclined => status?.toLowerCase() == 'declined';
+
+  /// Whether the artisan has named a price yet. The backend serialises an
+  /// unpriced request as `artisan_price: 0` (not null), so a null check is
+  /// not enough — that mistake offered "Accept current quote (0)".
+  bool get hasArtisanQuote =>
+      (artisanPrice ?? 0) > 0 || (currentCounterPrice ?? 0) > 0;
+
+  /// The figure on the table right now: latest counter, else opening quote.
+  num get currentQuote {
+    final counter = currentCounterPrice ?? 0;
+    return counter > 0 ? counter : (artisanPrice ?? 0);
+  }
 
   /// Counters remaining for the given side before the backend refuses.
   int countersLeftFor({required bool artisan}) {
@@ -72,4 +94,47 @@ class QuotationModel {
       _$QuotationModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$QuotationModelToJson(this);
+}
+
+/// One side of a negotiation. The payload nests a full user; only what the
+/// thread renders is modelled.
+@JsonSerializable(createToJson: false)
+class QuotationParty {
+  final String? id;
+  final QuotationPartyUser? user;
+
+  /// Artisans only — "photographer", "carpenter".
+  @JsonKey(name: 'service_type')
+  final String? serviceType;
+
+  QuotationParty({this.id, this.user, this.serviceType});
+
+  String get displayName {
+    final name = '${user?.firstName ?? ''} ${user?.lastName ?? ''}'.trim();
+    return name.isEmpty ? '' : name;
+  }
+
+  factory QuotationParty.fromJson(Map<String, dynamic> json) =>
+      _$QuotationPartyFromJson(json);
+}
+
+@JsonSerializable(createToJson: false)
+class QuotationPartyUser {
+  final String? id;
+  @JsonKey(name: 'first_name')
+  final String? firstName;
+  @JsonKey(name: 'last_name')
+  final String? lastName;
+  @JsonKey(name: 'profile_picture')
+  final String? profilePicture;
+
+  QuotationPartyUser({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+  });
+
+  factory QuotationPartyUser.fromJson(Map<String, dynamic> json) =>
+      _$QuotationPartyUserFromJson(json);
 }

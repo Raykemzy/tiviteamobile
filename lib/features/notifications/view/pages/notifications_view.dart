@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:tivi_tea/core/config/extensions/build_context_extensions.dart';
 import 'package:tivi_tea/core/router/app_routes.dart';
+import 'package:tivi_tea/features/artisans/model/quotation_model.dart';
 import 'package:tivi_tea/core/theme/extensions/theme_extensions.dart';
 import 'package:tivi_tea/core/utils/enums.dart';
 import 'package:tivi_tea/features/common/app_appbar.dart';
@@ -199,6 +200,12 @@ class _NotificationsViewState extends ConsumerState<NotificationsView> {
                                         .markNotificationAsRead(
                                             notification.id);
                                     if (!context.mounted) return;
+                                    if (_openQuotationRequest(
+                                      context,
+                                      notification,
+                                    )) {
+                                      return;
+                                    }
                                     context.push(
                                       '${AppRoutes.notificationsView}/${AppRoutes.notificationDetailsView}',
                                       extra:
@@ -389,4 +396,27 @@ class _NotificationGroup {
   final String key;
   final String label;
   final List<NotificationModel> notifications;
+}
+
+/// Opens a quotation notification straight into its negotiation.
+///
+/// The notification carries only the quotation id; the negotiation screen
+/// loads the rest. Returns false for anything that is not a quotation, which
+/// falls through to the notification detail page.
+bool _openQuotationRequest(
+  BuildContext context,
+  NotificationModel notification,
+) {
+  if (!notification.isQuotation) return false;
+  final id = notification.objectId;
+  if (id == null || id.isEmpty) return false;
+
+  // The negotiation screen fetches the full quotation from the id, so any
+  // quotation notification — request, quote, counter, accept, decline — for
+  // either side opens straight into it.
+  context.push(
+    '${AppRoutes.servicesView}/${AppRoutes.bargainQuotationView}',
+    extra: QuotationModel(id: id),
+  );
+  return true;
 }

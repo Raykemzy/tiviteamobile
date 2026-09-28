@@ -101,6 +101,7 @@ final GoRouter router = GoRouter(
                 ServicesRouter.createTransferRecepientView,
                 ServicesRouter.allArtisansView,
                 ServicesRouter.bargainQuotationView,
+                ServicesRouter.quotationsView,
                 ServicesRouter.artisanDetailsView,
                 ServicesRouter.marketPlaceView,
                 ServicesRouter.myCartView,

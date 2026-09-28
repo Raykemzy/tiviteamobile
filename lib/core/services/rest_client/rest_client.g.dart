@@ -1003,6 +1003,74 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<BaseResponse<GenericPaginatedResponse<QuotationModel>>> getQuotations(
+    int page,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<BaseResponse<GenericPaginatedResponse<QuotationModel>>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/bookings/quotation/list',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(
+            baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+          ),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<GenericPaginatedResponse<QuotationModel>> _value;
+    try {
+      _value = BaseResponse<GenericPaginatedResponse<QuotationModel>>.fromJson(
+        _result.data!,
+        (json) => GenericPaginatedResponse<QuotationModel>.fromJson(
+          json as Map<String, dynamic>,
+          (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BaseResponse<QuotationModel>> getQuotation(String quotationId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BaseResponse<QuotationModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/bookings/quote/${quotationId}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<QuotationModel> _value;
+    try {
+      _value = BaseResponse<QuotationModel>.fromJson(
+        _result.data!,
+        (json) => QuotationModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<BaseResponse<GenericPaginatedResponse<CategoryResponseModel>>>
       getCategories() async {
     final _extra = <String, dynamic>{};

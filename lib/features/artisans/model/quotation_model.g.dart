@@ -24,6 +24,12 @@ QuotationModel _$QuotationModelFromJson(Map<String, dynamic> json) =>
       images:
           (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
       meta: json['meta'] as Map<String, dynamic>?,
+      artisan: json['artisan'] == null
+          ? null
+          : QuotationParty.fromJson(json['artisan'] as Map<String, dynamic>),
+      client: json['client'] == null
+          ? null
+          : QuotationParty.fromJson(json['client'] as Map<String, dynamic>),
       dateCreated: json['date_created'] == null
           ? null
           : DateTime.parse(json['date_created'] as String),
@@ -44,3 +50,20 @@ Map<String, dynamic> _$QuotationModelToJson(QuotationModel instance) =>
       'meta': instance.meta,
       'date_created': instance.dateCreated?.toIso8601String(),
     };
+
+QuotationParty _$QuotationPartyFromJson(Map<String, dynamic> json) =>
+    QuotationParty(
+      id: json['id'] as String?,
+      user: json['user'] == null
+          ? null
+          : QuotationPartyUser.fromJson(json['user'] as Map<String, dynamic>),
+      serviceType: json['service_type'] as String?,
+    );
+
+QuotationPartyUser _$QuotationPartyUserFromJson(Map<String, dynamic> json) =>
+    QuotationPartyUser(
+      id: json['id'] as String?,
+      firstName: json['first_name'] as String?,
+      lastName: json['last_name'] as String?,
+      profilePicture: json['profile_picture'] as String?,
+    );

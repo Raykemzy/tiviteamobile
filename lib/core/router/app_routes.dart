@@ -53,6 +53,7 @@ class AppRoutes {
   static const String jobHistoryView = 'jobHistoryView';
   static const String allArtisansView = 'allArtisansView';
   static const String bargainQuotationView = 'bargainQuotationView';
+  static const String quotationsView = 'quotationsView';
   static const String writeReviewView = '/writeReviewView';
   static const String serviceCompletionView = '/serviceCompletionView';
   static const String partnerReviewsView = 'partnerReviewsView';
