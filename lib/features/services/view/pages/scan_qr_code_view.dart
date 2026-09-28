@@ -75,7 +75,7 @@ class _ScanQRCodeViewState extends ConsumerState<ScanQRCodeView> {
               );
               _checkInCheckOut(widget.bookingId);
             },
-            errorBuilder: (context, error, child) {
+            errorBuilder: (context, error) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
