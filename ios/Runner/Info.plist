@@ -50,11 +50,11 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This app uses Apple Music access to enhance your experience with music-related features.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Use your camera to take photos and upload them to your profile</string>
+	<string>tiviTea uses your camera to take photos and videos you choose to upload, and to scan booking QR codes. For example, you can photograph a tool you want to rent out and add it to your listing, take a new profile picture, or scan the QR code at a workspace to check in to your booking.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Use your microphone to record audio for videos.</string>
+	<string>tiviTea uses your microphone to record sound when you film a video to upload. For example, when you record a video showing your workspace or a piece of your work for your listing or artisan gallery.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Use your photo library to select images for you to upload.</string>
+	<string>tiviTea lets you choose photos and videos from your library to upload. For example, you can add pictures of an item you are selling in the marketplace, or add past work to your artisan gallery.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
