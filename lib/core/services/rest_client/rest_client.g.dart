@@ -355,15 +355,13 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<BaseResponse<dynamic>> deleteAccount(
-    DeleteAccountRequestBody data,
-  ) async {
+  Future<void> deleteAccount(DeleteAccountRequestBody data) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(data.toJson());
-    final _options = _setStreamType<BaseResponse<dynamic>>(
+    final _options = _setStreamType<void>(
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -373,18 +371,7 @@ class _RestClient implements RestClient {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<dynamic> _value;
-    try {
-      _value = BaseResponse<dynamic>.fromJson(
-        _result.data!,
-        (json) => json as dynamic,
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override

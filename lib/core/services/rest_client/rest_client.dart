@@ -95,8 +95,10 @@ abstract class RestClient {
   @POST('/authentication/client/social-auth')
   Future<BaseResponse<SocialAuthResponse>> signUpWithSocialAuth(
       @Body() SocialAuthModel data);
+  /// Replies with no body on success, so the response is not parsed — a
+  /// non-2xx still throws a DioException.
   @DELETE('/authentication/delete-account')
-  Future<BaseResponse> deleteAccount(@Body() DeleteAccountRequestBody data);
+  Future<void> deleteAccount(@Body() DeleteAccountRequestBody data);
 
   //<====================> Service <====================>
   @GET('/listings/')

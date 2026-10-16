@@ -6,7 +6,7 @@ part of 'login_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginNotifierHash() => r'd95335f526809d56d0575f3a559a8c6ea1934b65';
+String _$loginNotifierHash() => r'33bbf8d6728fab9306bf785268401c75875b84af';
 
 /// Kept alive: [LoginState.appAccessState] is session-wide. While this was
 /// auto-disposed the provider was rebuilt whenever no widget watched it, and

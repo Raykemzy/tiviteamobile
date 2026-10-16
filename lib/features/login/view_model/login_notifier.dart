@@ -256,12 +256,21 @@ class LoginNotifier extends _$LoginNotifier {
             response.message ??
             'An error occurred';
       }
-      state = state.copyWith(loadState: LoadState.success);
-      if (onSuccess != null) onSuccess();
     } catch (e) {
       state = state.copyWith(loadState: LoadState.error);
       if (onError != null) onError(e.toString());
+      return;
     }
+    // The repo has wiped storage; drop the in-memory session too, since
+    // this notifier is kept alive and would otherwise still say "user".
+    // Outside the try: the account is already gone, so nothing after this
+    // point may be reported as a failed deletion.
+    ref.read(userNotifierProvider.notifier).refreshUser();
+    state = state.copyWith(
+      loadState: LoadState.success,
+      appAccessState: AppAccessState.guest,
+    );
+    if (onSuccess != null) onSuccess();
   }
 
   void setAppAccessState(AppAccessState appAccessState) {

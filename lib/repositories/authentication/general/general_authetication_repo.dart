@@ -138,10 +138,10 @@ final class GeneralAuthenticationRepo {
     try {
       final refreshToken = userRepository?.getRefreshToken() ?? '';
       final requestBody = DeleteAccountRequestBody(refresh: refreshToken);
-      final result = await restClient.deleteAccount(requestBody);
+      await restClient.deleteAccount(requestBody);
       // Clear all local data after successful deletion
       await userRepository?.clearLocalUserInfo();
-      return result;
+      return const BaseResponse(status: 'success');
     } on DioException catch (e) {
       return AppException.handleError(e);
     }

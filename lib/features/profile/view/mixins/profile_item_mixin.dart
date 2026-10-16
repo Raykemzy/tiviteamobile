@@ -8,6 +8,7 @@ import 'package:tivi_tea/features/login/view_model/login_notifier.dart';
 import 'package:tivi_tea/features/profile/model/profile_item_model.dart';
 import 'package:tivi_tea/features/profile/view/widgets/switch_account_sheet.dart';
 import 'package:tivi_tea/features/profile/view_model/user_notifier.dart';
+import 'package:tivi_tea/features/settings/view/widgets/delete_account_dialog.dart';
 import 'package:tivi_tea/gen/assets.gen.dart';
 import 'package:tivi_tea/l10n/extensions/l10n_extensions.dart';
 
@@ -55,6 +56,11 @@ mixin ProfileItemMixin {
         icon: Assets.svgs.logout.path,
         isDestructive: true,
         onTap: () => _logout(context, ref),
+      ),
+      ProfileItemModel(
+        label: 'Delete account',
+        isDestructive: true,
+        onTap: () => showDeleteAccountDialog(context, ref),
       ),
     ];
   }
